@@ -2,16 +2,14 @@ package fr.ybonnel.codestory;
 
 import com.google.api.client.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.common.io.CharStreams;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mortbay.jetty.Server;
-import sun.net.www.http.HttpClient;
 
-import java.io.*;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import static junit.framework.Assert.assertEquals;
 
