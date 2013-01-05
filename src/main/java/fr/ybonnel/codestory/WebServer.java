@@ -9,10 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class WebServer extends AbstractHandler {
 
@@ -40,9 +37,14 @@ public class WebServer extends AbstractHandler {
         writer.println(reponse);
         writer.close();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS");
+        log(request, status, reponse);
 
-        System.out.println();
+    }
+
+    private void log(HttpServletRequest request, int status, String reponse) {
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS");
         final StringBuilder logMessage = new StringBuilder(sdf.format(new Date()));
         logMessage.append("\n\t");
         logMessage.append(request.getMethod());
@@ -56,8 +58,8 @@ public class WebServer extends AbstractHandler {
         logMessage.append("\n\tResponse:").append(reponse);
 
         System.out.println(logMessage.toString());
-
     }
+
 
     private Map<String, String> convertParametersMap(HttpServletRequest request) {
         Enumeration<String> parameters = request.getParameterNames();
