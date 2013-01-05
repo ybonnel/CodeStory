@@ -48,18 +48,14 @@ public class WebServer extends AbstractHandler {
         logMessage.append(request.getMethod());
         logMessage.append("\n\tPath info:")
                 .append(request.getPathInfo());
-
         logMessage.append("\n\tRequest parameters:")
                 .append(convertParametersMap(request));
-
         logMessage.append("\n\tRemote adress:")
                 .append(request.getRemoteAddr());
-
         logMessage.append("\n\tResponse status:").append(status);
         logMessage.append("\n\tResponse:").append(reponse);
 
         System.out.println(logMessage.toString());
-
 
     }
 
@@ -74,7 +70,12 @@ public class WebServer extends AbstractHandler {
     }
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(8080);
+        int port = 10080;
+        if (args.length == 1) {
+            port = Integer.parseInt(args[0]);
+        }
+
+        Server server = new Server(port);
         server.setHandler(new WebServer());
         server.start();
         server.join();
