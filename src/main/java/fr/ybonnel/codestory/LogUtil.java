@@ -1,5 +1,7 @@
 package fr.ybonnel.codestory;
 
+import org.omg.CORBA.StringHolder;
+
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,4 +43,9 @@ public class LogUtil {
         }
         return retour;
     }
+
+    public static void logQuestionUnkown(String question) {
+        System.err.println("#### Question inconnue : " + question + " ####");
+    }
+
 }

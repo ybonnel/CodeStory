@@ -26,11 +26,15 @@ public enum Question {
     protected abstract boolean isThisQuestion(String question);
 
     public static String getReponse(String question) throws Exception {
+        if (question ==null) {
+            return null;
+        }
         for (Question oneQuestion : values()) {
             if (oneQuestion.isThisQuestion(question)) {
                 return oneQuestion.abstractQuestion.getReponse(question);
             }
         }
+        LogUtil.logQuestionUnkown(question);
         return null;
     }
 
