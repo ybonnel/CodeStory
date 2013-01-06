@@ -20,13 +20,21 @@ public class WebServer extends AbstractHandler {
         String query = request.getParameter(QUERY_PARAMETER);
         response.setContentType("text/html;charset=utf-8");
 
-        String reponse = Question.getReponse(query);
+        String reponse = null;
         int status = HttpServletResponse.SC_OK;
-        if (reponse == null) {
+        try {
+            reponse = Question.getReponse(query);
+            if (reponse == null) {
+                reponse = "";
+                status = HttpServletResponse.SC_NOT_FOUND;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
             reponse = "";
-            status = HttpServletResponse.SC_NOT_FOUND;
         }
 
+        response.setHeader("Server", "YboServer");
         response.setStatus(status);
         PrintWriter writer = response.getWriter();
         writer.println(reponse);

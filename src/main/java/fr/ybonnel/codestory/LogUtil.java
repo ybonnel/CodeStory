@@ -10,7 +10,11 @@ import java.util.Map;
 public class LogUtil {
 
     static void log(HttpServletRequest request, int status, String reponse) {
-
+        String query = request.getParameter(WebServer.QUERY_PARAMETER);
+        if ((query != null && "log".equals(query))
+                || "/favicon.ico".equals(request.getPathInfo())) {
+            return;
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
         final StringBuilder logMessage = new StringBuilder(sdf.format(new Date()));

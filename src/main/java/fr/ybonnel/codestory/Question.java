@@ -8,6 +8,12 @@ public enum Question {
         protected boolean isThisQuestion(String question) {
             return "Quelle est ton adresse email".equals(question);
         }
+    },
+    LOG(new LogQuestion()) {
+        @Override
+        protected boolean isThisQuestion(String question) {
+            return "log".equals(question);
+        }
     };
 
 
@@ -19,7 +25,7 @@ public enum Question {
 
     protected abstract boolean isThisQuestion(String question);
 
-    public static String getReponse(String question) {
+    public static String getReponse(String question) throws Exception {
         for (Question oneQuestion : values()) {
             if (oneQuestion.isThisQuestion(question)) {
                 return oneQuestion.abstractQuestion.getReponse(question);
