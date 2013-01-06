@@ -12,7 +12,7 @@ public class LogUtil {
     static void log(HttpServletRequest request, int status, String reponse) {
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
         final StringBuilder logMessage = new StringBuilder(sdf.format(new Date()));
         logMessage.append("\n\t");
         logMessage.append(request.getMethod());
