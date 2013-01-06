@@ -21,7 +21,7 @@ public class WebServerTest {
     @Before
     public void setup() throws Exception {
         server = new Server(PORT);
-        server.setHandler(new WebServer());
+        server.setHandler(new WebServer(true));
         server.start();
 
         new Thread(){

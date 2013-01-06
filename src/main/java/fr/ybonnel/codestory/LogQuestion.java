@@ -1,15 +1,27 @@
 package fr.ybonnel.codestory;
 
 
-import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LogQuestion extends AbstractQuestion {
+
+    private Gson gson = new GsonBuilder().create();
+
     @Override
     public String getReponse(String question) throws IOException {
-        return Files.toString(new File("./serveur.log"), Charset.forName("utf-8")).replaceAll("\\n", "<br/>");
+        if ("log".equals(question)) {
+            return gson.toJson(DatabaseManager.INSTANCE.getLogs());
+        }
+
+        Matcher matcher = Pattern.compile("log\\(([a-zA-Z])\\)").matcher(question);
+        if (matcher.matches()) {
+            return gson.toJson(DatabaseManager.INSTANCE.getLogsByType(matcher.group(1)));
+        }
+        return null;
     }
 }

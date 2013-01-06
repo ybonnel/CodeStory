@@ -11,6 +11,20 @@ import java.io.PrintWriter;
 
 public class WebServer extends AbstractHandler {
 
+    private static boolean test = false;
+
+    public static boolean isTest() {
+        return test;
+    }
+
+    public WebServer(boolean test) {
+        WebServer.test = test;
+    }
+
+    public WebServer() {
+        test = false;
+    }
+
     public static final String QUERY_PARAMETER = "q";
 
     @Override

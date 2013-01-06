@@ -3,6 +3,9 @@ package fr.ybonnel.codestory;
 import org.omg.CORBA.StringHolder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -11,16 +14,17 @@ import java.util.Map;
 
 public class LogUtil {
 
-    static void log(HttpServletRequest request, int status, String reponse) {
+
+    public static void log(HttpServletRequest request, int status, String reponse) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
-        if ((query != null && "log".equals(query))
+        if ((query != null && query.startsWith("log"))
                 || "/favicon.ico".equals(request.getPathInfo())) {
             return;
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
-        final StringBuilder logMessage = new StringBuilder(sdf.format(new Date()));
-        logMessage.append("\n\t");
+
+        final StringBuilder logMessage = new StringBuilder();
+        logMessage.append("\t");
         logMessage.append(request.getMethod());
         logMessage.append("\n\tPath info:")
                 .append(request.getPathInfo());
@@ -31,7 +35,10 @@ public class LogUtil {
         logMessage.append("\n\tResponse status:").append(status);
         logMessage.append("\n\tResponse:").append(reponse);
 
-        System.out.println(logMessage.toString());
+        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_Q, logMessage.toString());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
+        System.out.println(sdf.format(new Date()) + "\n" + logMessage.toString());
     }
 
     private static Map<String, String> convertParametersMap(HttpServletRequest request) {
@@ -46,6 +53,8 @@ public class LogUtil {
 
     public static void logQuestionUnkown(String question) {
         System.err.println("#### Question inconnue : " + question + " ####");
+        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_NEW, question);
+
     }
 
 }

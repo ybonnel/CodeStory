@@ -12,7 +12,7 @@ public enum Question {
     LOG(new LogQuestion()) {
         @Override
         protected boolean isThisQuestion(String question) {
-            return "log".equals(question);
+            return question.startsWith("log");
         }
     };
 
