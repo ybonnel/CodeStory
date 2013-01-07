@@ -19,6 +19,8 @@ public class WebServer extends AbstractHandler {
     public void handle(String target, HttpServletRequest request, HttpServletResponse httpResponse, int dispatch)
             throws IOException, ServletException {
 
+        long startTime = System.nanoTime();
+
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");
 
@@ -42,7 +44,10 @@ public class WebServer extends AbstractHandler {
         writer.println(response);
         writer.close();
 
-        LogUtil.logHttpRequest(request, status, response);
+        long elapsedTime = System.nanoTime() - startTime;
+
+
+        LogUtil.logHttpRequest(request, status, response, elapsedTime);
     }
 
 

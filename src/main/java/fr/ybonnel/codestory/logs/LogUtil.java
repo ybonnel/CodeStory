@@ -3,16 +3,14 @@ package fr.ybonnel.codestory.logs;
 import fr.ybonnel.codestory.WebServer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LogUtil {
 
 
-    public static void logHttpRequest(HttpServletRequest request, int status, String response) {
+    public static void logHttpRequest(HttpServletRequest request, int status, String response, long elapsedTime) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if ((query != null && query.startsWith("log"))
                 || "/favicon.ico".equals(request.getPathInfo())) {
@@ -23,14 +21,15 @@ public class LogUtil {
         final StringBuilder logMessage = new StringBuilder();
         logMessage.append("\t");
         logMessage.append(request.getMethod());
-        logMessage.append("\n\tPath info:")
+        logMessage.append("\n\tPath info : ")
                 .append(request.getPathInfo());
-        logMessage.append("\n\tRequest parameters:")
+        logMessage.append("\n\tRequest parameters : ")
                 .append(convertParametersMap(request));
-        logMessage.append("\n\tRemote adress:")
+        logMessage.append("\n\tRemote adress : ")
                 .append(request.getRemoteAddr());
-        logMessage.append("\n\tResponse status:").append(status);
-        logMessage.append("\n\tResponse:").append(response);
+        logMessage.append("\n\tResponse status : ").append(status);
+        logMessage.append("\n\tResponse : ").append(response);
+        logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
 
         DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_Q, logMessage.toString());
 
