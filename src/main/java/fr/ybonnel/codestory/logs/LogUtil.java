@@ -14,7 +14,7 @@ public class LogUtil {
 
     public static void logHttpRequest(HttpServletRequest request, int status, String response) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
-        if ((query != null && query.startsWith("logHttpRequest"))
+        if ((query != null && query.startsWith("log"))
                 || "/favicon.ico".equals(request.getPathInfo())) {
             return;
         }
