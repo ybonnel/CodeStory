@@ -20,8 +20,9 @@ public class WebServerTest {
 
     @Before
     public void setup() throws Exception {
+        WebServer.setTest(true);
         server = new Server(PORT);
-        server.setHandler(new WebServer(true));
+        server.setHandler(new WebServer());
         server.start();
 
         new Thread(){
@@ -42,16 +43,22 @@ public class WebServerTest {
     }
 
 
-    static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 
     @Test
-    public void should_answear_to_first_question() throws Exception {
+    public void should_answear_to_whatsyourmail() throws Exception {
+        String url = "http://localhost:" + PORT + "/?q=Quelle+est+ton+adresse+email";
+        HttpResponse response = sendGetRequest(url);
+        assertEquals("Status code must be 200", 200, response.getStatusCode());
+        assertEquals("Response must be my mail", "ybonnel@gmail.com", responseToString(response));
+    }
+
+    private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+
+    private HttpResponse sendGetRequest(String url) throws IOException {
         HttpRequestFactory requestFactory =
                 HTTP_TRANSPORT.createRequestFactory();
-        HttpRequest request = requestFactory.buildGetRequest(new GenericUrl("http://localhost:" + PORT + "/?q=Quelle+est+ton+adresse+email"));
-        HttpResponse response = request.execute();
-        assertEquals(200, response.getStatusCode());
-        assertEquals("ybonnel@gmail.com", responseToString(response));
+        HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
+        return request.execute();
     }
 
     private String responseToString(HttpResponse response) throws IOException {

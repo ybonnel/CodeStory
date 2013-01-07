@@ -1,7 +1,8 @@
-package fr.ybonnel.codestory;
+package fr.ybonnel.codestory.logs;
 
 
 import com.google.common.base.Throwables;
+import fr.ybonnel.codestory.WebServer;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.*;

@@ -1,5 +1,7 @@
 package fr.ybonnel.codestory;
 
+import fr.ybonnel.codestory.logs.LogUtil;
+import fr.ybonnel.codestory.query.QueryType;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 
@@ -11,50 +13,36 @@ import java.io.PrintWriter;
 
 public class WebServer extends AbstractHandler {
 
-    private static boolean test = false;
-
-    public static boolean isTest() {
-        return test;
-    }
-
-    public WebServer(boolean test) {
-        WebServer.test = test;
-    }
-
-    public WebServer() {
-        test = false;
-    }
-
     public static final String QUERY_PARAMETER = "q";
 
     @Override
-    public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch)
+    public void handle(String target, HttpServletRequest request, HttpServletResponse httpResponse, int dispatch)
             throws IOException, ServletException {
 
         String query = request.getParameter(QUERY_PARAMETER);
-        response.setContentType("text/html;charset=utf-8");
+        httpResponse.setContentType("text/html;charset=utf-8");
 
-        String reponse = null;
+        String response;
         int status = HttpServletResponse.SC_OK;
         try {
-            reponse = Question.getReponse(query);
-            if (reponse == null) {
-                reponse = "";
+            response = QueryType.getResponse(query);
+            if (response == null) {
+                response = "Query " + query + " is unkown";
                 status = HttpServletResponse.SC_NOT_FOUND;
             }
         } catch (Exception e) {
             e.printStackTrace();
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            reponse = "";
+            response = e.getMessage();
         }
 
-        response.setHeader("Server", "YboServer");
-        response.setStatus(status);
-        PrintWriter writer = response.getWriter();
-        writer.println(reponse);
+        httpResponse.setHeader("Server", "YboServer");
+        httpResponse.setStatus(status);
+        PrintWriter writer = httpResponse.getWriter();
+        writer.println(response);
         writer.close();
 
-        LogUtil.log(request, status, reponse);
+        LogUtil.logHttpRequest(request, status, response);
     }
 
 
@@ -68,6 +56,16 @@ public class WebServer extends AbstractHandler {
         server.setHandler(new WebServer());
         server.start();
         server.join();
+    }
+
+    private static boolean test = false;
+
+    public static boolean isTest() {
+        return test;
+    }
+
+    public static void setTest(boolean test) {
+        WebServer.test = test;
     }
 
 }

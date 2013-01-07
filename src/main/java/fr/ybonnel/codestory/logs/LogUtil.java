@@ -1,11 +1,8 @@
-package fr.ybonnel.codestory;
+package fr.ybonnel.codestory.logs;
 
-import org.omg.CORBA.StringHolder;
+import fr.ybonnel.codestory.WebServer;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -15,9 +12,9 @@ import java.util.Map;
 public class LogUtil {
 
 
-    public static void log(HttpServletRequest request, int status, String reponse) {
+    public static void logHttpRequest(HttpServletRequest request, int status, String response) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
-        if ((query != null && query.startsWith("log"))
+        if ((query != null && query.startsWith("logHttpRequest"))
                 || "/favicon.ico".equals(request.getPathInfo())) {
             return;
         }
@@ -33,7 +30,7 @@ public class LogUtil {
         logMessage.append("\n\tRemote adress:")
                 .append(request.getRemoteAddr());
         logMessage.append("\n\tResponse status:").append(status);
-        logMessage.append("\n\tResponse:").append(reponse);
+        logMessage.append("\n\tResponse:").append(response);
 
         DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_Q, logMessage.toString());
 
@@ -43,17 +40,17 @@ public class LogUtil {
 
     private static Map<String, String> convertParametersMap(HttpServletRequest request) {
         Enumeration parameters = request.getParameterNames();
-        Map<String, String> retour = new HashMap<String, String>();
+        Map<String, String> parametersMap = new HashMap<String, String>();
         while (parameters.hasMoreElements()) {
             String parameter = (String) parameters.nextElement();
-            retour.put(parameter, request.getParameter(parameter));
+            parametersMap.put(parameter, request.getParameter(parameter));
         }
-        return retour;
+        return parametersMap;
     }
 
-    public static void logQuestionUnkown(String question) {
-        System.err.println("#### Question inconnue : " + question + " ####");
-        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_NEW, question);
+    public static void logUnkownQuery(String queryParameter) {
+        System.err.println("#### QueryType inconnue : " + queryParameter + " ####");
+        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_NEW, queryParameter);
 
     }
 
