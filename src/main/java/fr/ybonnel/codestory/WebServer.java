@@ -10,13 +10,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class WebServer extends AbstractHandler {
 
     public static final String QUERY_PARAMETER = "q";
 
     @Override
-    public void handle(String target, HttpServletRequest request, HttpServletResponse httpResponse, int dispatch)
+    public void handle(String target,
+                       HttpServletRequest request,
+                       HttpServletResponse httpResponse,
+                       int dispatch)
             throws IOException, ServletException {
 
         long startTime = System.nanoTime();
@@ -41,7 +46,7 @@ public class WebServer extends AbstractHandler {
         httpResponse.setHeader("Server", "YboServer");
         httpResponse.setStatus(status);
         PrintWriter writer = httpResponse.getWriter();
-        writer.println(response);
+        writer.print(response);
         writer.close();
 
         long elapsedTime = System.nanoTime() - startTime;
@@ -52,6 +57,8 @@ public class WebServer extends AbstractHandler {
 
 
     public static void main(String[] args) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
+        System.err.println(sdf.format(new Date()) + ":CodeStory starting");
         int port = 10080;
         if (args.length == 1) {
             port = Integer.parseInt(args[0]);

@@ -62,9 +62,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client</artifactId>
-            <version>1.12.0-beta</version>
+            <groupId>net.sourceforge.jwebunit</groupId>
+            <artifactId>jwebunit-htmlunit-plugin</artifactId>
+            <version>3.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
