@@ -51,5 +51,14 @@ public class WebServerTest extends WebServerTestUtil {
         rows = table.getRows();
         assertEquals(2, rows.size());
 
+        gotoPage("?q=logtutu");
+        assertResponseCode(404);
+        assertEquals("Query logtutu is unknown", getPageSource());
+    }
+
+    @Test
+    public void should_answer_404_for_no_query() {
+        beginAt("/");
+        assertResponseCode(404);
     }
 }
