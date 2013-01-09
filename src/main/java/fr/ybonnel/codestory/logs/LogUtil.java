@@ -42,11 +42,12 @@ public class LogUtil {
     }
 
     private static Map<String, String> getRequestHeaders(HttpServletRequest request) {
-        Enumeration headers = request.getHeaderNames();
         Map<String, String> headersMap = new HashMap<String, String>();
-        while (headers.hasMoreElements()) {
-            String header = (String) headers.nextElement();
-            headersMap.put(header, request.getHeader(header));
+        if (request.getHeader("Accept") != null) {
+            headersMap.put("Accept", request.getHeader("Accept"));
+        }
+        if (request.getHeader("Content-Type") !=null) {
+            headersMap.put("Content-Type", request.getHeader("Content-Type"));
         }
         return headersMap;
     }
