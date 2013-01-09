@@ -100,6 +100,14 @@ public class WebServerTest extends WebServerTestUtil {
         assertEquals("Response must be 'OUI'", "OUI", response.getText());
     }
 
+    @Test
+    public void should_not_answer_always_yes() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Est ce que tu reponds toujours oui(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'NON'", "NON", response.getText());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void should_log_a_post_request() throws IOException, SAXException {

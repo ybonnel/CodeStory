@@ -34,6 +34,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query) {
             return query.equals("Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
         }
+    },
+    NOT_ALWAYS_YES(new FixResponseQueryHandler("NON")) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("Est ce que tu reponds toujours oui(OUI/NON)");
+        }
     };
 
 
