@@ -2,6 +2,7 @@ package fr.ybonnel.codestory;
 
 import fr.ybonnel.codestory.logs.LogUtil;
 import fr.ybonnel.codestory.query.QueryType;
+import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 
@@ -29,6 +30,8 @@ public class WebServer extends AbstractHandler {
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");
 
+        String requestBody = getRequestBody(request);
+
         String response;
         int status = HttpServletResponse.SC_OK;
         try {
@@ -52,7 +55,11 @@ public class WebServer extends AbstractHandler {
         long elapsedTime = System.nanoTime() - startTime;
 
 
-        LogUtil.logHttpRequest(request, status, response, elapsedTime);
+        LogUtil.logHttpRequest(request, status, requestBody, response, elapsedTime);
+    }
+
+    private String getRequestBody(HttpServletRequest request) throws IOException {
+        return IOUtils.toString(request.getReader());
     }
 
 

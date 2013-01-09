@@ -27,13 +27,10 @@ public abstract class WebServerTestUtil {
 
     @Before
     public void startServer() throws Exception {
-        DatabaseUtil.goInTestMode();
         DatabaseManager.INSTANCE.createDatabase();
         server = new Server(portNumber);
         server.setHandler(new WebServer());
         server.start();
-        getTester().getTestingEngine().setIgnoreFailingStatusCodes(true);
-        setBaseUrl(getURL());
     }
 
     @After

@@ -1,27 +1,39 @@
 package fr.ybonnel.codestory;
 
+import com.meterware.httpunit.PostMethodWebRequest;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebResponse;
+import fr.ybonnel.codestory.logs.DatabaseManager;
+import net.sourceforge.jwebunit.html.Cell;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
-import javax.swing.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 
 public class WebServerTest extends WebServerTestUtil {
 
     @Test
     public void should_answer_to_whatsyourmail() throws Exception {
-        beginAt("/?q=Quelle+est+ton+adresse+email");
-        assertResponseCode(200);
-        assertEquals("Response must be my mail", "ybonnel@gmail.com", getPageSource());
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Quelle+est+ton+adresse+email");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be my mail", "ybonnel@gmail.com", response.getText());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void should_generate_logs() throws Exception {
+        getTester().getTestingEngine().setIgnoreFailingStatusCodes(true);
+        setBaseUrl(getURL());
         beginAt("/?q=test");
         assertResponseCode(404);
         assertEquals("Query test is unknown", getPageSource());
@@ -57,29 +69,62 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_404_for_no_query() {
-        beginAt("/");
-        assertResponseCode(404);
+    public void should_answer_404_for_no_query() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        wc.setExceptionsThrownOnErrorStatus(false);
+        WebResponse response = wc.getResponse(getURL());
+        assertEquals(404, response.getResponseCode());
     }
 
     @Test
-    public void should_answer_to_ml() {
-        beginAt("/?q=Es+tu+abonne+a+la+mailing+list(OUI/NON)");
-        assertResponseCode(200);
-        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+    public void should_answer_to_ml() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Es+tu+abonne+a+la+mailing+list(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'OUI'", "OUI", response.getText());
     }
 
     @Test
-    public void should_answer_to_participate() {
-        beginAt("/?q=Es tu heureux de participer(OUI/NON)");
-        assertResponseCode(200);
-        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+    public void should_answer_to_participate() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Es tu heureux de participer(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'OUI'", "OUI", response.getText());
     }
 
     @Test
-    public void should_answer_to_markdown_ready() {
-        beginAt("/?q=Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
+    public void should_answer_to_markdown_ready() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'OUI'", "OUI", response.getText());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void should_log_a_post_request() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        wc.setExceptionsThrownOnErrorStatus(false);
+        PostMethodWebRequest request = new PostMethodWebRequest(getURL(), new ByteArrayInputStream("testpost".getBytes("UTF-8")),
+                "plain/text");
+        WebResponse response = wc.getResponse(request);
+        assertEquals(404, response.getResponseCode());
+
+        setBaseUrl(getURL());
+        beginAt("/?q=log(Q)");
         assertResponseCode(200);
-        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+        assertTablePresent("log");
+        Table table = getTable("log");
+        ArrayList<Row> rows = table.getRows();
+        // Three lines :
+        // 1 for header
+        // 1 for the log
+        assertEquals(2, rows.size());
+        Row logRow = rows.get(1);
+        List<Cell> cells = logRow.getCells();
+        assertEquals("Q", cells.get(1).getValue());
+        assertTrue(cells.get(2).getValue().contains("plain/text"));
+        assertTrue(cells.get(2).getValue().contains("testpost"));
+
     }
 }
