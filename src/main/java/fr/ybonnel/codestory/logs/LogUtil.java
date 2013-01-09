@@ -32,8 +32,8 @@ public class LogUtil {
         logMessage.append("\n\tRequest headers : ")
                 .append(getRequestHeaders(request));
         logMessage.append("\n\tResponse status : ").append(status);
-        logMessage.append("\n\tResponse : ").append(response);
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
+        logMessage.append("\n\tResponse : ").append(response);
 
         DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_Q, logMessage.toString());
 
