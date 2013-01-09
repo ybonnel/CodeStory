@@ -118,7 +118,7 @@ public class WebServerTest extends WebServerTestUtil {
         PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1");
         request.setParameter("Titre", "=============\n\ntutu\n**tata**");
         WebResponse response = wc.getResponse(request);
-        assertEquals(200, response.getResponseCode());
+        assertEquals(201, response.getResponseCode());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class WebServerTest extends WebServerTestUtil {
         PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1");
         request.setParameter("Titre2", "autreenonce");
         WebResponse response = wc.getResponse(request);
-        assertEquals(200, response.getResponseCode());
+        assertEquals(201, response.getResponseCode());
 
         setBaseUrl(getURL());
         beginAt("/enonce");

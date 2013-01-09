@@ -17,7 +17,7 @@ public class EnonceQueryHandler extends AbstractQueryHandler {
             return getAllEnonce();
         }
         Matcher matcher = Pattern.compile("/enonce/(\\d+)").matcher(path);
-        if (matcher.matches()) {
+        if (matcher.matches() && request.getMethod() == "POST") {
             int id = Integer.parseInt(matcher.group(1));
             DatabaseManager.Enonce enonce = contructEnonce(id, request);
             DatabaseManager.INSTANCE.insertEnonce(enonce);
