@@ -2,7 +2,6 @@ package fr.ybonnel.codestory.logs;
 
 
 import com.google.common.base.Throwables;
-import fr.ybonnel.codestory.WebServer;
 import org.h2.jdbcx.JdbcDataSource;
 
 import java.sql.*;
@@ -70,6 +69,7 @@ public enum DatabaseManager {
         statement = conn.createStatement();
         statement.executeUpdate("CREATE TABLE ENONCE (" +
                 "ID INTEGER," +
+                "TITLE VARCHAR(100)," +
                 "ENONCE VARCHAR(4000))");
 
         conn.close();
@@ -77,48 +77,37 @@ public enum DatabaseManager {
 
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    public void insertEnonce(int id, String enonce) {
-        try {
-            insertEnonceSql(id, enonce);
-        } catch (Exception exception) {
-            try {
-                Connection conn = ds.getConnection();
-                Statement statement = conn.createStatement();
-                statement.executeUpdate("CREATE TABLE ENONCE (" +
-                        "ID INTEGER," +
-                        "ENONCE VARCHAR(4000))");
-                conn.close();
-                insertEnonceSql(id, enonce);
-            } catch (SQLException sqlException) {
-                Throwables.propagate(sqlException);
-            }
-        }
-    }
-
-    private void insertEnonceSql(int id, String enonce) throws SQLException {
+    public void insertEnonce(Enonce enonce) throws SQLException {
         Connection conn = ds.getConnection();
         try {
 
             PreparedStatement preparedStatementSelect = conn.prepareStatement("SELECT 1 FROM ENONCE WHERE ID = ?");
-            preparedStatementSelect.setInt(1, id);
+            preparedStatementSelect.setInt(1, enonce.getId());
             ResultSet resultSet = preparedStatementSelect.executeQuery();
             if (resultSet.next()) {
-                PreparedStatement preparedStatement = conn.prepareStatement("UPDATE ENONCE SET ENONCE = ? WHERE ID = ?");
-                if (enonce.length() > 3500) {
-                    enonce = enonce.substring(0, 3500);
+                PreparedStatement preparedStatement = conn.prepareStatement("UPDATE ENONCE SET TITLE = ?, ENONCE = ? WHERE ID = ?");
+                preparedStatement.setString(1, enonce.getTitle());
+                String enonceChaine = enonce.getContent();
+                if (enonceChaine.length() > 3500) {
+                    enonceChaine = enonceChaine.substring(0, 3500);
                 }
-                preparedStatement.setString(1, enonce);
-                preparedStatement.setInt(2, id);
+                preparedStatement.setString(2, enonceChaine);
+                preparedStatement.setInt(3, enonce.getId());
 
                 preparedStatement.executeUpdate();
             } else {
 
-                PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO ENONCE (ID, ENONCE) VALUES (?, ?)");
-                preparedStatement.setInt(1, id);
-                if (enonce.length() > 3500) {
-                    enonce = enonce.substring(0, 3500);
+                PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO ENONCE (ID, TITLE, ENONCE) VALUES (?, ?, ?)");
+                preparedStatement.setInt(1, enonce.getId());
+                preparedStatement.setString(2, enonce.getTitle());
+                String enonceChaine = enonce.getContent();
+                if (enonceChaine.length() > 3500) {
+                    enonceChaine = enonceChaine.substring(0, 3500);
                 }
-                preparedStatement.setString(2, enonce);
+                if (enonceChaine.length() > 3500) {
+                    enonceChaine = enonceChaine.substring(0, 3500);
+                }
+                preparedStatement.setString(3, enonceChaine);
 
                 preparedStatement.executeUpdate();
             }
@@ -129,6 +118,7 @@ public enum DatabaseManager {
         }
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public List<Enonce> getAllEnonces() {
         List<Enonce> enonces = new ArrayList<Enonce>();
 
@@ -136,9 +126,10 @@ public enum DatabaseManager {
             Connection conn = ds.getConnection();
 
             Statement statement = conn.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT ID, ENONCE FROM ENONCE ORDER BY ID DESC");
+            ResultSet resultSet = statement.executeQuery("SELECT ID, TITLE, ENONCE FROM ENONCE ORDER BY ID DESC");
             while (resultSet.next()) {
                 enonces.add(new Enonce(resultSet.getInt("ID"),
+                        resultSet.getString("TITLE"),
                         resultSet.getString("ENONCE")));
             }
 
@@ -152,15 +143,21 @@ public enum DatabaseManager {
 
     public static class Enonce {
         private int id;
+        private String title;
         private String content;
 
-        public Enonce(int id, String content) {
+        public Enonce(int id, String title, String content) {
             this.id = id;
+            this.title = title;
             this.content = content;
         }
 
         public int getId() {
             return id;
+        }
+
+        public String getTitle() {
+            return title;
         }
 
         public String getContent() {

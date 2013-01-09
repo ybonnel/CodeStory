@@ -36,7 +36,7 @@ public class WebServer extends AbstractHandler {
             int status = HttpServletResponse.SC_OK;
             try {
                 requestBody = getRequestBody(request);
-                response = QueryType.getResponse(query, request.getPathInfo(), requestBody);
+                response = QueryType.getResponse(query, request.getPathInfo(), request);
                 if (response == null) {
                     response = "Query " + query + " is unknown";
                     status = HttpServletResponse.SC_NOT_FOUND;

@@ -3,6 +3,8 @@ package fr.ybonnel.codestory.query;
 
 import fr.ybonnel.codestory.logs.LogUtil;
 
+import javax.servlet.http.HttpServletRequest;
+
 public enum QueryType {
 
     EMAIL(new FixResponseQueryHandler("ybonnel@gmail.com")) {
@@ -57,10 +59,10 @@ public enum QueryType {
 
     protected abstract boolean isThisQueryType(String query, String path);
 
-    public static String getResponse(String query, String path, String requestBody) throws Exception {
+    public static String getResponse(String query, String path, HttpServletRequest request) throws Exception {
         for (QueryType oneQuestion : values()) {
             if (oneQuestion.isThisQueryType(query, path)) {
-                return oneQuestion.queryHandler.getResponse(query, path, requestBody);
+                return oneQuestion.queryHandler.getResponse(query, path, request);
             }
         }
         if (query != null) {

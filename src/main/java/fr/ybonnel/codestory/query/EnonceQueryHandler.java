@@ -4,27 +4,33 @@ package fr.ybonnel.codestory.query;
 import fr.ybonnel.codestory.logs.DatabaseManager;
 import org.pegdown.PegDownProcessor;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EnonceQueryHandler extends AbstractQueryHandler {
     @Override
-    public String getResponse(String query, String path, String requestBody) throws Exception {
+    public String getResponse(String query, String path, HttpServletRequest request) throws Exception {
         if (path.equals("/enonce")) {
             return getAllEnonce();
         }
         Matcher matcher = Pattern.compile("/enonce/(\\d+)").matcher(path);
         if (matcher.matches()) {
             int id = Integer.parseInt(matcher.group(1));
-            String enonce = requestBody;
-            if (enonce.startsWith("{") && enonce.endsWith("}")) {
-                enonce = enonce.substring(1, enonce.length() - 1);
-            }
-            DatabaseManager.INSTANCE.insertEnonce(id, enonce);
+            DatabaseManager.Enonce enonce = contructEnonce(id, request);
+            DatabaseManager.INSTANCE.insertEnonce(enonce);
             return "OK, j'ai compris";
         }
         return null;
+    }
+
+    public DatabaseManager.Enonce contructEnonce(int id, HttpServletRequest request) {
+        Enumeration parameters = request.getParameterNames();
+        String titre = (String) parameters.nextElement();
+        return new DatabaseManager.Enonce(id, titre, request.getParameter(titre));
+
     }
 
     public String getAllEnonce() {
@@ -33,12 +39,15 @@ public class EnonceQueryHandler extends AbstractQueryHandler {
 
     private String enoncesToHtml(List<DatabaseManager.Enonce> allEnonces) {
         StringBuilder builder = new StringBuilder("<table id=\"enonces\" border=\"1\">");
-        builder.append("<tr><th>ID</th><th>Enonc&eacute;</th></tr>");
+        builder.append("<tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr>");
 
         for (DatabaseManager.Enonce enonce : allEnonces) {
             builder.append("<tr>");
             builder.append("<td>");
             builder.append(enonce.getId());
+            builder.append("</td>");
+            builder.append("<td>");
+            builder.append(enonce.getTitle());
             builder.append("</td>");
             builder.append("<td>");
             builder.append(formatMarkdown(enonce.getContent()));

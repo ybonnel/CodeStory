@@ -141,14 +141,10 @@ public class WebServerTest extends WebServerTestUtil {
 
     @Test
     public void can_insert_enonce() throws IOException, SAXException, SQLException {
-        Connection conn = DatabaseManager.INSTANCE.getDs().getConnection();
-        Statement statement = conn.createStatement();
-        statement.executeUpdate("DROP TABLE ENONCE");
-        conn.close();
         WebConversation wc = new WebConversation();
         wc.setExceptionsThrownOnErrorStatus(false);
-        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1", WebServerTest.class.getResourceAsStream("/enonce1.markdown"),
-                "plain/text");
+        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1");
+        request.setParameter("Titre", "=============\n\ntutu\n**tata**");
         WebResponse response = wc.getResponse(request);
         assertEquals(200, response.getResponseCode());
     }
@@ -159,7 +155,7 @@ public class WebServerTest extends WebServerTestUtil {
         setBaseUrl(getURL());
         beginAt("/enonce");
         assertResponseCode(200);
-        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td><h1>Titre</h1><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Titre</td><td><p>=============</p><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
     }
 
     @Test
@@ -167,15 +163,15 @@ public class WebServerTest extends WebServerTestUtil {
         can_insert_enonce();
         WebConversation wc = new WebConversation();
         wc.setExceptionsThrownOnErrorStatus(false);
-        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1", new ByteArrayInputStream("autreenonce".getBytes("UTF-8")),
-                "plain/text");
+        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1");
+        request.setParameter("Titre2", "autreenonce");
         WebResponse response = wc.getResponse(request);
         assertEquals(200, response.getResponseCode());
 
         setBaseUrl(getURL());
         beginAt("/enonce");
         assertResponseCode(200);
-        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td><p>autreenonce</p></td></tr></table>", getPageSource());
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Titre2</td><td><p>autreenonce</p></td></tr></table>", getPageSource());
 
     }
 }

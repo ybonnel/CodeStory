@@ -3,6 +3,7 @@ package fr.ybonnel.codestory.query;
 
 import fr.ybonnel.codestory.logs.DatabaseManager;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.regex.Pattern;
 public class LogQueryHandler extends AbstractQueryHandler {
 
     @Override
-    public String getResponse(String query, String path, String requestBody) throws IOException {
+    public String getResponse(String query, String path, HttpServletRequest request) throws IOException {
         if ("log".equals(query)) {
             return logsToHtml(DatabaseManager.INSTANCE.getLogs());
         }
