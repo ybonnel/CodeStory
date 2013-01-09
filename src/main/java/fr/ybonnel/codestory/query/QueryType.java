@@ -48,6 +48,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query, String path) {
             return path.startsWith("/enonce");
         }
+    },
+    CHANGE_SCALASKEL(new ChangeScalaskelQueryHandler()) {
+        @Override
+        protected boolean isThisQueryType(String query, String path) {
+            return path.startsWith("/scalaskel/change");
+        }
     };
 
 
