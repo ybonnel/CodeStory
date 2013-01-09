@@ -19,6 +19,10 @@ public enum DatabaseManager {
 
     private JdbcDataSource ds;
 
+    public JdbcDataSource getDs() {
+        return ds;
+    }
+
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private DatabaseManager() {
         try {
@@ -60,7 +64,93 @@ public enum DatabaseManager {
                 "TYPE_LOG VARCHAR(10)," +
                 "MESSAGE VARCHAR(500))");
 
+        statementDrop = conn.createStatement();
+        statementDrop.executeUpdate("DROP TABLE IF EXISTS ENONCE");
+
+        statement = conn.createStatement();
+        statement.executeUpdate("CREATE TABLE ENONCE (" +
+                "ID INTEGER," +
+                "ENONCE VARCHAR(4000))");
+
         conn.close();
+    }
+
+
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    public void insertEnonce(int id, String enonce) {
+        try {
+            insertEnonceSql(id, enonce);
+        } catch (Exception exception) {
+            try {
+                Connection conn = ds.getConnection();
+                Statement statement = conn.createStatement();
+                statement.executeUpdate("CREATE TABLE ENONCE (" +
+                        "ID INTEGER," +
+                        "ENONCE VARCHAR(4000))");
+                conn.close();
+                insertEnonceSql(id, enonce);
+            } catch (SQLException sqlException) {
+                Throwables.propagate(sqlException);
+            }
+        }
+    }
+
+    private void insertEnonceSql(int id, String enonce) throws SQLException {
+        Connection conn = ds.getConnection();
+        try {
+
+            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO ENONCE (ID, ENONCE) VALUES (?, ?)");
+            preparedStatement.setInt(1, id);
+            if (enonce.length() > 3500) {
+                enonce = enonce.substring(0, 3500);
+            }
+            preparedStatement.setString(2, enonce);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException sqlException) {
+            Throwables.propagate(sqlException);
+        } finally {
+            conn.close();
+        }
+    }
+
+    public List<Enonce> getAllEnonces() {
+        List<Enonce> enonces = new ArrayList<Enonce>();
+
+        try {
+            Connection conn = ds.getConnection();
+
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT ID, ENONCE FROM ENONCE ORDER BY ID DESC");
+            while (resultSet.next()) {
+                enonces.add(new Enonce(resultSet.getInt("ID"),
+                        resultSet.getString("ENONCE")));
+            }
+
+            conn.close();
+        } catch (SQLException sqlException) {
+            Throwables.propagate(sqlException);
+        }
+
+        return enonces;
+    }
+
+    public static class Enonce {
+        private int id;
+        private String content;
+
+        public Enonce(int id, String content) {
+            this.id = id;
+            this.content = content;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getContent() {
+            return content;
+        }
     }
 
 

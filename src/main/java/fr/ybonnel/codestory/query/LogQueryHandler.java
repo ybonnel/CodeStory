@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class LogQueryHandler extends AbstractQueryHandler {
 
     @Override
-    public String getResponse(String query) throws IOException {
+    public String getResponse(String query, String path, String requestBody) throws IOException {
         if ("log".equals(query)) {
             return logsToHtml(DatabaseManager.INSTANCE.getLogs());
         }

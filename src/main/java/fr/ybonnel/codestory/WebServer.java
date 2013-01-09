@@ -30,17 +30,17 @@ public class WebServer extends AbstractHandler {
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");
 
-        String requestBody = null;
+            String requestBody = null;
 
-        String response;
-        int status = HttpServletResponse.SC_OK;
-        try {
-            requestBody = getRequestBody(request);
-            response = QueryType.getResponse(query);
-            if (response == null) {
-                response = "Query " + query + " is unknown";
-                status = HttpServletResponse.SC_NOT_FOUND;
-            }
+            String response;
+            int status = HttpServletResponse.SC_OK;
+            try {
+                requestBody = getRequestBody(request);
+                response = QueryType.getResponse(query, request.getPathInfo(), requestBody);
+                if (response == null) {
+                    response = "Query " + query + " is unknown";
+                    status = HttpServletResponse.SC_NOT_FOUND;
+                }
         } catch (Exception e) {
             e.printStackTrace();
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;

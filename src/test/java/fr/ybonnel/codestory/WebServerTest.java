@@ -12,6 +12,9 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,5 +137,28 @@ public class WebServerTest extends WebServerTestUtil {
         assertTrue(cells.get(2).getValue().contains("plain/text"));
         assertTrue(cells.get(2).getValue().contains("testpost"));
 
+    }
+
+    @Test
+    public void can_insert_enonce() throws IOException, SAXException, SQLException {
+        Connection conn = DatabaseManager.INSTANCE.getDs().getConnection();
+        Statement statement = conn.createStatement();
+        statement.executeUpdate("DROP TABLE ENONCE");
+        conn.close();
+        WebConversation wc = new WebConversation();
+        wc.setExceptionsThrownOnErrorStatus(false);
+        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1", WebServerTest.class.getResourceAsStream("/enonce1.markdown"),
+                "plain/text");
+        WebResponse response = wc.getResponse(request);
+        assertEquals(200, response.getResponseCode());
+    }
+
+    @Test
+    public void should_return_enonce() throws IOException, SAXException, SQLException {
+        can_insert_enonce();
+        setBaseUrl(getURL());
+        beginAt("/enonce");
+        assertResponseCode(200);
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td><h1>Titre</h1><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
     }
 }

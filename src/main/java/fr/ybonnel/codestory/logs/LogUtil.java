@@ -65,7 +65,6 @@ public class LogUtil {
     public static void logUnkownQuery(String queryParameter) {
         System.err.println("#### QueryType inconnue : " + queryParameter + " ####");
         DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_NEW, queryParameter);
-
     }
 
 }

@@ -9,7 +9,7 @@ public class FixResponseQueryHandler extends AbstractQueryHandler {
     }
 
     @Override
-    public String getResponse(String query) throws Exception {
+    public String getResponse(String query, String path, String requestBody) throws Exception {
         return response;
     }
 }
