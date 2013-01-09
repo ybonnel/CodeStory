@@ -16,6 +16,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query) {
             return query.startsWith("log");
         }
+    },
+    MAILING_LIST(new MailingListQuery()) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("Es tu abonne a la mailing list(OUI/NON)");
+        }
     };
 
 

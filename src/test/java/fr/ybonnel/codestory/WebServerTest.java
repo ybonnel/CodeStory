@@ -61,4 +61,11 @@ public class WebServerTest extends WebServerTestUtil {
         beginAt("/");
         assertResponseCode(404);
     }
+
+    @Test
+    public void should_answer_to_ml() {
+        beginAt("/?q=Es+tu+abonne+a+la+mailing+list(OUI/NON)");
+        assertResponseCode(200);
+        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+    }
 }
