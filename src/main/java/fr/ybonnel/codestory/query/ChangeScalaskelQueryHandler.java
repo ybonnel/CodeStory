@@ -21,7 +21,9 @@ public class ChangeScalaskelQueryHandler extends AbstractQueryHandler {
     }
 
     private List<Change> getChanges(int cents) {
-
+        if (cents > 500) {
+            return null;
+        }
         List<Change> changes = new ArrayList<Change>();
         completeChanges(cents, null, changes, null);
         return changes;
