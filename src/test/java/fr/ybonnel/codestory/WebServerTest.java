@@ -161,4 +161,21 @@ public class WebServerTest extends WebServerTestUtil {
         assertResponseCode(200);
         assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td><h1>Titre</h1><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
     }
+
+    @Test
+    public void should_manage_update_of_enonce() throws IOException, SAXException, SQLException {
+        can_insert_enonce();
+        WebConversation wc = new WebConversation();
+        wc.setExceptionsThrownOnErrorStatus(false);
+        PostMethodWebRequest request = new PostMethodWebRequest(getURL() + "/enonce/1", new ByteArrayInputStream("autreenonce".getBytes("UTF-8")),
+                "plain/text");
+        WebResponse response = wc.getResponse(request);
+        assertEquals(200, response.getResponseCode());
+
+        setBaseUrl(getURL());
+        beginAt("/enonce");
+        assertResponseCode(200);
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td><p>autreenonce</p></td></tr></table>", getPageSource());
+
+    }
 }

@@ -99,14 +99,29 @@ public enum DatabaseManager {
         Connection conn = ds.getConnection();
         try {
 
-            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO ENONCE (ID, ENONCE) VALUES (?, ?)");
-            preparedStatement.setInt(1, id);
-            if (enonce.length() > 3500) {
-                enonce = enonce.substring(0, 3500);
-            }
-            preparedStatement.setString(2, enonce);
+            PreparedStatement preparedStatementSelect = conn.prepareStatement("SELECT 1 FROM ENONCE WHERE ID = ?");
+            preparedStatementSelect.setInt(1, id);
+            ResultSet resultSet = preparedStatementSelect.executeQuery();
+            if (resultSet.next()) {
+                PreparedStatement preparedStatement = conn.prepareStatement("UPDATE ENONCE SET ENONCE = ? WHERE ID = ?");
+                if (enonce.length() > 3500) {
+                    enonce = enonce.substring(0, 3500);
+                }
+                preparedStatement.setString(1, enonce);
+                preparedStatement.setInt(2, id);
 
-            preparedStatement.executeUpdate();
+                preparedStatement.executeUpdate();
+            } else {
+
+                PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO ENONCE (ID, ENONCE) VALUES (?, ?)");
+                preparedStatement.setInt(1, id);
+                if (enonce.length() > 3500) {
+                    enonce = enonce.substring(0, 3500);
+                }
+                preparedStatement.setString(2, enonce);
+
+                preparedStatement.executeUpdate();
+            }
         } catch (SQLException sqlException) {
             Throwables.propagate(sqlException);
         } finally {
