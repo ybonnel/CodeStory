@@ -30,11 +30,12 @@ public class WebServer extends AbstractHandler {
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");
 
-        String requestBody = getRequestBody(request);
+        String requestBody = null;
 
         String response;
         int status = HttpServletResponse.SC_OK;
         try {
+            requestBody = getRequestBody(request);
             response = QueryType.getResponse(query);
             if (response == null) {
                 response = "Query " + query + " is unknown";
@@ -59,7 +60,11 @@ public class WebServer extends AbstractHandler {
     }
 
     private String getRequestBody(HttpServletRequest request) throws IOException {
-        return IOUtils.toString(request.getReader());
+        try {
+            return IOUtils.toString(request.getReader());
+        } catch (IllegalStateException notReader) {
+            return IOUtils.toString(request.getInputStream());
+        }
     }
 
 
