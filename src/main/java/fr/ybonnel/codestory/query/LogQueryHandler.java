@@ -26,7 +26,7 @@ public class LogQueryHandler extends AbstractQueryHandler {
 
     private String logsToHtml(List<DatabaseManager.LogMessage> logMessages) {
 
-        StringBuilder builder = new StringBuilder("<table border=\"1\">");
+        StringBuilder builder = new StringBuilder("<table id=\"log\" border=\"1\">");
         builder.append("<tr><th>Time</th><th>Type</th><th>Message</th></tr>");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");

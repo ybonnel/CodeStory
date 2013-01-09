@@ -20,52 +20,52 @@ public enum DatabaseManager {
     private JdbcDataSource ds;
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    private DatabaseManager()  {
-        if (WebServer.isTest()) {
-            return;
-        }
+    private DatabaseManager() {
         try {
-        Class.forName("org.h2.Driver");
+            Class.forName("org.h2.Driver");
 
-        boolean databaseExists = false;
+            boolean databaseExists = false;
 
-        try {
-            String url = "jdbc:h2:./codestory;IFEXISTS=TRUE";
-            Connection connection = DriverManager.getConnection(url, "sa", "sa");
-            connection.close();
-            databaseExists = true;
-        } catch (SQLException ignore) {
-        }
+            try {
+                String url = DatabaseUtil.getUrl() + ";IFEXISTS=TRUE";
+                Connection connection = DriverManager.getConnection(url, "sa", "sa");
+                connection.close();
+                databaseExists = true;
+            } catch (SQLException ignore) {
+            }
 
 
-        ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:./codestory");
-        ds.setUser("sa");
-        ds.setPassword("sa");
+            ds = new JdbcDataSource();
+            ds.setURL(DatabaseUtil.getUrl());
+            ds.setUser("sa");
+            ds.setPassword("sa");
 
-        if (!databaseExists) {
-
-            Connection conn = ds.getConnection();
-
-            Statement statement = conn.createStatement();
-            statement.executeUpdate("CREATE TABLE LOG (" +
-                    "HEURE TIMESTAMP," +
-                    "TYPE_LOG VARCHAR(10)," +
-                    "MESSAGE VARCHAR(500))");
-
-            conn.close();
-        }
+            if (!databaseExists) {
+                createDatabase();
+            }
         } catch (Exception exception) {
             Throwables.propagate(exception);
         }
     }
 
+    public void createDatabase() throws SQLException {
+        Connection conn = ds.getConnection();
+
+        Statement statementDrop = conn.createStatement();
+        statementDrop.executeUpdate("DROP TABLE IF EXISTS LOG");
+
+        Statement statement = conn.createStatement();
+        statement.executeUpdate("CREATE TABLE LOG (" +
+                "HEURE TIMESTAMP," +
+                "TYPE_LOG VARCHAR(10)," +
+                "MESSAGE VARCHAR(500))");
+
+        conn.close();
+    }
+
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    public void insertLog(String type, String message)  {
-        if (WebServer.isTest()) {
-            return;
-        }
+    public void insertLog(String type, String message) {
         try {
             Connection conn = ds.getConnection();
 
@@ -86,9 +86,6 @@ public enum DatabaseManager {
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public List<LogMessage> getLogs() {
-        if (WebServer.isTest()) {
-            return null;
-        }
         List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
         try {
@@ -113,9 +110,6 @@ public enum DatabaseManager {
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public List<LogMessage> getLogsByType(String type) {
-        if (WebServer.isTest()) {
-            return null;
-        }
         List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
         try {

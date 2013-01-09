@@ -1,10 +1,14 @@
 package fr.ybonnel.codestory;
 
 
+import fr.ybonnel.codestory.logs.DatabaseManager;
+import fr.ybonnel.codestory.logs.DatabaseUtil;
+import net.sourceforge.jwebunit.junit.JWebUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
 
+import static net.sourceforge.jwebunit.junit.JWebUnit.getTester;
 import static net.sourceforge.jwebunit.junit.JWebUnit.setBaseUrl;
 
 public abstract class WebServerTestUtil {
@@ -23,10 +27,12 @@ public abstract class WebServerTestUtil {
 
     @Before
     public void startServer() throws Exception {
-        WebServer.setTest(true);
+        DatabaseUtil.goInTestMode();
+        DatabaseManager.INSTANCE.createDatabase();
         server = new Server(portNumber);
         server.setHandler(new WebServer());
         server.start();
+        getTester().getTestingEngine().setIgnoreFailingStatusCodes(true);
         setBaseUrl(getURL());
     }
 

@@ -34,7 +34,7 @@ public class WebServer extends AbstractHandler {
         try {
             response = QueryType.getResponse(query);
             if (response == null) {
-                response = "Query " + query + " is unkown";
+                response = "Query " + query + " is unknown";
                 status = HttpServletResponse.SC_NOT_FOUND;
             }
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class WebServer extends AbstractHandler {
 
 
     public static void main(String[] args) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
         System.err.println(sdf.format(new Date()) + ":CodeStory starting");
         int port = 10080;
         if (args.length == 1) {
@@ -68,16 +68,6 @@ public class WebServer extends AbstractHandler {
         server.setHandler(new WebServer());
         server.start();
         server.join();
-    }
-
-    private static boolean test = false;
-
-    public static boolean isTest() {
-        return test;
-    }
-
-    public static void setTest(boolean test) {
-        WebServer.test = test;
     }
 
 }
