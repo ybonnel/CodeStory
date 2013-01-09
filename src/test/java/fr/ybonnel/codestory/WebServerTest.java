@@ -68,4 +68,11 @@ public class WebServerTest extends WebServerTestUtil {
         assertResponseCode(200);
         assertEquals("Response must be 'OUI'", "OUI", getPageSource());
     }
+
+    @Test
+    public void should_answer_to_participate() {
+        beginAt("/?q=Es tu heureux de participer(OUI/NON)");
+        assertResponseCode(200);
+        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+    }
 }

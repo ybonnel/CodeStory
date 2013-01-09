@@ -22,6 +22,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query) {
             return query.equals("Es tu abonne a la mailing list(OUI/NON)");
         }
+    },
+    PARTICIAPATE(new ParticipateQueryHandler()) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("Es tu heureux de participer(OUI/NON)");
+        }
     };
 
 
