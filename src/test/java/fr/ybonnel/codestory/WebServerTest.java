@@ -3,23 +3,16 @@ package fr.ybonnel.codestory;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
-import fr.ybonnel.codestory.logs.DatabaseManager;
-import net.sourceforge.jwebunit.html.Cell;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 
 public class WebServerTest extends WebServerTestUtil {
@@ -145,5 +138,13 @@ public class WebServerTest extends WebServerTestUtil {
         assertResponseCode(200);
         assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Titre2</td><td><p>autreenonce</p></td></tr></table>", getPageSource());
 
+    }
+
+    @Test
+    public void should_know_first_enonce() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=As tu bien recu le premier enonce(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'NON'", "OUI", response.getText());
     }
 }

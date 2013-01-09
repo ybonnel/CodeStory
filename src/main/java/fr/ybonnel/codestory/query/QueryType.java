@@ -54,6 +54,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query, String path) {
             return path.startsWith("/scalaskel/change");
         }
+    },
+    KNOW_ENONCE1(new FixResponseQueryHandler("OUI")) {
+        @Override
+        protected boolean isThisQueryType(String query, String path) {
+            return query != null && query.equals("As tu bien recu le premier enonce(OUI/NON)");
+        }
     };
 
 
