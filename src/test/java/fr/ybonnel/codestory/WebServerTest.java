@@ -111,34 +111,6 @@ public class WebServerTest extends WebServerTestUtil {
         assertEquals("Response must be 'NON'", "NON", response.getText());
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void should_log_a_post_request() throws IOException, SAXException {
-        WebConversation wc = new WebConversation();
-        wc.setExceptionsThrownOnErrorStatus(false);
-        PostMethodWebRequest request = new PostMethodWebRequest(getURL(), new ByteArrayInputStream("testpost".getBytes("UTF-8")),
-                "plain/text");
-        WebResponse response = wc.getResponse(request);
-        assertEquals(404, response.getResponseCode());
-
-        setBaseUrl(getURL());
-        beginAt("/?q=log(Q)");
-        assertResponseCode(200);
-        assertTablePresent("log");
-        Table table = getTable("log");
-        ArrayList<Row> rows = table.getRows();
-        // Three lines :
-        // 1 for header
-        // 1 for the log
-        assertEquals(2, rows.size());
-        Row logRow = rows.get(1);
-        List<Cell> cells = logRow.getCells();
-        assertEquals("Q", cells.get(1).getValue());
-        assertTrue(cells.get(2).getValue().contains("plain/text"));
-        assertTrue(cells.get(2).getValue().contains("testpost"));
-
-    }
-
     @Test
     public void can_insert_enonce() throws IOException, SAXException, SQLException {
         WebConversation wc = new WebConversation();
