@@ -52,14 +52,15 @@ public class LogUtil {
         return headersMap;
     }
 
-    private static Map<String, String> convertParametersMap(HttpServletRequest request) {
+    private static String convertParametersMap(HttpServletRequest request) {
+        StringBuilder builder = new StringBuilder();
         Enumeration parameters = request.getParameterNames();
-        Map<String, String> parametersMap = new HashMap<String, String>();
         while (parameters.hasMoreElements()) {
             String parameter = (String) parameters.nextElement();
-            parametersMap.put(parameter, request.getParameter(parameter));
+            builder.append("\n\t\tparameter(").append(parameter).append("={");
+            builder.append(request.getParameter(parameter)).append('}');
         }
-        return parametersMap;
+        return builder.toString();
     }
 
     public static void logUnkownQuery(String queryParameter) {
