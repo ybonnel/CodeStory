@@ -5,7 +5,7 @@ import fr.ybonnel.codestory.logs.LogUtil;
 
 public enum QueryType {
 
-    EMAIL(new EmailQueryHandler()) {
+    EMAIL(new FixResponseQueryHandler("ybonnel@gmail.com")) {
         @Override
         protected boolean isThisQueryType(String query) {
             return "Quelle est ton adresse email".equals(query);
@@ -17,16 +17,22 @@ public enum QueryType {
             return query.startsWith("log");
         }
     },
-    MAILING_LIST(new MailingListQuery()) {
+    MAILING_LIST(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query) {
             return query.equals("Es tu abonne a la mailing list(OUI/NON)");
         }
     },
-    PARTICIAPATE(new ParticipateQueryHandler()) {
+    PARTICIAPATE(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query) {
             return query.equals("Es tu heureux de participer(OUI/NON)");
+        }
+    },
+    MARKDWN_READY(new FixResponseQueryHandler("OUI")) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
         }
     };
 

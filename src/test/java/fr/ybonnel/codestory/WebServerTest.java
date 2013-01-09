@@ -75,4 +75,11 @@ public class WebServerTest extends WebServerTestUtil {
         assertResponseCode(200);
         assertEquals("Response must be 'OUI'", "OUI", getPageSource());
     }
+
+    @Test
+    public void should_answer_to_markdown_ready() {
+        beginAt("/?q=Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
+        assertResponseCode(200);
+        assertEquals("Response must be 'OUI'", "OUI", getPageSource());
+    }
 }
