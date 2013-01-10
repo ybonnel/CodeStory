@@ -28,7 +28,7 @@ public class ChangeScalaskelQueryHandler extends AbstractPathHandler {
 
     public List<Change> completeChanges(int cents, Change currentChange, Cent lastMoney) {
 
-        if (cents > 500 || cents < 0) {
+        if (cents > 500) {
             return Lists.newArrayList();
         }
         if (cents == 0) {

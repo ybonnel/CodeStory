@@ -18,10 +18,6 @@ public enum DatabaseManager {
 
     private JdbcDataSource ds;
 
-    public JdbcDataSource getDs() {
-        return ds;
-    }
-
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private DatabaseManager() {
         try {
@@ -101,9 +97,6 @@ public enum DatabaseManager {
                 preparedStatement.setInt(1, enonce.getId());
                 preparedStatement.setString(2, enonce.getTitle());
                 String enonceChaine = enonce.getContent();
-                if (enonceChaine.length() > 3500) {
-                    enonceChaine = enonceChaine.substring(0, 3500);
-                }
                 if (enonceChaine.length() > 3500) {
                     enonceChaine = enonceChaine.substring(0, 3500);
                 }

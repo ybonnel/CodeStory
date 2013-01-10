@@ -6,6 +6,8 @@ import fr.ybonnel.codestory.query.QueryType;
 import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
+import sun.misc.Signal;
+import sun.misc.SignalHandler;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -74,9 +76,35 @@ public class WebServer extends AbstractHandler {
         }
 
         Server server = new Server(port);
+
+        Signal.handle(new Signal("TERM"), new StopHandler(server));
+
         server.setHandler(new WebServer());
         server.start();
         server.join();
+
+        System.err.println(sdf.format(new Date()) + ":CodeStory stopped");
+    }
+
+    public static class StopHandler implements SignalHandler {
+
+        private Server server;
+
+        public StopHandler(Server server) {
+            this.server = server;
+        }
+
+        @Override
+        public void handle(Signal signal) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+            System.err.println(sdf.format(new Date()) + ":CodeStory stoping");
+            try {
+                server.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(60);
+            }
+        }
     }
 
 }

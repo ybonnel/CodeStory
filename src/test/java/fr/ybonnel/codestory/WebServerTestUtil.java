@@ -18,6 +18,10 @@ public abstract class WebServerTestUtil {
     }
 
     public String getURL() {
+        return getURL(portNumber);
+    }
+
+    public static String getURL(int portNumber) {
         return "http://localhost:" + portNumber + "/";
     }
 

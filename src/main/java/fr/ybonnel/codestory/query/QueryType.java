@@ -17,37 +17,37 @@ public enum QueryType {
     LOG(new LogQueryHandler()) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.startsWith("log");
+            return query.startsWith("log");
         }
     },
     MAILING_LIST(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.equals("Es tu abonne a la mailing list(OUI/NON)");
+            return query.equals("Es tu abonne a la mailing list(OUI/NON)");
         }
     },
     PARTICIAPATE(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.equals("Es tu heureux de participer(OUI/NON)");
+            return query.equals("Es tu heureux de participer(OUI/NON)");
         }
     },
     MARKDWN_READY(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.equals("Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
+            return query.equals("Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
         }
     },
     NOT_ALWAYS_YES(new FixResponseQueryHandler("NON")) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.equals("Est ce que tu reponds toujours oui(OUI/NON)");
+            return query.equals("Est ce que tu reponds toujours oui(OUI/NON)");
         }
     },
     KNOW_ENONCE1(new FixResponseQueryHandler("OUI")) {
         @Override
         protected boolean isThisQueryType(String query, String path) {
-            return query != null && query.equals("As tu bien recu le premier enonce(OUI/NON)");
+            return query.equals("As tu bien recu le premier enonce(OUI/NON)");
         }
     };
 
@@ -66,9 +66,7 @@ public enum QueryType {
                 return oneQuestion.queryHandler.getResponse(query, path, request);
             }
         }
-        if (query != null) {
-            LogUtil.logUnkownQuery(query);
-        }
+        LogUtil.logUnkownQuery(query);
         return null;
     }
 

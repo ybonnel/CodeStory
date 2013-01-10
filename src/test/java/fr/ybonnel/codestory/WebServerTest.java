@@ -1,18 +1,22 @@
 package fr.ybonnel.codestory;
 
+import com.google.common.collect.Lists;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+import sun.misc.Signal;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 
 public class WebServerTest extends WebServerTestUtil {
@@ -147,4 +151,43 @@ public class WebServerTest extends WebServerTestUtil {
         assertEquals(200, response.getResponseCode());
         assertEquals("Response must be 'NON'", "OUI", response.getText());
     }
+
+    @Test
+    public void should_stop_with_sigTerm() throws Exception {
+        int port = 18888;
+        final String[] params = {Integer.toString(port)};
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    WebServer.main(params);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    fail(e.getMessage());
+                }
+            }
+        });
+
+        thread.start();
+
+        Thread.sleep(100);
+
+        // Thread must be alive
+        assertTrue(thread.isAlive());
+
+        // Serveur must respond.
+        should_answer_to_whatsyourmail();
+
+        // Sent of SIGTERM
+        Signal.raise(new Signal("TERM"));
+
+        // Waiting server stopped (if it's not stopped after 1 second, there is a problem).
+        for (int i = 0; i < 10 && thread.isAlive(); i++) {
+            Thread.sleep(100);
+        }
+
+        // Thread must be dead.
+        assertFalse(thread.isAlive());
+    }
+
 }

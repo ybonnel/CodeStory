@@ -60,4 +60,17 @@ public class ScalaskelTest extends WebServerTestUtil {
             assertEquals(expected, response.getText());
         }
     }
+
+    @Test
+    public void should_not_answer_to_minus1_and_more500() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+
+        WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/0");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("[]", response.getText());
+
+        response = wc.getResponse(getURL() + "/scalaskel/change/501");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("[]", response.getText());
+    }
 }

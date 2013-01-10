@@ -38,14 +38,4 @@ public class Change {
                 break;
         }
     }
-
-    @Override
-    public String toString() {
-        return "Change{" +
-                "foo=" + foo +
-                ", bar=" + bar +
-                ", qix=" + qix +
-                ", baz=" + baz +
-                '}';
-    }
 }
