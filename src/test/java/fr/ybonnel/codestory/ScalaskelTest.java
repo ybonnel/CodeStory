@@ -3,10 +3,15 @@ package fr.ybonnel.codestory;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import fr.ybonnel.codestory.path.ChangeScalaskelQueryHandler;
+import fr.ybonnel.codestory.path.scalaskel.Change;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -44,5 +49,15 @@ public class ScalaskelTest extends WebServerTestUtil {
         assertEquals("[{\"foo\":21},{\"foo\":14,\"bar\":1},{\"foo\":10,\"qix\":1},{\"foo\":7,\"bar\":2},{\"foo\":3,\"bar\":1,\"qix\":1},{\"bar\":3},{\"baz\":1}]", response.getText());
     }
 
+    @Test
+    public void should_answer_to_all_changes() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
 
+        for (int oneChange = 1; oneChange <= 100 ; oneChange++) {
+            WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/" + oneChange);
+            assertEquals(200, response.getResponseCode());
+            String expected = IOUtils.toString(ScalaskelTest.class.getResourceAsStream("/assertChange" + oneChange + ".json"));
+            assertEquals(expected, response.getText());
+        }
+    }
 }
