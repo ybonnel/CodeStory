@@ -39,9 +39,9 @@ public class LogQueryHandler extends AbstractQueryHandler {
             builder.append("<td>");
             builder.append(logMessage.getType());
             builder.append("</td>");
-            builder.append("<td>");
-            builder.append(logMessage.getMessage().replaceAll("\n", "<br/>"));
-            builder.append("</td>");
+            builder.append("<td><pre>");
+            builder.append(logMessage.getMessage().replaceAll("\t", ""));
+            builder.append("</pre></td>");
             builder.append("</tr>");
         }
         builder.append("</table>");

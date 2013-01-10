@@ -195,7 +195,7 @@ public enum DatabaseManager {
 
             Statement statement = conn.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG ORDER BY HEURE DESC");
+            ResultSet resultSet = statement.executeQuery("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG ORDER BY HEURE DESC LIMIT 5");
             while (resultSet.next()) {
                 logMessages.add(new LogMessage(new Date(resultSet.getTimestamp("HEURE").getTime()),
                         resultSet.getString("TYPE_LOG"),
@@ -217,7 +217,7 @@ public enum DatabaseManager {
         try {
             Connection conn = ds.getConnection();
 
-            PreparedStatement statement = conn.prepareStatement("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG WHERE TYPE_LOG = ? ORDER BY HEURE DESC");
+            PreparedStatement statement = conn.prepareStatement("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG WHERE TYPE_LOG = ? ORDER BY HEURE DESC LIMIT 5");
             statement.setString(1, type);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
