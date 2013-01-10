@@ -1,6 +1,7 @@
 package fr.ybonnel.codestory;
 
 import fr.ybonnel.codestory.logs.LogUtil;
+import fr.ybonnel.codestory.path.PathType;
 import fr.ybonnel.codestory.query.QueryType;
 import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
@@ -30,20 +31,20 @@ public class WebServer extends AbstractHandler {
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");
 
-        String requestBody = null;
-
         String response;
         int status = HttpServletResponse.SC_OK;
-        if ("POST".equals(request.getMethod())) {
-            status = HttpServletResponse.SC_CREATED;
-        }
 
         try {
-            requestBody = getRequestBody(request);
-            response = QueryType.getResponse(query, request.getPathInfo(), request);
-            if (response == null) {
-                response = "Query " + query + " is unknown";
-                status = HttpServletResponse.SC_NOT_FOUND;
+            if (query != null) {
+                response = QueryType.getResponse(query, request.getPathInfo(), request);
+                if (response == null) {
+                    response = "Query " + query + " is unknown";
+                    status = HttpServletResponse.SC_NOT_FOUND;
+                }
+            } else {
+                PathType.PathResponse pathResponse = PathType.getResponse(request);
+                status = pathResponse.getStatusCode();
+                response = pathResponse.getResponse();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,15 +61,7 @@ public class WebServer extends AbstractHandler {
         long elapsedTime = System.nanoTime() - startTime;
 
 
-        LogUtil.logHttpRequest(request, status, requestBody, response, elapsedTime);
-    }
-
-    private String getRequestBody(HttpServletRequest request) throws IOException {
-        try {
-            return IOUtils.toString(request.getReader());
-        } catch (IllegalStateException notReader) {
-            return IOUtils.toString(request.getInputStream());
-        }
+        LogUtil.logHttpRequest(request, status, response, elapsedTime);
     }
 
 

@@ -11,7 +11,7 @@ import java.util.*;
 public class LogUtil {
 
 
-    public static void logHttpRequest(HttpServletRequest request, int status, String requestBody, String response, long elapsedTime) {
+    public static void logHttpRequest(HttpServletRequest request, int status, String response, long elapsedTime) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if ((query != null && query.startsWith("log"))
                 || "/favicon.ico".equals(request.getPathInfo())) {
@@ -28,8 +28,6 @@ public class LogUtil {
                 .append(convertParametersMap(request));
         logMessage.append("\n\tRemote adress : ")
                 .append(request.getRemoteAddr());
-        logMessage.append("\n\tRequest body : ")
-                .append(requestBody);
         logMessage.append("\n\tRequest headers : ")
                 .append(getRequestHeaders(request));
         logMessage.append("\n\tResponse status : ").append(status);

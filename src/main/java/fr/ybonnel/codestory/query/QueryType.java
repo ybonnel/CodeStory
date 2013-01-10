@@ -2,6 +2,7 @@ package fr.ybonnel.codestory.query;
 
 
 import fr.ybonnel.codestory.logs.LogUtil;
+import fr.ybonnel.codestory.path.ChangeScalaskelQueryHandler;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,18 +42,6 @@ public enum QueryType {
         @Override
         protected boolean isThisQueryType(String query, String path) {
             return query != null && query.equals("Est ce que tu reponds toujours oui(OUI/NON)");
-        }
-    },
-    INSERT_ENONCE(new EnonceQueryHandler()) {
-        @Override
-        protected boolean isThisQueryType(String query, String path) {
-            return path.startsWith("/enonce");
-        }
-    },
-    CHANGE_SCALASKEL(new ChangeScalaskelQueryHandler()) {
-        @Override
-        protected boolean isThisQueryType(String query, String path) {
-            return path.startsWith("/scalaskel/change");
         }
     },
     KNOW_ENONCE1(new FixResponseQueryHandler("OUI")) {

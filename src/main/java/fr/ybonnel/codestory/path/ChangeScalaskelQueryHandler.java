@@ -1,35 +1,30 @@
-package fr.ybonnel.codestory.query;
+package fr.ybonnel.codestory.path;
 
 
 import com.google.gson.GsonBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class ChangeScalaskelQueryHandler extends AbstractQueryHandler {
+public class ChangeScalaskelQueryHandler extends AbstractPathHandler {
     @Override
-    public String getResponse(String query, String path, HttpServletRequest request) throws Exception {
-
-        Matcher matcher = Pattern.compile("/scalaskel/change/(\\d+)").matcher(path);
-        if (matcher.matches()) {
-            return new GsonBuilder().create().toJson(getChanges(Integer.parseInt(matcher.group(1))));
-        }
-        return null;
+    public PathType.PathResponse getResponse(HttpServletRequest request, String... params) throws Exception {
+        return new PathType.PathResponse(HttpServletResponse.SC_OK,
+                new GsonBuilder().create().toJson(getChanges(Integer.parseInt(params[0]))));
     }
 
     private List<Change> getChanges(int cents) {
-        if (cents > 500) {
-            return null;
-        }
         List<Change> changes = new ArrayList<Change>();
         completeChanges(cents, null, changes, null);
         return changes;
     }
 
     private void completeChanges(int cents, Change currentChange, List<Change> changes, Cent lastMoney) {
+        if (cents > 500 || cents < 0) {
+            return;
+        }
         if (cents == 0) {
             changes.add(currentChange);
         }

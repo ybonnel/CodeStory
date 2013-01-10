@@ -1,36 +1,21 @@
-package fr.ybonnel.codestory.query;
+package fr.ybonnel.codestory.path;
 
 
 import fr.ybonnel.codestory.database.DatabaseManager;
+import fr.ybonnel.codestory.query.AbstractQueryHandler;
 import org.pegdown.PegDownProcessor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EnonceQueryHandler extends AbstractQueryHandler {
+public class GetEnoncesHandler extends AbstractPathHandler {
     @Override
-    public String getResponse(String query, String path, HttpServletRequest request) throws Exception {
-        if (path.equals("/enonce")) {
-            return getAllEnonce();
-        }
-        Matcher matcher = Pattern.compile("/enonce/(\\d+)").matcher(path);
-        if (matcher.matches() && request.getMethod() == "POST") {
-            int id = Integer.parseInt(matcher.group(1));
-            DatabaseManager.Enonce enonce = contructEnonce(id, request);
-            DatabaseManager.INSTANCE.insertEnonce(enonce);
-            return "OK, j'ai compris";
-        }
-        return null;
-    }
-
-    public DatabaseManager.Enonce contructEnonce(int id, HttpServletRequest request) {
-        Enumeration parameters = request.getParameterNames();
-        String titre = (String) parameters.nextElement();
-        return new DatabaseManager.Enonce(id, titre, request.getParameter(titre));
-
+    public PathType.PathResponse getResponse(HttpServletRequest request, String...param) throws Exception {
+        return new PathType.PathResponse(HttpServletResponse.SC_OK, getAllEnonce());
     }
 
     public String getAllEnonce() {
