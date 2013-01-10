@@ -1,7 +1,7 @@
 package fr.ybonnel.codestory.query;
 
 
-import fr.ybonnel.codestory.logs.DatabaseManager;
+import fr.ybonnel.codestory.database.DatabaseManager;
 import org.pegdown.PegDownProcessor;
 
 import javax.servlet.http.HttpServletRequest;

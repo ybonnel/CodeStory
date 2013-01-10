@@ -1,6 +1,7 @@
 package fr.ybonnel.codestory.logs;
 
 import fr.ybonnel.codestory.WebServer;
+import fr.ybonnel.codestory.database.DatabaseManager;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.NumberFormat;

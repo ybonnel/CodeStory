@@ -1,14 +1,12 @@
 package fr.ybonnel.codestory;
 
 
-import fr.ybonnel.codestory.logs.DatabaseManager;
-import fr.ybonnel.codestory.logs.DatabaseUtil;
-import net.sourceforge.jwebunit.junit.JWebUnit;
+import fr.ybonnel.codestory.database.DatabaseManager;
+import fr.ybonnel.codestory.database.DatabaseUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
 
-import static net.sourceforge.jwebunit.junit.JWebUnit.getTester;
 import static net.sourceforge.jwebunit.junit.JWebUnit.setBaseUrl;
 
 public abstract class WebServerTestUtil {

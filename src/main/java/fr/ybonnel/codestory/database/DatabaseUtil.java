@@ -1,4 +1,4 @@
-package fr.ybonnel.codestory.logs;
+package fr.ybonnel.codestory.database;
 
 public class DatabaseUtil {
 
