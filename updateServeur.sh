@@ -1,4 +1,4 @@
-mvn clean install assembly:single
+mvn clean install assembly:single -DskipTests=true
 if [ $? -eq 0 ]
 then
 	cp scripts/* ../CodeStory-server/
