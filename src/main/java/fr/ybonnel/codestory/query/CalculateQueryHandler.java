@@ -64,7 +64,6 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     }
 
     private String calculateWithoutParenthesis(String calculateQuery) throws ParseException {
-        System.out.println(calculateQuery);
         Matcher matcherMultiple = patternMultiple.matcher(calculateQuery);
 
         while (matcherMultiple.find()) {
@@ -81,10 +80,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
 
             BigDecimal a = new BigDecimal(matcherDivide.group(1));
             BigDecimal b = new BigDecimal(matcherDivide.group(2));
-            System.out.println(a);
-            System.out.println(b);
             BigDecimal result = a.divide(b, 100, RoundingMode.HALF_UP);
-            System.out.println(result);
             calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result.toString() + calculateQuery.substring(matcherDivide.end());
             matcherDivide = patternDivide.matcher(calculateQuery);
         }
@@ -98,7 +94,6 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             calculateQuery = calculateQuery.substring(0, matcherPlus.start()) + result.toString() + calculateQuery.substring(matcherPlus.end());
             matcherPlus = patternPlus.matcher(calculateQuery);
         }
-        System.out.println(calculateQuery);
         return calculateQuery;
     }
 
