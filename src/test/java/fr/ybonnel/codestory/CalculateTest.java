@@ -14,31 +14,47 @@ public class CalculateTest extends WebServerTestUtil {
 
     @Test
     public void should_answer_to_1plus1() throws IOException, SAXException {
-        WebConversation wc = new WebConversation();
-        WebResponse response = wc.getResponse(getURL() + "/?q=1+1");
-        assertEquals(200, response.getResponseCode());
-        assertEquals("2", response.getText());
+        test_calculate("1+1", "2");
     }
 
     @Test
     public void should_answer_to_allPlus() throws IOException, SAXException {
         for (int number = 1; number < 10; number++) {
-            WebConversation wc = new WebConversation();
-            WebResponse response = wc.getResponse(getURL() + "/?q=" + number + "+" + number);
-            assertEquals(200, response.getResponseCode());
-            assertEquals(Integer.toString(number+number), response.getText());
+            test_calculate(Integer.toString(number) + "+" + number, Integer.toString(number + number));
         }
     }
 
     @Test
     public void should_answer_to_allMultiple() throws IOException, SAXException {
         for (int number = 1; number < 10; number++) {
-            WebConversation wc = new WebConversation();
-            WebResponse response = wc.getResponse(getURL() + "/?q=" + number + "*" + number);
-            assertEquals(200, response.getResponseCode());
-            assertEquals(Integer.toString(number*number), response.getText());
+            test_calculate(Integer.toString(number) + "*" + number, Integer.toString(number * number));
         }
     }
+
+    private void test_calculate(String query, String resultExpected) throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=" + query);
+        assertEquals(200, response.getResponseCode());
+        assertEquals(resultExpected, response.getText());
+    }
+
+    @Test
+    public void should_answer_to_more_complicated() throws IOException, SAXException {
+        test_calculate("1+2*2", "5");
+    }
+
+    @Test
+    public void should_answer_with_parenthesis() throws IOException, SAXException {
+        test_calculate("(1+2)*2", "6");
+//        (1+2)*2
+//        (1+2)/2
+//        (1+2+3+4+5+6+7+8+9+10)*2
+//        ((1+2)+3+4+(5+6+7)+(8+9+10)*3)/2*5
+//        1,5*4
+//        ((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000
+//        ((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000/31878018900000000000000000000000000000000000000000
+    }
+
 
 
 
