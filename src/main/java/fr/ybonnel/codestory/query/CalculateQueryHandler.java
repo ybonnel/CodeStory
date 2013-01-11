@@ -16,16 +16,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     public String getResponse(String query) {
         String calculateQuery = query.replace(' ', '+');
 
-        Matcher matcherParenthsis = patternParenthesis.matcher(calculateQuery);
-
-        while (matcherParenthsis.find()) {
-            String queryBetweenParenthesis = matcherParenthsis.group(1);
-            int result = Integer.parseInt(calculateWithoutParenthesis(queryBetweenParenthesis));
-            calculateQuery = calculateQuery.substring(0, matcherParenthsis.start()) + result + calculateQuery.substring(matcherParenthsis.end());
-            matcherParenthsis = patternParenthesis.matcher(calculateQuery);
-        }
-
-        calculateQuery = calculateWithoutParenthesis(calculateQuery);
+        calculateQuery = calculateWithParenthesis(calculateQuery);
 
         Matcher matcherJustANumber = patternJustANumber.matcher(calculateQuery);
 
@@ -36,7 +27,45 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         return null;
     }
 
+    private String calculateWithParenthesis(String calculateQuery) {
+        Matcher matcherParenthsis = patternParenthesis.matcher(calculateQuery);
+
+        while (matcherParenthsis.find()) {
+            int start=-1;
+            int end=-1;
+            int currentProf=0;
+            int currentStart=-1;
+            int maxProf=-1;
+            for (int index=0;index < calculateQuery.length(); index++) {
+                char car = calculateQuery.charAt(index);
+                if (car == '(') {
+                    currentStart = index;
+                    currentProf++;
+                }
+
+                if (car == ')') {
+                    if (currentProf > maxProf) {
+                        start = currentStart;
+                        end = index+1;
+                        maxProf = currentProf;
+                    }
+                    currentProf--;
+                }
+            }
+
+            String queryBetweenParenthesis = calculateQuery.substring(start+1, end-1);
+            System.out.println(queryBetweenParenthesis);
+            int result = Integer.parseInt(calculateWithoutParenthesis(queryBetweenParenthesis));
+            calculateQuery = calculateQuery.substring(0, start) + result + calculateQuery.substring(end);
+            matcherParenthsis = patternParenthesis.matcher(calculateQuery);
+        }
+
+        calculateQuery = calculateWithoutParenthesis(calculateQuery);
+        return calculateQuery;
+    }
+
     private String calculateWithoutParenthesis(String calculateQuery) {
+        System.out.println(calculateQuery);
         Matcher matcherMultiple = patternMultiple.matcher(calculateQuery);
 
         while (matcherMultiple.find()) {
