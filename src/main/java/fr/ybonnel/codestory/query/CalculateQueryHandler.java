@@ -9,6 +9,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     private Pattern patternPlus = Pattern.compile("(\\d+)\\+(\\d+)");
     private Pattern patternPlusWithParenthesis = Pattern.compile("\\((\\d+)\\+(\\d+)\\)");
     private Pattern patternMultiple = Pattern.compile("(\\d+)\\*(\\d+)");
+    private Pattern patternDivide = Pattern.compile("(\\d+)/(\\d+)");
     private Pattern patternJustANumber = Pattern.compile("(\\d+)");
 
     @Override
@@ -33,6 +34,16 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             int result = a*b;
             calculateQuery = calculateQuery.substring(0, matcherMultiple.start()) + result + calculateQuery.substring(matcherMultiple.end());
             matcherMultiple = patternMultiple.matcher(calculateQuery);
+        }
+
+        Matcher matcherDivide = patternDivide.matcher(calculateQuery);
+
+        while (matcherDivide.find()) {
+            int a = Integer.parseInt(matcherDivide.group(1));
+            int b = Integer.parseInt(matcherDivide.group(2));
+            int result = a / b;
+            calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result + calculateQuery.substring(matcherDivide.end());
+            matcherDivide = patternPlus.matcher(calculateQuery);
         }
 
         Matcher matcherPlus = patternPlus.matcher(calculateQuery);
