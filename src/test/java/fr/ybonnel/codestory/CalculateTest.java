@@ -51,6 +51,7 @@ public class CalculateTest extends WebServerTestUtil {
 
     @Test
     public void should_answer_divide() throws IOException, SAXException {
+        test_calculate("(1+2)/2", "1,5");
     }
 
     @Test
@@ -68,8 +69,6 @@ public class CalculateTest extends WebServerTestUtil {
 
         test_calculate("((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000/31878018900000000000000000000000000000000000000000", "3,2659468948982401874460171572190135538424583803597339E-48");
 
-
-//        ((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000/31878018900000000000000000000000000000000000000000
     }
 
 

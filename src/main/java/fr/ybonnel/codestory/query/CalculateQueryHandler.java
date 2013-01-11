@@ -20,7 +20,6 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     private Pattern patternPlus = Pattern.compile("(" + NOMBRE + ")\\+(" + NOMBRE + ")");
     private Pattern patternMultiple = Pattern.compile("(" + NOMBRE + ")\\*(" + NOMBRE + ")");
     private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");
-    private Pattern patternJustANumber = Pattern.compile("(" + NOMBRE + ")");
 
     private NumberFormat format = new DecimalFormat("#0.####################", new DecimalFormatSymbols(Locale.FRANCE));
 
