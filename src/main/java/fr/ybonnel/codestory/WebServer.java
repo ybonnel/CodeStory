@@ -39,6 +39,7 @@ public class WebServer extends AbstractHandler {
             if (query != null) {
                 response = QueryType.getResponse(query);
                 if (response == null) {
+                    LogUtil.logUnkownQuery(query);
                     response = "Query " + query + " is unknown";
                     status = HttpServletResponse.SC_NOT_FOUND;
                 }

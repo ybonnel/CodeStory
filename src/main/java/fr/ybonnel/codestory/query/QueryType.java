@@ -46,6 +46,12 @@ public enum QueryType {
         protected boolean isThisQueryType(String query) {
             return query.equals("As tu bien recu le premier enonce(OUI/NON)");
         }
+    },
+    CALCULATE(new CalculateQueryHandler()) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return true;
+        }
     };
 
 
@@ -63,7 +69,6 @@ public enum QueryType {
                 return oneQuestion.queryHandler.getResponse(query);
             }
         }
-        LogUtil.logUnkownQuery(query);
         return null;
     }
 
