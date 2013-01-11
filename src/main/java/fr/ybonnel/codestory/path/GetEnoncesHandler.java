@@ -2,15 +2,12 @@ package fr.ybonnel.codestory.path;
 
 
 import fr.ybonnel.codestory.database.DatabaseManager;
-import fr.ybonnel.codestory.query.AbstractQueryHandler;
+import fr.ybonnel.codestory.database.modele.Enonce;
 import org.pegdown.PegDownProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GetEnoncesHandler extends AbstractPathHandler {
     @Override
@@ -19,14 +16,14 @@ public class GetEnoncesHandler extends AbstractPathHandler {
     }
 
     public String getAllEnonce() {
-        return enoncesToHtml(DatabaseManager.INSTANCE.getAllEnonces());
+        return enoncesToHtml(DatabaseManager.INSTANCE.getEnonceDao().findAll());
     }
 
-    private String enoncesToHtml(List<DatabaseManager.Enonce> allEnonces) {
+    private String enoncesToHtml(List<Enonce> allEnonces) {
         StringBuilder builder = new StringBuilder("<table id=\"enonces\" border=\"1\">");
         builder.append("<tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr>");
 
-        for (DatabaseManager.Enonce enonce : allEnonces) {
+        for (Enonce enonce : allEnonces) {
             builder.append("<tr>");
             builder.append("<td>");
             builder.append(enonce.getId());

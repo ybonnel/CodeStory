@@ -2,6 +2,7 @@ package fr.ybonnel.codestory.logs;
 
 import fr.ybonnel.codestory.WebServer;
 import fr.ybonnel.codestory.database.DatabaseManager;
+import fr.ybonnel.codestory.database.modele.LogMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.NumberFormat;
@@ -34,7 +35,7 @@ public class LogUtil {
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
         logMessage.append("\n\tResponse : ").append(response);
 
-        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_Q, logMessage.toString());
+        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_Q, logMessage.toString()));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
         System.out.println(sdf.format(new Date()) + "\n" + logMessage.toString());
@@ -64,7 +65,7 @@ public class LogUtil {
 
     public static void logUnkownQuery(String queryParameter) {
         System.err.println("#### QueryType inconnue : " + queryParameter + " ####");
-        DatabaseManager.INSTANCE.insertLog(DatabaseManager.TYPE_NEW, queryParameter);
+        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_NEW, queryParameter));
     }
 
 }

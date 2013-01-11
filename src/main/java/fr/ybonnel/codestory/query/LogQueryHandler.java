@@ -2,6 +2,7 @@ package fr.ybonnel.codestory.query;
 
 
 import fr.ybonnel.codestory.database.DatabaseManager;
+import fr.ybonnel.codestory.database.modele.LogMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -15,23 +16,23 @@ public class LogQueryHandler extends AbstractQueryHandler {
     @Override
     public String getResponse(String query, String path, HttpServletRequest request) throws IOException {
         if ("log".equals(query)) {
-            return logsToHtml(DatabaseManager.INSTANCE.getLogs());
+            return logsToHtml(DatabaseManager.INSTANCE.getLogDao().findAll());
         }
 
         Matcher matcher = Pattern.compile("log\\(([a-zA-Z])\\)").matcher(query);
         if (matcher.matches()) {
-            return logsToHtml(DatabaseManager.INSTANCE.getLogsByType(matcher.group(1)));
+            return logsToHtml(DatabaseManager.INSTANCE.getLogDao().findByType(matcher.group(1)));
         }
         return null;
     }
 
-    private String logsToHtml(List<DatabaseManager.LogMessage> logMessages) {
+    private String logsToHtml(List<LogMessage> logMessages) {
 
         StringBuilder builder = new StringBuilder("<table id=\"log\" border=\"1\">");
         builder.append("<tr><th>Time</th><th>Type</th><th>Message</th></tr>");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
-        for (DatabaseManager.LogMessage logMessage : logMessages) {
+        for (LogMessage logMessage : logMessages) {
             builder.append("<tr>");
             builder.append("<td>");
             builder.append(sdf.format(logMessage.getDate()));
