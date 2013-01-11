@@ -20,6 +20,16 @@ public class CalculateTest extends WebServerTestUtil {
         assertEquals("2", response.getText());
     }
 
+    @Test
+    public void should_answer_to_allPlus() throws IOException, SAXException {
+        for (int number = 1; number < 10; number++) {
+            WebConversation wc = new WebConversation();
+            WebResponse response = wc.getResponse(getURL() + "/?q=" + number + "+" + number);
+            assertEquals(200, response.getResponseCode());
+            assertEquals(Integer.toString(number+number), response.getText());
+        }
+    }
+
 
 
 }
