@@ -3,7 +3,10 @@ package fr.ybonnel.codestory.query;
 
 import com.google.common.base.Throwables;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -12,17 +15,18 @@ import java.util.regex.Pattern;
 
 public class CalculateQueryHandler extends AbstractQueryHandler {
 
-    private Pattern patternPlus = Pattern.compile("(\\d+)\\+(\\d+)");
     private Pattern patternParenthesis = Pattern.compile("\\((.*)\\)");
-    private Pattern patternMultiple = Pattern.compile("(\\d+,?\\d*)\\*(\\d+,?\\d*)");
-    private Pattern patternDivide = Pattern.compile("(\\d+)/(\\d+)");
-    private Pattern patternJustANumber = Pattern.compile("(\\d+,?\\d*)");
+    private static final String NOMBRE = "\\d+\\.?\\d*";
+    private Pattern patternPlus = Pattern.compile("(" + NOMBRE + ")\\+(" + NOMBRE + ")");
+    private Pattern patternMultiple = Pattern.compile("(" + NOMBRE + ")\\*(" + NOMBRE + ")");
+    private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");
+    private Pattern patternJustANumber = Pattern.compile("(" + NOMBRE + ")");
 
-    private NumberFormat format = NumberFormat.getInstance(Locale.FRANCE);
+    private NumberFormat format =  new DecimalFormat("#0.####################", new DecimalFormatSymbols(Locale.FRANCE));
 
     @Override
     public String getResponse(String query) {
-        String calculateQuery = query.replace(' ', '+');
+        String calculateQuery = query.replace(' ', '+').replace(',', '.');
 
         try {
             calculateQuery = calculateWithParenthesis(calculateQuery);
@@ -33,7 +37,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         Matcher matcherJustANumber = patternJustANumber.matcher(calculateQuery);
 
         if (matcherJustANumber.matches()) {
-            return calculateQuery;
+            return format.format(new BigDecimal(calculateQuery));
         }
 
         return null;
@@ -48,7 +52,6 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             int end = searchParanthesis.getEnd();
 
             String queryBetweenParenthesis = calculateQuery.substring(start+1, end-1);
-            System.out.println(queryBetweenParenthesis);
             String result = calculateWithoutParenthesis(queryBetweenParenthesis);
             calculateQuery = calculateQuery.substring(0, start) + result + calculateQuery.substring(end);
             matcherParenthsis = patternParenthesis.matcher(calculateQuery);
@@ -63,32 +66,37 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         Matcher matcherMultiple = patternMultiple.matcher(calculateQuery);
 
         while (matcherMultiple.find()) {
-            double a = format.parse(matcherMultiple.group(1)).doubleValue();
-            double b = format.parse(matcherMultiple.group(2)).doubleValue();
-            double result = a*b;
-            calculateQuery = calculateQuery.substring(0, matcherMultiple.start()) + format.format(result) + calculateQuery.substring(matcherMultiple.end());
+            BigDecimal a = new BigDecimal(matcherMultiple.group(1));
+            BigDecimal b = new BigDecimal(matcherMultiple.group(2));
+            BigDecimal result = a.multiply(b);
+            calculateQuery = calculateQuery.substring(0, matcherMultiple.start()) + result.toString() + calculateQuery.substring(matcherMultiple.end());
             matcherMultiple = patternMultiple.matcher(calculateQuery);
         }
 
         Matcher matcherDivide = patternDivide.matcher(calculateQuery);
 
         while (matcherDivide.find()) {
-            double a = format.parse(matcherDivide.group(1)).doubleValue();
-            double b = format.parse(matcherDivide.group(2)).doubleValue();
-            double result = a / b;
-            calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + format.format(result) + calculateQuery.substring(matcherDivide.end());
+
+            BigDecimal a = new BigDecimal(matcherDivide.group(1));
+            BigDecimal b = new BigDecimal(matcherDivide.group(2));
+            System.out.println(a);
+            System.out.println(b);
+            BigDecimal result = a.divide(b, 500, RoundingMode.HALF_UP);
+            System.out.println(result);
+            calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result.toString() + calculateQuery.substring(matcherDivide.end());
             matcherDivide = patternPlus.matcher(calculateQuery);
         }
 
         Matcher matcherPlus = patternPlus.matcher(calculateQuery);
 
         while (matcherPlus.find()) {
-            double a = format.parse(matcherPlus.group(1)).doubleValue();
-            double b = format.parse(matcherPlus.group(2)).doubleValue();
-            double result = a + b;
-            calculateQuery = calculateQuery.substring(0, matcherPlus.start()) + format.format(result) + calculateQuery.substring(matcherPlus.end());
+            BigDecimal a = new BigDecimal(matcherPlus.group(1));
+            BigDecimal b = new BigDecimal(matcherPlus.group(2));
+            BigDecimal result = a.add(b);
+            calculateQuery = calculateQuery.substring(0, matcherPlus.start()) + result.toString() + calculateQuery.substring(matcherPlus.end());
             matcherPlus = patternPlus.matcher(calculateQuery);
         }
+        System.out.println(calculateQuery);
         return calculateQuery;
     }
 
