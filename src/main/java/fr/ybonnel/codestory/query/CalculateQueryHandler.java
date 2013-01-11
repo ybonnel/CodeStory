@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class CalculateQueryHandler extends AbstractQueryHandler {
 
     private Pattern patternPlus = Pattern.compile("(\\d+)\\+(\\d+)");
-    private Pattern patternPlusWithParenthesis = Pattern.compile("\\((\\d+)\\+(\\d+)\\)");
+    private Pattern patternParenthesis = Pattern.compile("\\((.*)\\)");
     private Pattern patternMultiple = Pattern.compile("(\\d+)\\*(\\d+)");
     private Pattern patternDivide = Pattern.compile("(\\d+)/(\\d+)");
     private Pattern patternJustANumber = Pattern.compile("(\\d+)");
@@ -16,16 +16,27 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     public String getResponse(String query) {
         String calculateQuery = query.replace(' ', '+');
 
-        Matcher matcherPlusWithParenthesis = patternPlusWithParenthesis.matcher(calculateQuery);
+        Matcher matcherParenthsis = patternParenthesis.matcher(calculateQuery);
 
-        while (matcherPlusWithParenthesis.find()) {
-            int a = Integer.parseInt(matcherPlusWithParenthesis.group(1));
-            int b = Integer.parseInt(matcherPlusWithParenthesis.group(2));
-            int result = a + b;
-            calculateQuery = calculateQuery.substring(0, matcherPlusWithParenthesis.start()) + result + calculateQuery.substring(matcherPlusWithParenthesis.end());
-            matcherPlusWithParenthesis = patternPlus.matcher(calculateQuery);
+        while (matcherParenthsis.find()) {
+            String queryBetweenParenthesis = matcherParenthsis.group(1);
+            int result = Integer.parseInt(calculateWithoutParenthesis(queryBetweenParenthesis));
+            calculateQuery = calculateQuery.substring(0, matcherParenthsis.start()) + result + calculateQuery.substring(matcherParenthsis.end());
+            matcherParenthsis = patternParenthesis.matcher(calculateQuery);
         }
 
+        calculateQuery = calculateWithoutParenthesis(calculateQuery);
+
+        Matcher matcherJustANumber = patternJustANumber.matcher(calculateQuery);
+
+        if (matcherJustANumber.matches()) {
+            return calculateQuery;
+        }
+
+        return null;
+    }
+
+    private String calculateWithoutParenthesis(String calculateQuery) {
         Matcher matcherMultiple = patternMultiple.matcher(calculateQuery);
 
         while (matcherMultiple.find()) {
@@ -55,14 +66,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             calculateQuery = calculateQuery.substring(0, matcherPlus.start()) + result + calculateQuery.substring(matcherPlus.end());
             matcherPlus = patternPlus.matcher(calculateQuery);
         }
-
-        Matcher matcherJustANumber = patternJustANumber.matcher(calculateQuery);
-
-        if (matcherJustANumber.matches()) {
-            return calculateQuery;
-        }
-
-        return null;
+        return calculateQuery;
     }
 
 

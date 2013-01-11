@@ -46,13 +46,12 @@ public class CalculateTest extends WebServerTestUtil {
     @Test
     public void should_answer_with_parenthesis() throws IOException, SAXException {
         test_calculate("(1+2)*2", "6");
+        test_calculate("(1+2+3+4+5+6+7+8+9+10)*2", "110");
     }
 
     @Test
     public void should_answer_divide() throws IOException, SAXException {
         test_calculate("(1+2)/2", "1");
-//        (1+2)/2
-//        (1+2+3+4+5+6+7+8+9+10)*2
 //        ((1+2)+3+4+(5+6+7)+(8+9+10)*3)/2*5
 //        1,5*4
 //        ((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000
