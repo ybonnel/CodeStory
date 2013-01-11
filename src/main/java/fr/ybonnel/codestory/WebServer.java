@@ -27,6 +27,9 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        System.err.println(sdf.format(new Date()) + ":" + request.getRequestURL() + "?" + request.getQueryString());
+
         long startTime = System.nanoTime();
 
         String query = request.getParameter(QUERY_PARAMETER);
