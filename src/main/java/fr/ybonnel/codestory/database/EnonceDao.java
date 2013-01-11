@@ -5,9 +5,14 @@ import com.google.common.base.Throwables;
 import fr.ybonnel.codestory.database.modele.Enonce;
 
 import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class EnonceDao extends AbstractDao<Enonce> {
 
@@ -15,9 +20,10 @@ public class EnonceDao extends AbstractDao<Enonce> {
         super(ds);
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public List<Enonce> findAll() {
-        List<Enonce> enonces = new ArrayList<Enonce>();
+        List<Enonce> enonces = newArrayList();
 
         try {
             Connection conn = getConnection();
@@ -30,6 +36,8 @@ public class EnonceDao extends AbstractDao<Enonce> {
                         resultSet.getString("ENONCE")));
             }
 
+            resultSet.close();
+            statement.close();
             conn.close();
         } catch (SQLException sqlException) {
             Throwables.propagate(sqlException);
@@ -38,14 +46,15 @@ public class EnonceDao extends AbstractDao<Enonce> {
         return enonces;
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void insert(Enonce enonce) {
         try {
 
             Connection conn = getConnection();
-            PreparedStatement preparedStatementSelect = conn.prepareStatement("SELECT 1 FROM ENONCE WHERE ID = ?");
-            preparedStatementSelect.setInt(1, enonce.getId());
-            ResultSet resultSet = preparedStatementSelect.executeQuery();
+            PreparedStatement preparedStatement = conn.prepareStatement("SELECT 1 FROM ENONCE WHERE ID = ?");
+            preparedStatement.setInt(1, enonce.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 update(enonce, conn);
             } else {

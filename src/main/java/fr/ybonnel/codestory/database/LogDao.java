@@ -4,7 +4,12 @@ import com.google.common.base.Throwables;
 import fr.ybonnel.codestory.database.modele.LogMessage;
 
 import javax.sql.DataSource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -64,6 +69,7 @@ public class LogDao extends AbstractDao<LogMessage> {
         return logMessages;
     }
 
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void insert(LogMessage objectToInsert) {
         try {

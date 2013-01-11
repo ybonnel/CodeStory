@@ -5,11 +5,11 @@ import java.util.Date;
 
 @SuppressWarnings("UnusedDeclaration")
 public class LogMessage {
-    private java.util.Date date;
+    private Date date;
     private String type;
     private String message;
 
-    public LogMessage(java.util.Date date, String type, String message) {
+    public LogMessage(Date date, String type, String message) {
         this.date = date;
         this.type = type;
         if (message.length() > 450) {
@@ -20,7 +20,7 @@ public class LogMessage {
     }
 
     public LogMessage(String type, String message) {
-        this.date = new Date();
+        date = new Date();
         this.type = type;
         if (message.length() > 450) {
             this.message = message.substring(0, 450);

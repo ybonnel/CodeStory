@@ -1,12 +1,10 @@
 package fr.ybonnel.codestory;
 
-import com.google.common.collect.Lists;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 import sun.misc.Signal;
@@ -14,10 +12,12 @@ import sun.misc.Signal;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import static junit.framework.Assert.*;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WebServerTest extends WebServerTestUtil {
 
@@ -69,7 +69,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_404_for_no_query() throws IOException, SAXException {
+    public void should_answer_404_for_no_query() throws Exception {
         WebConversation wc = new WebConversation();
         wc.setExceptionsThrownOnErrorStatus(false);
         WebResponse response = wc.getResponse(getURL());
@@ -77,7 +77,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_ml() throws IOException, SAXException {
+    public void should_answer_to_ml() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=Es+tu+abonne+a+la+mailing+list(OUI/NON)");
         assertEquals(200, response.getResponseCode());
@@ -85,7 +85,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_participate() throws IOException, SAXException {
+    public void should_answer_to_participate() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=Es tu heureux de participer(OUI/NON)");
         assertEquals(200, response.getResponseCode());
@@ -93,7 +93,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_markdown_ready() throws IOException, SAXException {
+    public void should_answer_to_markdown_ready() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=Es tu pret a recevoir une enonce au format markdown par http post(OUI/NON)");
         assertEquals(200, response.getResponseCode());
@@ -101,7 +101,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_not_answer_always_yes() throws IOException, SAXException {
+    public void should_not_answer_always_yes() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=Est ce que tu reponds toujours oui(OUI/NON)");
         assertEquals(200, response.getResponseCode());
@@ -119,7 +119,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_return_enonce() throws IOException, SAXException, SQLException {
+    public void should_return_enonce() throws Exception {
         can_insert_enonce();
         setBaseUrl(getURL());
         beginAt("/enonce");
@@ -128,7 +128,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_manage_update_of_enonce() throws IOException, SAXException, SQLException {
+    public void should_manage_update_of_enonce() throws Exception {
         can_insert_enonce();
         WebConversation wc = new WebConversation();
         wc.setExceptionsThrownOnErrorStatus(false);
@@ -145,7 +145,7 @@ public class WebServerTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_know_first_enonce() throws IOException, SAXException {
+    public void should_know_first_enonce() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=As tu bien recu le premier enonce(OUI/NON)");
         assertEquals(200, response.getResponseCode());

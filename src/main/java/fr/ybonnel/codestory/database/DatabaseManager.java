@@ -2,14 +2,12 @@ package fr.ybonnel.codestory.database;
 
 
 import com.google.common.base.Throwables;
-import fr.ybonnel.codestory.database.modele.Enonce;
-import fr.ybonnel.codestory.database.modele.LogMessage;
 import org.h2.jdbcx.JdbcDataSource;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public enum DatabaseManager {
 
@@ -21,20 +19,11 @@ public enum DatabaseManager {
     private JdbcDataSource ds;
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    private DatabaseManager() {
+    DatabaseManager() {
         try {
             Class.forName("org.h2.Driver");
 
-            boolean databaseExists = false;
-
-            try {
-                String url = DatabaseUtil.getUrl() + ";IFEXISTS=TRUE";
-                Connection connection = DriverManager.getConnection(url, "sa", "sa");
-                connection.close();
-                databaseExists = true;
-            } catch (SQLException ignore) {
-            }
-
+            boolean databaseExists = doesDatabaseExists();
 
             ds = new JdbcDataSource();
             ds.setURL(DatabaseUtil.getUrl());
@@ -47,6 +36,18 @@ public enum DatabaseManager {
         } catch (Exception exception) {
             Throwables.propagate(exception);
         }
+    }
+
+    private static boolean doesDatabaseExists() {
+        boolean databaseExists = false;
+        try {
+            String url = DatabaseUtil.getUrl() + ";IFEXISTS=TRUE";
+            Connection connection = DriverManager.getConnection(url, "sa", "sa");
+            connection.close();
+            databaseExists = true;
+        } catch (SQLException ignore) {
+        }
+        return databaseExists;
     }
 
     public void createDatabase() throws SQLException {
@@ -73,7 +74,7 @@ public enum DatabaseManager {
         conn.close();
     }
 
-    private LogDao logDao = null;
+    private LogDao logDao;
 
     public LogDao getLogDao() {
         if (logDao == null) {

@@ -4,8 +4,6 @@ package fr.ybonnel.codestory.query;
 import fr.ybonnel.codestory.database.DatabaseManager;
 import fr.ybonnel.codestory.database.modele.LogMessage;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,8 +12,8 @@ import java.util.regex.Pattern;
 public class LogQueryHandler extends AbstractQueryHandler {
 
     @Override
-    public String getResponse(String query, String path, HttpServletRequest request) throws IOException {
-        if ("log".equals(query)) {
+    public String getResponse(String query) {
+        if (query.equals("log")) {
             return logsToHtml(DatabaseManager.INSTANCE.getLogDao().findAll());
         }
 
@@ -41,7 +39,7 @@ public class LogQueryHandler extends AbstractQueryHandler {
             builder.append(logMessage.getType());
             builder.append("</td>");
             builder.append("<td><pre>");
-            builder.append(logMessage.getMessage().replaceAll("\t", "").replaceAll("<", "&lt;").replaceAll(">", "&ft;"));
+            builder.append(logMessage.getMessage().replaceAll("\t", "").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
             builder.append("</pre></td>");
             builder.append("</tr>");
         }

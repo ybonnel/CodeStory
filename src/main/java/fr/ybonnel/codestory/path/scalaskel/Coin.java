@@ -4,7 +4,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public enum Cent {
+public enum Coin {
     FOO(1),
     BAR(7),
     QIX(11),
@@ -12,7 +12,7 @@ public enum Cent {
 
     private int value;
 
-    Cent(int value) {
+    Coin(int value) {
         this.value = value;
     }
 
@@ -24,12 +24,11 @@ public enum Cent {
         return cents >= value;
     }
 
-    private static List<Cent> valuesAsLists;
+    private static class ListHolder {
+        private static final List<Coin> valuesAsLists = newArrayList(values());
+    }
 
-    public static List<Cent> valuesAsLists() {
-        if (valuesAsLists == null) {
-            valuesAsLists = newArrayList(values());
-        }
-        return valuesAsLists;
+    public static List<Coin> valuesAsLists() {
+        return ListHolder.valuesAsLists;
     }
 }

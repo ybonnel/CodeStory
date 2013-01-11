@@ -1,7 +1,5 @@
 package fr.ybonnel.codestory.query;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class FixResponseQueryHandler extends AbstractQueryHandler {
 
     private String response;
@@ -11,7 +9,7 @@ public class FixResponseQueryHandler extends AbstractQueryHandler {
     }
 
     @Override
-    public String getResponse(String query, String path, HttpServletRequest request) throws Exception {
+    public String getResponse(String query) {
         return response;
     }
 }

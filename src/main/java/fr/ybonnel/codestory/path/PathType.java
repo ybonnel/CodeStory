@@ -16,7 +16,7 @@ public enum PathType {
     private Pattern pathPattern;
     private String method;
 
-    private PathType(AbstractPathHandler handler, String pathPattern, String method) {
+    PathType(AbstractPathHandler handler, String pathPattern, String method) {
         this.handler = handler;
         this.pathPattern = Pattern.compile(pathPattern);
         this.method = method;
@@ -31,36 +31,21 @@ public enum PathType {
         }
     }
 
-    public static class PathResponse {
-        private int statusCode;
-        private String response;
-
-        public PathResponse(int statusCode, String response) {
-            this.statusCode = statusCode;
-            this.response = response;
-        }
-
-        public int getStatusCode() {
-            return statusCode;
-        }
-
-        public String getResponse() {
-            return response;
-        }
-    }
-
     public static PathResponse getResponse(HttpServletRequest request) throws Exception {
         for (PathType onePath : values()) {
             Matcher isThisPath = onePath.isThisPath(request.getMethod(), request.getPathInfo());
             if (isThisPath != null && isThisPath.matches()) {
-                String[] params = new String[isThisPath.groupCount()];
-                for (int groupIndex = 1; groupIndex <= isThisPath.groupCount(); groupIndex++) {
-                    params[groupIndex - 1] = isThisPath.group(groupIndex);
-                }
-
-                return onePath.handler.getResponse(request, params);
+                return onePath.handler.getResponse(request, extractParameters(isThisPath));
             }
         }
         return new PathResponse(HttpServletResponse.SC_NOT_FOUND, "This path is unknown");
+    }
+
+    private static String[] extractParameters(Matcher thisPath) {
+        String[] params = new String[thisPath.groupCount()];
+        for (int groupIndex = 1; groupIndex <= thisPath.groupCount(); groupIndex++) {
+            params[groupIndex - 1] = thisPath.group(groupIndex);
+        }
+        return params;
     }
 }

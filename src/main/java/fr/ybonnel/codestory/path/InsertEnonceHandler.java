@@ -15,15 +15,15 @@ public class InsertEnonceHandler extends AbstractPathHandler {
     private Gson gson = new GsonBuilder().create();
 
     @Override
-    public PathType.PathResponse getResponse(HttpServletRequest request, String...params) throws Exception {
+    public PathResponse getResponse(HttpServletRequest request, String...params) {
         int id = Integer.parseInt(params[0]);
         Enonce enonce = contructEnonce(id, request);
         DatabaseManager.INSTANCE.getEnonceDao().insert(enonce);
-        return new PathType.PathResponse(HttpServletResponse.SC_CREATED, gson.toJson(enonce));
+        return new PathResponse(HttpServletResponse.SC_CREATED, gson.toJson(enonce));
     }
 
     public Enonce contructEnonce(int id, HttpServletRequest request) {
-        Enumeration parameters = request.getParameterNames();
+        Enumeration<?> parameters = request.getParameterNames();
         String titre = (String) parameters.nextElement();
         return new Enonce(id, titre, request.getParameter(titre));
 

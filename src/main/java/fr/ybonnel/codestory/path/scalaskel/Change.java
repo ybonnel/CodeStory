@@ -15,26 +15,26 @@ public class Change {
 
     public Change(Change change) {
         if (change != null) {
-            this.foo = change.foo;
-            this.bar = change.bar;
-            this.qix = change.qix;
-            this.baz = change.baz;
+            foo = change.foo;
+            bar = change.bar;
+            qix = change.qix;
+            baz = change.baz;
         }
     }
 
-    public void pay(Cent cent) {
-        switch (cent) {
+    public void pay(Coin coin) {
+        switch (coin) {
             case FOO:
-                this.foo = this.foo == null ? 1 : this.foo + 1;
+                foo = foo == null ? 1 : foo + 1;
                 break;
             case BAR:
-                this.bar = this.bar == null ? 1 : this.bar + 1;
+                bar = bar == null ? 1 : bar + 1;
                 break;
             case QIX:
-                this.qix = this.qix == null ? 1 : this.qix + 1;
+                qix = qix == null ? 1 : qix + 1;
                 break;
             case BAZ:
-                this.baz = this.baz == null ? 1 : this.baz + 1;
+                baz = baz == null ? 1 : baz + 1;
                 break;
         }
     }

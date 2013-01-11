@@ -7,14 +7,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
 
-import static net.sourceforge.jwebunit.junit.JWebUnit.setBaseUrl;
-
 public abstract class WebServerTestUtil {
 
     private final int portNumber;
 
-    public WebServerTestUtil() {
-        this.portNumber = Integer.getInteger("port", 18080);
+    protected WebServerTestUtil() {
+        portNumber = Integer.getInteger("port", 18080);
     }
 
     public String getURL() {
@@ -22,7 +20,7 @@ public abstract class WebServerTestUtil {
     }
 
     public static String getURL(int portNumber) {
-        return "http://localhost:" + portNumber + "/";
+        return "http://localhost:" + portNumber + '/';
     }
 
     private Server server;

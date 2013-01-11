@@ -5,16 +5,16 @@ import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
+import java.io.InputStream;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+
 
 public class ScalaskelTest extends WebServerTestUtil {
 
     @Test
-    public void should_answer_to_1cent() throws IOException, SAXException {
+    public void should_answer_to_1cent() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/1");
         assertEquals(200, response.getResponseCode());
@@ -22,7 +22,7 @@ public class ScalaskelTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_7cent() throws IOException, SAXException {
+    public void should_answer_to_7cent() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/7");
         assertEquals(200, response.getResponseCode());
@@ -30,7 +30,7 @@ public class ScalaskelTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_11cent() throws IOException, SAXException {
+    public void should_answer_to_11cent() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/11");
         assertEquals(200, response.getResponseCode());
@@ -38,7 +38,7 @@ public class ScalaskelTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_21cent() throws IOException, SAXException {
+    public void should_answer_to_21cent() throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/21");
         assertEquals(200, response.getResponseCode());
@@ -46,19 +46,21 @@ public class ScalaskelTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_answer_to_all_changes() throws IOException, SAXException {
+    public void should_answer_to_all_changes() throws Exception {
         WebConversation wc = new WebConversation();
 
         for (int oneChange = 1; oneChange <= 100 ; oneChange++) {
             WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/" + oneChange);
             assertEquals(200, response.getResponseCode());
-            String expected = IOUtils.toString(ScalaskelTest.class.getResourceAsStream("/assertChange" + oneChange + ".json"));
+            InputStream expectedResponse = ScalaskelTest.class.getResourceAsStream("/assertChange" + oneChange + ".json");
+            String expected = IOUtils.toString(expectedResponse);
+            IOUtils.closeQuietly(expectedResponse);
             assertEquals(expected, response.getText());
         }
     }
 
     @Test
-    public void should_not_answer_to_minus1_and_more100() throws IOException, SAXException {
+    public void should_not_answer_to_minus1_and_more100() throws Exception {
         WebConversation wc = new WebConversation();
         wc.setExceptionsThrownOnErrorStatus(false);
 
