@@ -22,7 +22,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");
     private Pattern patternJustANumber = Pattern.compile("(" + NOMBRE + ")");
 
-    private NumberFormat format =  new DecimalFormat("#0.####################", new DecimalFormatSymbols(Locale.FRANCE));
+    private NumberFormat format = new DecimalFormat("#0.####################", new DecimalFormatSymbols(Locale.FRANCE));
 
     @Override
     public String getResponse(String query) {
@@ -34,13 +34,16 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             Throwables.propagate(e);
         }
 
-        Matcher matcherJustANumber = patternJustANumber.matcher(calculateQuery);
-
-        if (matcherJustANumber.matches()) {
-            return format.format(new BigDecimal(calculateQuery));
+        try {
+            String retour = format.format(new BigDecimal(calculateQuery));
+            if ("0".equals(retour)) {
+                return new BigDecimal(calculateQuery).toString().replace('.', ',');
+            }
+            return retour;
+        } catch (NumberFormatException numberFormatException) {
+            numberFormatException.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
     private String calculateWithParenthesis(String calculateQuery) throws ParseException {
@@ -51,7 +54,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             int start = searchParanthesis.getStart();
             int end = searchParanthesis.getEnd();
 
-            String queryBetweenParenthesis = calculateQuery.substring(start+1, end-1);
+            String queryBetweenParenthesis = calculateQuery.substring(start + 1, end - 1);
             String result = calculateWithoutParenthesis(queryBetweenParenthesis);
             calculateQuery = calculateQuery.substring(0, start) + result + calculateQuery.substring(end);
             matcherParenthsis = patternParenthesis.matcher(calculateQuery);
@@ -81,10 +84,10 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             BigDecimal b = new BigDecimal(matcherDivide.group(2));
             System.out.println(a);
             System.out.println(b);
-            BigDecimal result = a.divide(b, 500, RoundingMode.HALF_UP);
+            BigDecimal result = a.divide(b, 100, RoundingMode.HALF_UP);
             System.out.println(result);
             calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result.toString() + calculateQuery.substring(matcherDivide.end());
-            matcherDivide = patternPlus.matcher(calculateQuery);
+            matcherDivide = patternDivide.matcher(calculateQuery);
         }
 
         Matcher matcherPlus = patternPlus.matcher(calculateQuery);
@@ -121,10 +124,10 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         public SearchParanthesis invoke() {
             start = -1;
             end = -1;
-            int currentProf=0;
-            int currentStart=-1;
-            int maxProf=-1;
-            for (int index=0;index < calculateQuery.length(); index++) {
+            int currentProf = 0;
+            int currentStart = -1;
+            int maxProf = -1;
+            for (int index = 0; index < calculateQuery.length(); index++) {
                 char car = calculateQuery.charAt(index);
                 if (car == '(') {
                     currentStart = index;
@@ -134,7 +137,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
                 if (car == ')') {
                     if (currentProf > maxProf) {
                         start = currentStart;
-                        end = index+1;
+                        end = index + 1;
                         maxProf = currentProf;
                     }
                     currentProf--;
