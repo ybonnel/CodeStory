@@ -27,8 +27,9 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
+        Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        System.err.println(sdf.format(new Date()) + ":" + request.getRequestURL() + "?" + request.getQueryString());
+        System.err.println(sdf.format(date) + ":" + request.getRequestURL() + "?" + request.getQueryString());
 
         long startTime = System.nanoTime();
 
@@ -66,7 +67,7 @@ public class WebServer extends AbstractHandler {
         long elapsedTime = System.nanoTime() - startTime;
 
 
-        LogUtil.logHttpRequest(request, status, response, elapsedTime);
+        LogUtil.logHttpRequest(date, request, status, response, elapsedTime);
     }
 
 

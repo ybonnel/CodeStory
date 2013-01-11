@@ -17,7 +17,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class LogUtil {
 
 
-    public static void logHttpRequest(HttpServletRequest request, int status, String response, long elapsedTime) {
+    public static void logHttpRequest(Date date, HttpServletRequest request, int status, String response, long elapsedTime) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())) {
@@ -40,10 +40,10 @@ public class LogUtil {
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
         logMessage.append("\n\tResponse : ").append(response);
 
-        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_Q, logMessage.toString()));
+        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(date, DatabaseManager.TYPE_Q, logMessage.toString()));
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
-        System.out.println(sdf.format(new Date()) + '\n' + logMessage);
+        System.out.println(sdf.format(date) + '\n' + logMessage);
     }
 
     private static Map<String, String> getRequestHeaders(HttpServletRequest request) {
