@@ -27,6 +27,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     public String getResponse(String query) {
         String calculateQuery = query.replace(' ', '+').replace(',', '.');
 
+
         try {
             calculateQuery = calculateWithParenthesis(calculateQuery);
         } catch (ParseException e) {
@@ -34,11 +35,9 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         }
 
         try {
-            String retour = format.format(new BigDecimal(calculateQuery));
-            if ("0".equals(retour)) {
-                return new BigDecimal(calculateQuery).toString().replace('.', ',');
-            }
-            return retour;
+            BigDecimal retour = new BigDecimal(calculateQuery);
+            retour = retour.setScale(20, RoundingMode.HALF_UP);
+            return format.format(retour);
         } catch (NumberFormatException numberFormatException) {
             numberFormatException.printStackTrace();
             return null;
@@ -70,7 +69,12 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
 
             BigDecimal a = new BigDecimal(matcherDivide.group(1));
             BigDecimal b = new BigDecimal(matcherDivide.group(2));
-            BigDecimal result = a.divide(b, 100, RoundingMode.HALF_UP);
+            BigDecimal result;
+            try {
+                result = a.divide(b);
+            } catch (ArithmeticException exception) {
+                result = a.divide(b, 500, RoundingMode.HALF_UP);
+            }
             calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result.toString() + calculateQuery.substring(matcherDivide.end());
             matcherDivide = patternDivide.matcher(calculateQuery);
         }
