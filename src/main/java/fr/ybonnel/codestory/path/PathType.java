@@ -1,7 +1,5 @@
 package fr.ybonnel.codestory.path;
 
-import fr.ybonnel.codestory.logs.LogUtil;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
@@ -11,7 +9,7 @@ public enum PathType {
 
     INSERT_ENONCE(new InsertEnonceHandler(), "/enonce/(\\d+)", "POST"),
     GET_ENONCES(new GetEnoncesHandler(), "/enonce(/)*", "GET"),
-    SCALASKEL_CHANGES(new ChangeScalaskelQueryHandler(), "/scalaskel/change/(\\d+)", "GET");
+    SCALASKEL_CHANGES(new ChangeScalaskelHandler(), "/scalaskel/change/(\\d+)", "GET");
 
     private AbstractPathHandler handler;
 

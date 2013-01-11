@@ -2,7 +2,6 @@ package fr.ybonnel.codestory.query;
 
 
 import fr.ybonnel.codestory.logs.LogUtil;
-import fr.ybonnel.codestory.path.ChangeScalaskelQueryHandler;
 
 import javax.servlet.http.HttpServletRequest;
 

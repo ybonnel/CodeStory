@@ -3,15 +3,11 @@ package fr.ybonnel.codestory;
 
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
-import fr.ybonnel.codestory.path.ChangeScalaskelQueryHandler;
-import fr.ybonnel.codestory.path.scalaskel.Change;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -62,15 +58,14 @@ public class ScalaskelTest extends WebServerTestUtil {
     }
 
     @Test
-    public void should_not_answer_to_minus1_and_more500() throws IOException, SAXException {
+    public void should_not_answer_to_minus1_and_more100() throws IOException, SAXException {
         WebConversation wc = new WebConversation();
+        wc.setExceptionsThrownOnErrorStatus(false);
 
         WebResponse response = wc.getResponse(getURL() + "/scalaskel/change/0");
-        assertEquals(200, response.getResponseCode());
-        assertEquals("[]", response.getText());
+        assertEquals(403, response.getResponseCode());
 
-        response = wc.getResponse(getURL() + "/scalaskel/change/501");
-        assertEquals(200, response.getResponseCode());
-        assertEquals("[]", response.getText());
+        response = wc.getResponse(getURL() + "/scalaskel/change/101");
+        assertEquals(403, response.getResponseCode());
     }
 }
