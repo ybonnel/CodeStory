@@ -27,6 +27,8 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     public String getResponse(String query) {
         String calculateQuery = query.replace(' ', '+').replace(',', '.');
 
+        boolean decimalMode = calculateQuery.contains(".");
+
         try {
             calculateQuery = calculateWithParenthesis(calculateQuery);
         } catch (ParseException e) {
@@ -34,6 +36,9 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         }
 
         try {
+            if (!decimalMode) {
+                return new BigDecimal(calculateQuery).toBigInteger().toString();
+            }
             String retour = format.format(new BigDecimal(calculateQuery));
             if ("0".equals(retour)) {
                 return new BigDecimal(calculateQuery).toString().replace('.', ',');
