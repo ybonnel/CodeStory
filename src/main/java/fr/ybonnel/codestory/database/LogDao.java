@@ -52,7 +52,7 @@ public class LogDao extends AbstractDao<LogMessage> {
         try {
             Connection conn = getConnection();
 
-            PreparedStatement statement = conn.prepareStatement("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG WHERE TYPE_LOG = ? ORDER BY HEURE DESC LIMIT 5");
+            PreparedStatement statement = conn.prepareStatement("SELECT HEURE, TYPE_LOG, MESSAGE FROM LOG WHERE TYPE_LOG = ? ORDER BY HEURE DESC");
             statement.setString(1, type);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
