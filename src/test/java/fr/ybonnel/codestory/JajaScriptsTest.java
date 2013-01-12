@@ -18,7 +18,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         String request = "[{ \"MONAD42\",0,5,10 }," +
                 "{ \"META18\",3,7,14 }," +
                 "{ \"LEGACY01\",5,9,7}," +
-                "{ \"YAGNI17\",5,9,7}" +
+                "{ \"YAGNI17\",6,9,8}" +
                 "]";
 
         String resultExpected = "{\"gain\":18,\"path\":[\"MONAD42\",\"YAGNI17\"]}";
@@ -33,7 +33,6 @@ public class JajaScriptsTest extends WebServerTestUtil {
         assertEquals(200, response.getResponseCode());
         assertEquals(resultExpected, response.getText());
     }
-
 }
 
 
