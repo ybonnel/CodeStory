@@ -1,43 +1,19 @@
 package fr.ybonnel.codestory.path.jajascript;
 
 
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static com.google.common.collect.Lists.newArrayList;
+import java.io.IOException;
+import java.util.List;
 
 public class JajascriptRequest {
 
-    private List<Commande> commandes = newArrayList();
+    private List<Commande> commandes;
 
-    private static final Pattern patternArray = Pattern.compile("\\[(.*)\\]");
-    private static final Pattern patternCommande = Pattern.compile("\\{ ?\"(\\w+)\" ?, ?(\\d+) ?, ?(\\d+) ?, ?(\\d+) ?\\}");
-
-    public static JajascriptRequest fromPayLoad(String payLoad) {
-
-        Matcher matcher = patternArray.matcher(payLoad);
-
-        JajascriptRequest request = new JajascriptRequest();
-
-        if (matcher.matches()) {
-
-            String commandesPayLoad = matcher.group(1);
-
-            Matcher matcherCommande = patternCommande.matcher(commandesPayLoad);
-
-            while (matcherCommande.find()) {
-
-                System.out.println(matcherCommande.group(0));
-
-                request.commandes.add(new Commande(matcherCommande.group(1),
-                        Integer.parseInt(matcherCommande.group(2)),
-                        Integer.parseInt(matcherCommande.group(3)),
-                        Integer.parseInt(matcherCommande.group(4))));
-
-            }
-        }
-        return request;
+    public JajascriptRequest(List<Commande> commandes) {
+        this.commandes = commandes;
     }
 
     @Override
@@ -49,5 +25,12 @@ public class JajascriptRequest {
 
     public List<Commande> getCommandes() {
         return commandes;
+    }
+
+    private final static ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+    public static JajascriptRequest fromPayLoad(String payLoad) throws IOException {
+        List<Commande> commandes = mapper.readValue(payLoad, new TypeReference<List<Commande>>(){});
+        return new JajascriptRequest(commandes);
     }
 }

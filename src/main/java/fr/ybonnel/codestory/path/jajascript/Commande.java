@@ -1,11 +1,20 @@
 package fr.ybonnel.codestory.path.jajascript;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Commande {
 
+    @JsonProperty("VOL")
     private String nomVol;
+    @JsonProperty("DEPART")
     private int heureDepart;
+    @JsonProperty("DUREE")
     private int tempsVol;
+    @JsonProperty("PRIX")
     private int prix;
+
+    public Commande() {
+    }
 
     public Commande(String nomVol, int heureDepart, int tempsVol, int prix) {
         this.nomVol = nomVol;

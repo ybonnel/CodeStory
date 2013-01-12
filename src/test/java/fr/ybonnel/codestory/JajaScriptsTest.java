@@ -15,13 +15,12 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
     @Test
     public void should_answer_to_jajascripts() throws IOException, SAXException {
-        String request = "[{ \"MONAD42\",0,5,10 }," +
-                "{ \"META18\",3,7,14 }," +
-                "{ \"LEGACY01\",5,9,7}," +
-                "{ \"YAGNI17\",6,9,8}" +
-                "]";
+        String request = "[{ \"VOL\": \"MONAD42\", \"DEPART\": 0, \"DUREE\": 5, \"PRIX\": 10 }," +
+                "{ \"VOL\": \"META18\", \"DEPART\": 3, \"DUREE\": 7, \"PRIX\": 14 }," +
+                "{ \"VOL\": \"LEGACY01\", \"DEPART\": 5, \"DUREE\": 9, \"PRIX\": 8 }," +
+                "{ \"VOL\": \"YAGNI17\", \"DEPART\": 5, \"DUREE\": 9, \"PRIX\": 7 }]";
 
-        String resultExpected = "{\"gain\":18,\"path\":[\"MONAD42\",\"YAGNI17\"]}";
+        String resultExpected = "{\"gain\":18,\"path\":[\"MONAD42\",\"LEGACY01\"]}";
 
         WebConversation wc = new WebConversation();
 
