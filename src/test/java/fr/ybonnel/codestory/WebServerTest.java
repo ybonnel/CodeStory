@@ -124,7 +124,7 @@ public class WebServerTest extends WebServerTestUtil {
         setBaseUrl(getURL());
         beginAt("/enonce");
         assertResponseCode(200);
-        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Titre</td><td><p>=============</p><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Enonce 1</td><td><p>Titre==============</p><p>tutu <strong>tata</strong></p></td></tr></table>", getPageSource());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class WebServerTest extends WebServerTestUtil {
         setBaseUrl(getURL());
         beginAt("/enonce");
         assertResponseCode(200);
-        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Titre2</td><td><p>autreenonce</p></td></tr></table>", getPageSource());
+        assertEquals("<table id=\"enonces\" border=\"1\"><tr><th>ID</th><th>Titre</th><th>Enonc&eacute;</th></tr><tr><td>1</td><td>Enonce 1</td><td><p>Titre2=autreenonce</p></td></tr></table>", getPageSource());
 
     }
 

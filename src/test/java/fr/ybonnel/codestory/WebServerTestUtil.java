@@ -11,7 +11,7 @@ import java.util.Random;
 
 public abstract class WebServerTestUtil {
 
-    private final int portNumber;
+    private final ThreadLocal<Integer> portNumber = new ThreadLocal<Integer>();
 
     private final Random random = new Random();
 
@@ -19,12 +19,15 @@ public abstract class WebServerTestUtil {
         return random.nextInt(1000) + 20000;
     }
 
-    protected WebServerTestUtil() {
-        portNumber = getRandomPort();
+    private int getPortNumber() {
+        if (portNumber.get() == null) {
+            portNumber.set(getRandomPort());
+        }
+        return portNumber.get();
     }
 
     public String getURL() {
-        return getURL(portNumber);
+        return getURL(getPortNumber());
     }
 
     public static String getURL(int portNumber) {
@@ -37,7 +40,7 @@ public abstract class WebServerTestUtil {
     public void startServer() throws Exception {
         DatabaseUtil.goInTestMode();
         DatabaseManager.INSTANCE.createDatabase();
-        server = new Server(portNumber);
+        server = new Server(getPortNumber());
         server.setHandler(new WebServer());
         server.start();
     }
