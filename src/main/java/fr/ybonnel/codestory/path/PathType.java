@@ -9,7 +9,8 @@ public enum PathType {
 
     INSERT_ENONCE(new InsertEnonceHandler(), "/enonce/(\\d+)", "POST"),
     GET_ENONCES(new GetEnoncesHandler(), "/enonce(/)*", "GET"),
-    SCALASKEL_CHANGES(new ChangeScalaskelHandler(), "/scalaskel/change/(\\d+)", "GET");
+    SCALASKEL_CHANGES(new ChangeScalaskelHandler(), "/scalaskel/change/(\\d+)", "GET"),
+    JAJASCRIPT(new OptimizeJajascriptHandler(), "/jajascript/optimize", "POST");
 
     private AbstractPathHandler handler;
 
@@ -31,11 +32,11 @@ public enum PathType {
         }
     }
 
-    public static PathResponse getResponse(HttpServletRequest request) throws Exception {
+    public static PathResponse getResponse(HttpServletRequest request, String payLoad) throws Exception {
         for (PathType onePath : values()) {
             Matcher isThisPath = onePath.isThisPath(request.getMethod(), request.getPathInfo());
             if (isThisPath != null && isThisPath.matches()) {
-                return onePath.handler.getResponse(request, extractParameters(isThisPath));
+                return onePath.handler.getResponse(request, payLoad, extractParameters(isThisPath));
             }
         }
         return new PathResponse(HttpServletResponse.SC_NOT_FOUND, "This path is unknown");

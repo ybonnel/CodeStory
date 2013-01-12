@@ -4,6 +4,7 @@ import fr.ybonnel.codestory.logs.LogUtil;
 import fr.ybonnel.codestory.path.PathResponse;
 import fr.ybonnel.codestory.path.PathType;
 import fr.ybonnel.codestory.query.QueryType;
+import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
 import sun.misc.Signal;
@@ -27,6 +28,14 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
+
+        String payLoad;
+        try {
+            payLoad = IOUtils.toString(request.getInputStream());
+        } catch (Exception exception) {
+            payLoad = IOUtils.toString(request.getReader());
+        }
+
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
         System.err.println(sdf.format(date) + ":" + request.getRequestURL() + "?" + request.getQueryString());
@@ -48,7 +57,7 @@ public class WebServer extends AbstractHandler {
                     status = HttpServletResponse.SC_NOT_FOUND;
                 }
             } else {
-                PathResponse pathResponse = PathType.getResponse(request);
+                PathResponse pathResponse = PathType.getResponse(request, payLoad);
                 status = pathResponse.getStatusCode();
                 response = pathResponse.getResponse();
             }
@@ -67,7 +76,7 @@ public class WebServer extends AbstractHandler {
         long elapsedTime = System.nanoTime() - startTime;
 
 
-        LogUtil.logHttpRequest(date, request, status, response, elapsedTime);
+        LogUtil.logHttpRequest(date, request, payLoad, status, response, elapsedTime);
     }
 
 

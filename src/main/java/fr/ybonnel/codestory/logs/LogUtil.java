@@ -17,7 +17,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class LogUtil {
 
 
-    public static void logHttpRequest(Date date, HttpServletRequest request, int status, String response, long elapsedTime) {
+    public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())) {
@@ -36,6 +36,8 @@ public class LogUtil {
                 .append(request.getRemoteAddr());
         logMessage.append("\n\tRequest headers : ")
                 .append(getRequestHeaders(request));
+        logMessage.append("\n\tRequest payload : ")
+                .append(payLoad);
         logMessage.append("\n\tResponse status : ").append(status);
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
         logMessage.append("\n\tResponse : ").append(response);

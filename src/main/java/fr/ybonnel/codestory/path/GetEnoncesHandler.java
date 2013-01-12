@@ -11,7 +11,7 @@ import java.util.List;
 
 public class GetEnoncesHandler extends AbstractPathHandler {
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String...param) {
+    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... param) {
         return new PathResponse(HttpServletResponse.SC_OK, getAllEnonce());
     }
 

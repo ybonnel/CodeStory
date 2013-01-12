@@ -23,7 +23,7 @@ public class ChangeScalaskelHandler extends AbstractPathHandler {
     }
 
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String... params) throws JsonProcessingException, NumberFormatException {
+    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws JsonProcessingException, NumberFormatException {
         int centsToPay = Integer.parseInt(params[0]);
         if (wrongParams(centsToPay)) {
             return new PathResponse(HttpServletResponse.SC_FORBIDDEN, "Wrong parameters");

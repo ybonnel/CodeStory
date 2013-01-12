@@ -15,9 +15,10 @@ public class InsertEnonceHandler extends AbstractPathHandler {
     private Gson gson = new GsonBuilder().create();
 
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String...params) {
+    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) {
+
         int id = Integer.parseInt(params[0]);
-        Enonce enonce = contructEnonce(id, request);
+        Enonce enonce = payLoad == null ? contructEnonce(id, request) : new Enonce(id, "Enonce " + id, payLoad);
         DatabaseManager.INSTANCE.getEnonceDao().insert(enonce);
         return new PathResponse(HttpServletResponse.SC_CREATED, gson.toJson(enonce));
     }
