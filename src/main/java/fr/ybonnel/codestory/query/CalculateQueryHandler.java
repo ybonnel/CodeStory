@@ -22,16 +22,10 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");
 
     private NumberFormat format = new DecimalFormat("#0.########################################", new DecimalFormatSymbols(Locale.FRANCE));
-    private NumberFormat formatDecimal = new DecimalFormat("#0.0#######################################", new DecimalFormatSymbols(Locale.FRANCE));
 
     @Override
     public String getResponse(String query) {
         String calculateQuery = query.replace(' ', '+').replace(',', '.');
-
-        NumberFormat outputFormat = format;
-        if (calculateQuery.contains(".")) {
-            outputFormat = formatDecimal;
-        }
 
 
         try {
@@ -43,7 +37,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
         try {
             BigDecimal retour = new BigDecimal(calculateQuery);
             retour = retour.setScale(50, RoundingMode.HALF_UP);
-            return outputFormat.format(retour);
+            return format.format(retour);
         } catch (NumberFormatException numberFormatException) {
             numberFormatException.printStackTrace();
             return null;
