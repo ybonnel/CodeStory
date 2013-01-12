@@ -190,4 +190,12 @@ public class WebServerTest extends WebServerTestUtil {
         assertFalse(thread.isAlive());
     }
 
+    @Test
+    public void should_have_good_night() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=As tu passe une bonne nuit malgre les bugs de l etape precedente(PAS_TOP/BOF/QUELS_BUGS)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("BOF", response.getText());
+    }
+
 }

@@ -47,6 +47,12 @@ public enum QueryType {
             return query.equals("As tu bien recu le premier enonce(OUI/NON)");
         }
     },
+    GOOD_NIGHT(new FixResponseQueryHandler("BOF")) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("As tu passe une bonne nuit malgre les bugs de l etape precedente(PAS_TOP/BOF/QUELS_BUGS)");
+        }
+    },
     CALCULATE(new CalculateQueryHandler()) {
         @Override
         protected boolean isThisQueryType(String query) {
