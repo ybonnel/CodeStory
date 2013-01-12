@@ -154,7 +154,7 @@ public class WebServerTest extends WebServerTestUtil {
 
     @Test
     public void should_stop_with_sigTerm() throws Exception {
-        int port = 18888;
+        int port = getRandomPort();
         final String[] params = {Integer.toString(port)};
         Thread thread = new Thread(new Runnable() {
             @Override

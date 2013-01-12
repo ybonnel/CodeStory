@@ -7,12 +7,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
 
+import java.util.Random;
+
 public abstract class WebServerTestUtil {
 
     private final int portNumber;
 
+    private final Random random = new Random();
+
+    protected int getRandomPort() {
+        return random.nextInt(1000) + 20000;
+    }
+
     protected WebServerTestUtil() {
-        portNumber = Integer.getInteger("port", 18080);
+        portNumber = getRandomPort();
     }
 
     public String getURL() {
