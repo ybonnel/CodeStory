@@ -30,6 +30,14 @@ public class Planning {
         return totalPrice;
     }
 
+    public int getTempsVol() {
+        int tempsVol = 0;
+        for (Commande commande : commandes) {
+            tempsVol+= commande.getTempsVol();
+        }
+        return tempsVol;
+    }
+
     Planning(Planning planning) {
         if (planning == null) {
             this.commandes = newArrayList();

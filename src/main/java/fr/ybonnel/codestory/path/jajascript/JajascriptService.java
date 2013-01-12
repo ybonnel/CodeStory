@@ -3,8 +3,9 @@ package fr.ybonnel.codestory.path.jajascript;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.google.common.primitives.Ints;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,23 +18,34 @@ public class JajascriptService {
 
     private JajascriptRequest request;
 
-    public Planning getBetterPlanning() {
-        Collections.sort(plannings, new Comparator<Planning>() {
-            @Override
-            public int compare(Planning planning, Planning planning1) {
-                int y = planning.getTotalPrice();
-                int x = planning1.getTotalPrice();
-                return (x < y) ? -1 : ((x == y) ? 0 : 1);
-            }
-        });
-        return Iterables.getFirst(plannings, null);
-    }
-
     public JajascriptService(JajascriptRequest request) {
         this.request = request;
     }
 
     private List<Planning> plannings = newArrayList();
+
+    public Planning getBestPlanning() {
+        Ordering<Planning> byPriceDescAndTempsVolAsc = new Ordering<Planning>() {
+            @Override
+            public int compare(Planning planning1, Planning planning2) {
+                int result = Ints.compare(planning2.getTotalPrice(), planning1.getTotalPrice());
+                if (result == 0) {
+                    result = Ints.compare(planning1.getTempsVol(), planning2.getTempsVol());
+                }
+                return result;
+            }
+        };
+        return byPriceDescAndTempsVolAsc.min(plannings);
+    }
+
+    private void addToPlanningsIfBetter(Planning planning) {
+        for (Planning myPlanning : plannings) {
+            if (myPlanning.getTotalPrice() > planning.getTotalPrice()) {
+                return;
+            }
+        }
+        plannings.add(planning);
+    }
 
     private void calculate(Planning actualPlanning, Collection<Commande> commandesToAdd) {
         if (actualPlanning != null) {
@@ -49,20 +61,11 @@ public class JajascriptService {
         }
     }
 
-    private void addToPlanningsIfBetter(Planning planning) {
-        for (Planning myPlanning : plannings) {
-            if (myPlanning.getTotalPrice() > planning.getTotalPrice()) {
-                return;
-            }
-        }
-        plannings.add(planning);
-    }
-
     public JajaScriptResponse calculate() {
 
         calculate(null, request.getCommandes());
 
-        Planning planning = getBetterPlanning();
+        Planning planning = getBestPlanning();
 
         int gain = -1;
         List<String> path = null;
