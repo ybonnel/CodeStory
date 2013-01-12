@@ -25,7 +25,7 @@ public class InsertEnonceHandler extends AbstractPathHandler {
     public Enonce contructEnonce(int id, HttpServletRequest request) {
         Enumeration<?> parameters = request.getParameterNames();
         String titre = (String) parameters.nextElement();
-        return new Enonce(id, titre, request.getParameter(titre));
+        return new Enonce(id, "Enonce " + id, titre + "=" + request.getParameter(titre));
 
     }
 }
