@@ -29,7 +29,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
         WebResponse response = wc.getResponse(postRequest);
 
-        assertEquals(200, response.getResponseCode());
+        assertEquals(201, response.getResponseCode());
         assertEquals(resultExpected, response.getText());
     }
 }
