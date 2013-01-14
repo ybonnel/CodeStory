@@ -20,7 +20,8 @@ public class LogUtil {
     public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
-                || "/favicon.ico".equals(request.getPathInfo())) {
+                || "/favicon.ico".equals(request.getPathInfo())
+                || request.getPathInfo().endsWith(".png")) {
             return;
         }
 

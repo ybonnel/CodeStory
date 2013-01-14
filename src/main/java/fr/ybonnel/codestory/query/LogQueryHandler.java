@@ -5,6 +5,7 @@ import fr.ybonnel.codestory.database.DatabaseManager;
 import fr.ybonnel.codestory.database.modele.LogMessage;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,10 +27,13 @@ public class LogQueryHandler extends AbstractQueryHandler {
 
     private String logsToHtml(List<LogMessage> logMessages) {
 
-        StringBuilder builder = new StringBuilder("<table id=\"log\" border=\"1\">");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
+
+        StringBuilder builder = new StringBuilder("<h1>Logs de ");
+        builder.append(sdf.format(new Date()));
+        builder.append("</h1><table id=\"log\" border=\"1\">");
         builder.append("<tr><th>Time</th><th>Type</th><th>Message</th></tr>");
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
         for (LogMessage logMessage : logMessages) {
             builder.append("<tr>");
             builder.append("<td>");
