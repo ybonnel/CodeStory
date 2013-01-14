@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class CalculateQueryHandler extends AbstractQueryHandler {
 
     private Pattern patternParenthesis = Pattern.compile("\\((.*)\\)");
-    private static final String NOMBRE = "\\d+\\.?\\d*";
+    private static final String NOMBRE = "\\-?\\d+\\.?\\d*";
     private Pattern patternPlus = Pattern.compile("(" + NOMBRE + ")\\+(" + NOMBRE + ")");
     private Pattern patternMultiple = Pattern.compile("(" + NOMBRE + ")\\*(" + NOMBRE + ")");
     private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");

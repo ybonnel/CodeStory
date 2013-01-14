@@ -67,7 +67,7 @@ public enum QueryType {
     },
     CALCULATE(new CalculateQueryHandler()) {
 
-        private Pattern pattern = Pattern.compile("[\\(\\)0-9\\+/\\* ,]+");
+        private Pattern pattern = Pattern.compile("[\\(\\)0-9\\+/\\* ,\\-]+");
 
         @Override
         protected boolean isThisQueryType(String query) {

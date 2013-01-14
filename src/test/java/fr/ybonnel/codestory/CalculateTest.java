@@ -72,6 +72,11 @@ public class CalculateTest extends WebServerTestUtil {
 
     }
 
+    @Test
+    public void should_answer_to_minus() throws IOException, SAXException {
+        test_calculate("(-1)+(1)", "0");
+    }
+
 
 
 
