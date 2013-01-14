@@ -1,8 +1,9 @@
 package fr.ybonnel.codestory.path;
 
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ybonnel.codestory.database.DatabaseManager;
 import fr.ybonnel.codestory.database.modele.Enonce;
 
@@ -12,15 +13,15 @@ import java.util.Enumeration;
 
 public class InsertEnonceHandler extends AbstractPathHandler {
 
-    private Gson gson = new GsonBuilder().create();
+    private ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) {
+    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws JsonProcessingException {
 
         int id = Integer.parseInt(params[0]);
         Enonce enonce = payLoad == null ? contructEnonce(id, request) : new Enonce(id, "Enonce " + id, payLoad);
         DatabaseManager.INSTANCE.getEnonceDao().insert(enonce);
-        return new PathResponse(HttpServletResponse.SC_CREATED, gson.toJson(enonce));
+        return new PathResponse(HttpServletResponse.SC_CREATED, mapper.writeValueAsString(enonce));
     }
 
     public Enonce contructEnonce(int id, HttpServletRequest request) {
