@@ -21,7 +21,10 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
         JajascriptRequest jajascriptRequest = JajascriptRequest.fromPayLoad(payLoad);
 
         JajaScriptResponse jajaScriptResponse = new JajascriptService(jajascriptRequest).calculate();
-        PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_CREATED, mapper.writeValueAsString(jajaScriptResponse));
+
+
+
+        PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_CREATED, jajaScriptResponse.toJson());
         pathResponse.setContentType("application/json;charset=utf-8");
         return pathResponse;
     }
