@@ -149,8 +149,18 @@ public class WebServerTest extends WebServerTestUtil {
         WebConversation wc = new WebConversation();
         WebResponse response = wc.getResponse(getURL() + "/?q=As tu bien recu le premier enonce(OUI/NON)");
         assertEquals(200, response.getResponseCode());
-        assertEquals("Response must be 'NON'", "OUI", response.getText());
+        assertEquals("Response must be 'OUI'", "OUI", response.getText());
     }
+
+    @Test
+    public void should_know_second_enonce() throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=As tu bien recu le second enonce(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("Response must be 'OUI'", "OUI", response.getText());
+    }
+
+
 
     @Test
     public void should_stop_with_sigTerm() throws Exception {
