@@ -38,7 +38,13 @@ public class WebServer extends AbstractHandler {
 
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        System.err.println(sdf.format(date) + ":" + request.getRequestURL() + "?" + request.getQueryString());
+        StringBuilder logRequest = new StringBuilder(sdf.format(date)).append(':');
+        logRequest.append(request.getMethod()).append(':');
+        logRequest.append(request.getRequestURL());
+        if (request.getQueryString() != null) {
+            logRequest.append('?').append(request.getQueryString());
+        }
+        System.err.println(logRequest.toString());
 
         long startTime = System.nanoTime();
 
