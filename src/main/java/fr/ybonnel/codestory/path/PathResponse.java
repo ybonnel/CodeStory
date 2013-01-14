@@ -4,6 +4,7 @@ package fr.ybonnel.codestory.path;
 public class PathResponse {
     private int statusCode;
     private String response;
+    private String contentType;
 
     public PathResponse(int statusCode, String response) {
         this.statusCode = statusCode;
@@ -16,5 +17,13 @@ public class PathResponse {
 
     public String getResponse() {
         return response;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

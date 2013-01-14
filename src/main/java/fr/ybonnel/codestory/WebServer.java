@@ -60,6 +60,9 @@ public class WebServer extends AbstractHandler {
                 PathResponse pathResponse = PathType.getResponse(request, payLoad);
                 status = pathResponse.getStatusCode();
                 response = pathResponse.getResponse();
+                if (pathResponse.getContentType() != null) {
+                    httpResponse.setContentType(pathResponse.getContentType());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

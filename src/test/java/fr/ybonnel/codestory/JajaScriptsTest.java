@@ -30,6 +30,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         WebResponse response = wc.getResponse(postRequest);
 
         assertEquals(201, response.getResponseCode());
+        assertEquals("application/json", response.getContentType());
         assertEquals(resultExpected, response.getText());
     }
 }
