@@ -24,12 +24,12 @@ public class Commande {
     }
 
     public boolean compatibleWith(Commande other) {
-        return (other.getHeureFin() <= this.heureDepart
-                || other.heureDepart >= getHeureFin());
+        return other.getHeureFin() <= heureDepart
+                || other.heureDepart >= getHeureFin();
     }
 
     private int getHeureFin() {
-        return this.heureDepart + this.tempsVol;
+        return heureDepart + tempsVol;
     }
 
     public String getNomVol() {
