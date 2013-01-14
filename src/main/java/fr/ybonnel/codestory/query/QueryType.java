@@ -1,7 +1,7 @@
 package fr.ybonnel.codestory.query;
 
 
-import fr.ybonnel.codestory.logs.LogUtil;
+import java.util.regex.Pattern;
 
 public enum QueryType {
 
@@ -66,9 +66,12 @@ public enum QueryType {
         }
     },
     CALCULATE(new CalculateQueryHandler()) {
+
+        private Pattern pattern = Pattern.compile("[\\(\\)0-9\\+/\\* ,]+");
+
         @Override
         protected boolean isThisQueryType(String query) {
-            return true;
+            return pattern.matcher(query).matches();
         }
     };
 
