@@ -20,7 +20,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
                 "{ \"VOL\": \"LEGACY01\", \"DEPART\": 5, \"DUREE\": 9, \"PRIX\": 8 }," +
                 "{ \"VOL\": \"YAGNI17\", \"DEPART\": 5, \"DUREE\": 9, \"PRIX\": 7 }]";
 
-        String resultExpected = "{\n    \"gain\" : 18,\n    \"path\" : [\"MONAD42\",\"LEGACY01\"]\n}";
+        String resultExpected = "{\"gain\":18,\"path\":[\"MONAD42\",\"LEGACY01\"]}";
 
         WebConversation wc = new WebConversation();
 
