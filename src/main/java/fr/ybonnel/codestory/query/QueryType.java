@@ -59,6 +59,12 @@ public enum QueryType {
             return query.equals("As tu passe une bonne nuit malgre les bugs de l etape precedente(PAS_TOP/BOF/QUELS_BUGS)");
         }
     },
+    NOT_COPY(new FixResponseQueryHandler("NON")) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("As tu copie le code de ndeloof(OUI/NON/JE_SUIS_NICOLAS)");
+        }
+    },
     CALCULATE(new CalculateQueryHandler()) {
         @Override
         protected boolean isThisQueryType(String query) {

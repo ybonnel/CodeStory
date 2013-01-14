@@ -208,4 +208,16 @@ public class WebServerTest extends WebServerTestUtil {
         assertEquals("BOF", response.getText());
     }
 
+    @Test
+    public void should_not_copy() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=As tu copie le code de ndeloof(OUI/NON/JE_SUIS_NICOLAS)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("NON", response.getText());
+    }
+
+
+
+
+
 }
