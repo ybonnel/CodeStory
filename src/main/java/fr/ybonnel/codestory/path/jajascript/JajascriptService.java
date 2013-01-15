@@ -1,88 +1,92 @@
 package fr.ybonnel.codestory.path.jajascript;
 
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 public class JajascriptService {
 
-    private JajascriptRequest request;
+    private List<Commande> commandes;
 
-    public JajascriptService(JajascriptRequest request) {
-        this.request = request;
-        Collections.sort(request.getCommandes(), new Comparator<Commande>() {
+    private int nbCommands;
+    private int[] starts;
+    private int[] ends;
+    private int[] durations;
+    private int[] prices;
+
+    public JajascriptService(List<Commande> commandes) {
+        this.commandes = commandes;
+        Collections.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
                 return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
             }
         });
-    }
 
-    private Planning bestPlanning = null;
-
-    private void addToPlanningsIfBetter(Planning planning) {
-        if (bestPlanning == null) {
-            bestPlanning = planning;
-        } else {
-            if (planning.isBetterThan(bestPlanning)) {
-                bestPlanning = planning;
-            }
+        nbCommands = commandes.size();
+        starts = new int[nbCommands];
+        ends = new int[nbCommands];
+        durations = new int[nbCommands];
+        prices = new int[nbCommands];
+        for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
+            Commande commande = commandes.get(indexComand);
+            starts[indexComand] = commande.getHeureDepart();
+            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
+            durations[indexComand] = commande.getTempsVol();
+            prices[indexComand] =  commande.getPrix();
         }
     }
 
-    private void calculate(Planning actualPlanning, Collection<Commande> commandesToAdd) {
-        if (actualPlanning != null) {
-            addToPlanningsIfBetter(actualPlanning);
-        }
-        Iterator<Commande> itCommande = commandesToAdd.iterator();
+    private boolean[] bestAcceptedCommands = null;
+    private int bestPrice = 0;
+    private int bestDuration = Integer.MAX_VALUE;
 
-        while (itCommande.hasNext()) {
-            Commande commandeToAdd = itCommande.next();
-            itCommande.remove();
-            if (actualPlanning == null || actualPlanning.canAddCommande(commandeToAdd)) {
-                calculate(new Planning(actualPlanning).addCommande(commandeToAdd), newArrayList(commandesToAdd));
+    private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
+        if (price > bestPrice || price == bestPrice && duration < bestDuration) {
+            bestAcceptedCommands = acceptedCommands;
+            bestPrice = price;
+            bestDuration = duration;
+        }
+    }
+
+    private void calculate(int heureFinPlanning, int totalPrice, int totalDuration, boolean[] acceptedCommande, int lastCommandeAdded) {
+        // Planing
+        // - heure début - heure fin
+        // - boolean[] : liste commande
+
+        boolean mustAdd = true;
+        for (int i =lastCommandeAdded+1; i<nbCommands;i++) {
+            if (starts[i] >= heureFinPlanning) {
+                mustAdd = false;
+                boolean[] newAceptedCommands = Arrays.copyOf(acceptedCommande, acceptedCommande.length);
+                newAceptedCommands[i] = true;
+                calculate(ends[i], totalPrice + prices[i], totalDuration + durations[i], newAceptedCommands, i);
             }
+        }
+
+        if (mustAdd && totalPrice > 0) {
+            addToPlanningsIfBetter(acceptedCommande, totalPrice, totalDuration);
         }
     }
 
     public JajaScriptResponse calculate() {
+        boolean[] acceptedCommands = new boolean[nbCommands];
+        Arrays.fill(acceptedCommands, false);
+        calculate(0, 0, 0, acceptedCommands, -1);
 
-        calculate(null, request.getCommandes());
+        int gain = bestPrice;
+        List<String> path = newArrayList();
 
-        Planning planning = bestPlanning;
-
-        int gain = -1;
-        List<String> path = null;
-
-        if (planning != null) {
-            gain = planning.getTotalPrice();
-            List<Commande> commandes = newArrayList(planning.getCommandes());
-            Collections.sort(commandes, new Comparator<Commande>() {
-                @Override
-                public int compare(Commande commande, Commande commande1) {
-                    int x = commande.getHeureDepart();
-                    int y = commande1.getHeureDepart();
-                    return (x < y) ? -1 : ((x == y) ? 0 : 1);
-                }
-            });
-            path = Lists.transform(commandes, new Function<Commande, String>() {
-                @Override
-                public String apply(Commande commande) {
-                    return commande.getNomVol();
-                }
-            });
+        for (int i=0; i<nbCommands; i++) {
+            if (bestAcceptedCommands[i]) {
+                path.add(commandes.get(i).getNomVol());
+            }
         }
 
 

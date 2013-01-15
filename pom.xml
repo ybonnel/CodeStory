@@ -41,12 +41,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>choco</id>
-            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
-        </repository>
-    </repositories>
 
 
     <reporting>
@@ -89,11 +83,6 @@
             <groupId>org.pegdown</groupId>
             <artifactId>pegdown</artifactId>
             <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>choco</groupId>
-            <artifactId>choco</artifactId>
-            <version>2.1.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
