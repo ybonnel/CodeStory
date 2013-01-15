@@ -25,20 +25,12 @@ public class JajascriptService {
         Collections.sort(request.getCommandes(), new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                int result = Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
-                if (result == 0) {
-                    result = Ints.compare(commande1.getTempsVol(), commande2.getTempsVol());
-                }
-                return result;
+                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
             }
         });
     }
 
     private Planning bestPlanning = null;
-
-    public Planning getBestPlanning() {
-        return bestPlanning;
-    }
 
     private void addToPlanningsIfBetter(Planning planning) {
         if (bestPlanning == null) {
@@ -54,17 +46,13 @@ public class JajascriptService {
         if (actualPlanning != null) {
             addToPlanningsIfBetter(actualPlanning);
         }
-        List<Commande> tmpCommandes = new ArrayList<Commande>(commandesToAdd);
-        Iterator<Commande> itCommande = tmpCommandes.iterator();
+        Iterator<Commande> itCommande = commandesToAdd.iterator();
 
         while (itCommande.hasNext()) {
             Commande commandeToAdd = itCommande.next();
             itCommande.remove();
             if (actualPlanning == null || actualPlanning.canAddCommande(commandeToAdd)) {
-                Planning newPlanning = new Planning(actualPlanning);
-                newPlanning.addCommande(commandeToAdd);
-                Collection<Commande> newCommandesToAdd = new ArrayList<Commande>(tmpCommandes);
-                calculate(newPlanning, newCommandesToAdd);
+                calculate(new Planning(actualPlanning).addCommande(commandeToAdd), newArrayList(commandesToAdd));
             }
         }
     }
@@ -73,7 +61,7 @@ public class JajascriptService {
 
         calculate(null, request.getCommandes());
 
-        Planning planning = getBestPlanning();
+        Planning planning = bestPlanning;
 
         int gain = -1;
         List<String> path = null;

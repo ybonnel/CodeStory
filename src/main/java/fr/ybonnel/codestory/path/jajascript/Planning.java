@@ -26,10 +26,14 @@ public class Planning {
         return totalPrice;
     }
 
+    private Integer tempsVol = null;
+
     public int getTempsVol() {
-        int tempsVol = 0;
-        for (Commande commande : commandes) {
-            tempsVol+= commande.getTempsVol();
+        if (tempsVol == null) {
+            tempsVol = 0;
+            for (Commande commande : commandes) {
+                tempsVol+= commande.getTempsVol();
+            }
         }
         return tempsVol;
     }
