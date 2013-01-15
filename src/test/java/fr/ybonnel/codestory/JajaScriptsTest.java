@@ -85,7 +85,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         Random random = new Random();
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         WebConversation wc = new WebConversation();
-        for (int i =200; i < max; i++) {
+        for (int i =0; i < max; i++) {
             List<Commande> commandes = new ArrayList<Commande>();
             for (int j = 1; j <= (i+1)*5; j++) {
                 Commande commande = new Commande();

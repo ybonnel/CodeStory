@@ -45,13 +45,16 @@ public class JajascriptService {
             durations[indexComand] = commande.getTempsVol();
             prices[indexComand] =  commande.getPrix();
         }
-        maxValue = ends[nbCommands-1];
+        maxValue = Ints.max(ends);
+        pricesByEndTime = new int[maxValue+1];
+        Arrays.fill(pricesByEndTime, 0);
     }
 
     private boolean[] bestAcceptedCommands = null;
     private int bestPrice = 0;
     private int bestDuration = Integer.MAX_VALUE;
     private long timeFound  = System.currentTimeMillis();
+    private int[] pricesByEndTime;
 
     private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
 
@@ -67,6 +70,11 @@ public class JajascriptService {
         // Planing
         // - heure début - heure fin
         // - boolean[] : liste commande
+
+        if (totalPrice < pricesByEndTime[heureFinPlanning]) {
+            return;
+        }
+        pricesByEndTime[heureFinPlanning]= totalPrice;
 
         if (System.currentTimeMillis() - timeFound > TimeUnit.SECONDS.toMillis(3)) {
             return;
