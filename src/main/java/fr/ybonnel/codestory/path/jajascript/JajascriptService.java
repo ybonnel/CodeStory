@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -50,7 +51,7 @@ public class JajascriptService {
     private boolean[] bestAcceptedCommands = null;
     private int bestPrice = 0;
     private int bestDuration = Integer.MAX_VALUE;
-    private Date date;
+    private long timeFound  = System.currentTimeMillis();
 
     private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
 
@@ -58,7 +59,7 @@ public class JajascriptService {
             bestAcceptedCommands = acceptedCommands;
             bestPrice = price;
             bestDuration = duration;
-            date = new Date();
+            timeFound = System.currentTimeMillis();
         }
     }
 
@@ -66,6 +67,10 @@ public class JajascriptService {
         // Planing
         // - heure début - heure fin
         // - boolean[] : liste commande
+
+        if (System.currentTimeMillis() - timeFound > TimeUnit.SECONDS.toMillis(1)) {
+            return;
+        }
 
         boolean mustAdd = true;
         int endFirstAccepted = maxValue;
@@ -89,6 +94,7 @@ public class JajascriptService {
     public JajaScriptResponse calculate() {
         boolean[] acceptedCommands = new boolean[nbCommands];
         Arrays.fill(acceptedCommands, false);
+
         calculate(0, 0, 0, acceptedCommands, -1);
 
         int gain = bestPrice;
@@ -101,7 +107,7 @@ public class JajascriptService {
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        System.out.println(sdf.format(date));
+        System.out.println(sdf.format(new Date(timeFound)));
         System.out.println(sdf.format(new Date()));
 
 

@@ -32,4 +32,20 @@ public class Commande {
     public int getPrix() {
         return prix;
     }
+
+    public void setNomVol(String nomVol) {
+        this.nomVol = nomVol;
+    }
+
+    public void setHeureDepart(int heureDepart) {
+        this.heureDepart = heureDepart;
+    }
+
+    public void setTempsVol(int tempsVol) {
+        this.tempsVol = tempsVol;
+    }
+
+    public void setPrix(int prix) {
+        this.prix = prix;
+    }
 }

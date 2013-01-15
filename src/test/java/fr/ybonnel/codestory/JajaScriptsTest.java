@@ -1,13 +1,21 @@
 package fr.ybonnel.codestory;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import fr.ybonnel.codestory.path.jajascript.Commande;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 
@@ -68,6 +76,43 @@ public class JajaScriptsTest extends WebServerTestUtil {
         assertEquals(200, response.getResponseCode());
         assertEquals("application/json", response.getContentType());
         assertEquals(resultExpected, response.getText());
+    }
+
+    @Test
+    @Ignore
+    public void should_be_very_very_fast() throws IOException, SAXException {
+        int max = 250;
+        Random random = new Random();
+        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        WebConversation wc = new WebConversation();
+        for (int i =200; i < max; i++) {
+            List<Commande> commandes = new ArrayList<Commande>();
+            for (int j = 1; j <= (i+1)*5; j++) {
+                Commande commande = new Commande();
+                commande.setNomVol(Integer.toBinaryString(j));
+                commande.setHeureDepart(j);
+                commande.setTempsVol(random.nextInt(10) + 1);
+                commande.setPrix(random.nextInt(20) + 1);
+                commandes.add(commande);
+            }
+            String request = mapper.writeValueAsString(commandes);
+
+            PostMethodWebRequest postRequest = new PostMethodWebRequest(getURL() + "jajascript/optimize",
+                    new ByteArrayInputStream(request.getBytes()), "application/json");
+
+            long startTime = System.nanoTime();
+
+            WebResponse response = wc.getResponse(postRequest);
+
+            long elapsedTime = System.nanoTime() - startTime;
+
+            assertEquals(200, response.getResponseCode());
+            assertEquals("application/json", response.getContentType());
+            System.out.println("Level " + (i+1) + " : " + elapsedTime);
+
+
+        }
+
     }
 }
 
