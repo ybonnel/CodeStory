@@ -3,9 +3,11 @@ package fr.ybonnel.codestory.path.jajascript;
 
 import com.google.common.primitives.Ints;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -19,6 +21,7 @@ public class JajascriptService {
     private int[] ends;
     private int[] durations;
     private int[] prices;
+    private int maxValue;
 
     public JajascriptService(List<Commande> commandes) {
         this.commandes = commandes;
@@ -41,17 +44,21 @@ public class JajascriptService {
             durations[indexComand] = commande.getTempsVol();
             prices[indexComand] =  commande.getPrix();
         }
+        maxValue = ends[nbCommands-1];
     }
 
     private boolean[] bestAcceptedCommands = null;
     private int bestPrice = 0;
     private int bestDuration = Integer.MAX_VALUE;
+    private Date date;
 
     private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
+
         if (price > bestPrice || price == bestPrice && duration < bestDuration) {
             bestAcceptedCommands = acceptedCommands;
             bestPrice = price;
             bestDuration = duration;
+            date = new Date();
         }
     }
 
@@ -61,8 +68,12 @@ public class JajascriptService {
         // - boolean[] : liste commande
 
         boolean mustAdd = true;
-        for (int i =lastCommandeAdded+1; i<nbCommands;i++) {
+        int endFirstAccepted = maxValue;
+        for (int i =lastCommandeAdded+1; i<nbCommands && starts[i]<endFirstAccepted;i++) {
             if (starts[i] >= heureFinPlanning) {
+                if (mustAdd) {
+                    endFirstAccepted = ends[i];
+                }
                 mustAdd = false;
                 boolean[] newAceptedCommands = Arrays.copyOf(acceptedCommande, acceptedCommande.length);
                 newAceptedCommands[i] = true;
@@ -88,6 +99,10 @@ public class JajascriptService {
                 path.add(commandes.get(i).getNomVol());
             }
         }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        System.out.println(sdf.format(date));
+        System.out.println(sdf.format(new Date()));
 
 
         return new JajaScriptResponse(gain, path);
