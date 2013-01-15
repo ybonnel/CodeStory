@@ -53,7 +53,6 @@ public class JajascriptService {
     private boolean[] bestAcceptedCommands = null;
     private int bestPrice = 0;
     private int bestDuration = Integer.MAX_VALUE;
-    private long timeFound  = System.currentTimeMillis();
     private int[] pricesByEndTime;
 
     private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
@@ -62,7 +61,6 @@ public class JajascriptService {
             bestAcceptedCommands = acceptedCommands;
             bestPrice = price;
             bestDuration = duration;
-            timeFound = System.currentTimeMillis();
         }
     }
 
@@ -75,10 +73,6 @@ public class JajascriptService {
             return;
         }
         pricesByEndTime[heureFinPlanning]= totalPrice;
-
-        if (System.currentTimeMillis() - timeFound > TimeUnit.SECONDS.toMillis(3)) {
-            return;
-        }
 
         boolean mustAdd = true;
         int endFirstAccepted = maxValue;
@@ -113,10 +107,6 @@ public class JajascriptService {
                 path.add(commandes.get(i).getNomVol());
             }
         }
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        System.out.println(sdf.format(new Date(timeFound)));
-        System.out.println(sdf.format(new Date()));
 
 
         return new JajaScriptResponse(gain, path);
