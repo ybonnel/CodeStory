@@ -7,9 +7,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -51,11 +53,16 @@ public class JajascriptService {
         if (actualPlanning != null) {
             addToPlanningsIfBetter(actualPlanning);
         }
-        for (Commande commandeToAdd : commandesToAdd) {
+        List<Commande> tmpCommandes = new ArrayList<Commande>(commandesToAdd);
+        Iterator<Commande> itCommande = tmpCommandes.iterator();
+
+        while (itCommande.hasNext()) {
+            Commande commandeToAdd = itCommande.next();
+            itCommande.remove();
             if (actualPlanning == null || actualPlanning.canAddCommande(commandeToAdd)) {
                 Planning newPlanning = new Planning(actualPlanning);
                 newPlanning.addCommande(commandeToAdd);
-                Collection<Commande> newCommandesToAdd = Collections2.filter(commandesToAdd, new FilterCommande(commandeToAdd));
+                Collection<Commande> newCommandesToAdd = new ArrayList<Commande>(tmpCommandes);
                 calculate(newPlanning, newCommandesToAdd);
             }
         }

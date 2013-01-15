@@ -22,10 +22,14 @@ public class Planning {
         return this;
     }
 
+    private Integer totalPrice = null;
+
     public int getTotalPrice() {
-        int totalPrice = 0;
-        for (Commande commande : commandes) {
-            totalPrice+= commande.getPrix();
+        if (totalPrice == null) {
+            totalPrice = 0;
+            for (Commande commande : commandes) {
+                totalPrice+= commande.getPrix();
+            }
         }
         return totalPrice;
     }
