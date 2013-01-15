@@ -68,7 +68,7 @@ public class JajascriptService {
         // - heure début - heure fin
         // - boolean[] : liste commande
 
-        if (System.currentTimeMillis() - timeFound > TimeUnit.SECONDS.toMillis(1)) {
+        if (System.currentTimeMillis() - timeFound > TimeUnit.SECONDS.toMillis(3)) {
             return;
         }
 
