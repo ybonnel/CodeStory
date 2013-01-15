@@ -8,29 +8,21 @@ public class Planning {
 
     private List<Commande> commandes;
 
+    private int maxHeureFin = -1;
+    private int totalPrice = 0;
+
     public boolean canAddCommande(Commande commande) {
-        for (Commande actualCommande : commandes) {
-            if (!commande.compatibleWith(actualCommande)) {
-                return false;
-            }
-        }
-        return true;
+        return commande.getHeureDepart() >= maxHeureFin;
     }
 
     public Planning addCommande(Commande commande) {
+        maxHeureFin = commande.getHeureDepart() + commande.getTempsVol();
         commandes.add(commande);
+        totalPrice += commande.getPrix();
         return this;
     }
 
-    private Integer totalPrice = null;
-
     public int getTotalPrice() {
-        if (totalPrice == null) {
-            totalPrice = 0;
-            for (Commande commande : commandes) {
-                totalPrice+= commande.getPrix();
-            }
-        }
         return totalPrice;
     }
 
@@ -47,10 +39,21 @@ public class Planning {
             this.commandes = newArrayList();
         } else {
             this.commandes = newArrayList(planning.commandes);
+            this.maxHeureFin = planning.maxHeureFin;
+            this.totalPrice = planning.totalPrice;
         }
     }
 
     public List<Commande> getCommandes() {
         return commandes;
+    }
+
+    public boolean isBetterThan(Planning planning) {
+        if (this.getTotalPrice() > planning.getTotalPrice()) {
+            return true;
+        } else if (this.getTotalPrice() < planning.getTotalPrice()) {
+            return false;
+        }
+        return this.getTempsVol() < planning.getTempsVol();
     }
 }

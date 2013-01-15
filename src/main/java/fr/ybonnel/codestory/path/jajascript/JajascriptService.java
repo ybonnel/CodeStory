@@ -22,31 +22,32 @@ public class JajascriptService {
 
     public JajascriptService(JajascriptRequest request) {
         this.request = request;
-    }
-
-    private List<Planning> plannings = newArrayList();
-
-    public Planning getBestPlanning() {
-        Ordering<Planning> byPriceDescAndTempsVolAsc = new Ordering<Planning>() {
+        Collections.sort(request.getCommandes(), new Comparator<Commande>() {
             @Override
-            public int compare(Planning planning1, Planning planning2) {
-                int result = Ints.compare(planning2.getTotalPrice(), planning1.getTotalPrice());
+            public int compare(Commande commande1, Commande commande2) {
+                int result = Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
                 if (result == 0) {
-                    result = Ints.compare(planning1.getTempsVol(), planning2.getTempsVol());
+                    result = Ints.compare(commande1.getTempsVol(), commande2.getTempsVol());
                 }
                 return result;
             }
-        };
-        return byPriceDescAndTempsVolAsc.min(plannings);
+        });
+    }
+
+    private Planning bestPlanning = null;
+
+    public Planning getBestPlanning() {
+        return bestPlanning;
     }
 
     private void addToPlanningsIfBetter(Planning planning) {
-        for (Planning myPlanning : plannings) {
-            if (myPlanning.getTotalPrice() > planning.getTotalPrice()) {
-                return;
+        if (bestPlanning == null) {
+            bestPlanning = planning;
+        } else {
+            if (planning.isBetterThan(bestPlanning)) {
+                bestPlanning = planning;
             }
         }
-        plannings.add(planning);
     }
 
     private void calculate(Planning actualPlanning, Collection<Commande> commandesToAdd) {
