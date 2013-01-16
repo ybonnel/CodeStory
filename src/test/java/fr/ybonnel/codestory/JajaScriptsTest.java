@@ -7,6 +7,7 @@ import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
 import fr.ybonnel.codestory.path.jajascript.Commande;
+import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.xml.sax.SAXException;
@@ -16,8 +17,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class JajaScriptsTest extends WebServerTestUtil {
 
@@ -79,17 +82,34 @@ public class JajaScriptsTest extends WebServerTestUtil {
     }
 
     @Test
+    public void send_big_request() throws IOException, SAXException {
+        String request = IOUtils.toString(JajaScriptsTest.class.getResource("/bigJajascript.json"));
+
+        WebConversation wc = new WebConversation();
+
+        PostMethodWebRequest postRequest = new PostMethodWebRequest(getURL() + "jajascript/optimize",
+                new ByteArrayInputStream(request.getBytes()), "application/json");
+
+        WebResponse response = wc.getResponse(postRequest);
+
+        assertEquals(200, response.getResponseCode());
+        assertEquals("application/json", response.getContentType());
+        assertTrue(response.getText().startsWith("{\"gain\":3991"));
+
+    }
+
+    @Test
     @Ignore
     public void should_be_very_very_fast() throws IOException, SAXException {
-        int max = 250;
         Random random = new Random();
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         WebConversation wc = new WebConversation();
-        for (int i =0; i < max; i++) {
+        long elapsedTime = 0;
+        for (int i =100; elapsedTime < TimeUnit.SECONDS.toNanos(20); i=i+100) {
             List<Commande> commandes = new ArrayList<Commande>();
             for (int j = 1; j <= (i+1)*5; j++) {
                 Commande commande = new Commande();
-                commande.setNomVol(Integer.toBinaryString(j));
+                commande.setNomVol(Integer.toString(j));
                 commande.setHeureDepart(j);
                 commande.setTempsVol(random.nextInt(10) + 1);
                 commande.setPrix(random.nextInt(20) + 1);
@@ -104,7 +124,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
             WebResponse response = wc.getResponse(postRequest);
 
-            long elapsedTime = System.nanoTime() - startTime;
+            elapsedTime = System.nanoTime() - startTime;
 
             assertEquals(200, response.getResponseCode());
             assertEquals("application/json", response.getContentType());

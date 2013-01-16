@@ -23,13 +23,14 @@ public class JajascriptService {
     private int[] durations;
     private int[] prices;
     private int maxValue;
+    private long startTime;
 
     public JajascriptService(List<Commande> commandes) {
         this.commandes = commandes;
         Collections.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
+                return Ints.compare(commande1.getHeureDepart() + commande1.getTempsVol(), commande2.getHeureDepart() + commande2.getTempsVol());
             }
         });
 
@@ -47,20 +48,20 @@ public class JajascriptService {
         }
         maxValue = Ints.max(ends);
         pricesByEndTime = new int[maxValue+1];
-        Arrays.fill(pricesByEndTime, 0);
+        Arrays.fill(pricesByEndTime, -1);
     }
 
     private boolean[] bestAcceptedCommands = null;
     private int bestPrice = 0;
-    private int bestDuration = Integer.MAX_VALUE;
     private int[] pricesByEndTime;
+    private long timeFound = 0;
 
     private void addToPlanningsIfBetter(boolean[] acceptedCommands, int price, int duration) {
 
-        if (price > bestPrice || price == bestPrice && duration < bestDuration) {
+        if (price > bestPrice) {
             bestAcceptedCommands = acceptedCommands;
             bestPrice = price;
-            bestDuration = duration;
+            timeFound = System.currentTimeMillis();
         }
     }
 
@@ -69,7 +70,7 @@ public class JajascriptService {
         // - heure début - heure fin
         // - boolean[] : liste commande
 
-        if (totalPrice < pricesByEndTime[heureFinPlanning]) {
+        if (totalPrice <= pricesByEndTime[heureFinPlanning] || TimeUnit.NANOSECONDS.toSeconds(System.nanoTime()-startTime) > 20  ) {
             return;
         }
         pricesByEndTime[heureFinPlanning]= totalPrice;
@@ -97,7 +98,14 @@ public class JajascriptService {
         boolean[] acceptedCommands = new boolean[nbCommands];
         Arrays.fill(acceptedCommands, false);
 
+        startTime = System.nanoTime();
+
         calculate(0, 0, 0, acceptedCommands, -1);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+
+        System.out.println("Solution found at : " + sdf.format(new Date(timeFound)));
+        System.out.println("Actual time : " + sdf.format(new Date()));
 
         int gain = bestPrice;
         List<String> path = newArrayList();
@@ -107,7 +115,6 @@ public class JajascriptService {
                 path.add(commandes.get(i).getNomVol());
             }
         }
-
 
         return new JajaScriptResponse(gain, path);
     }
