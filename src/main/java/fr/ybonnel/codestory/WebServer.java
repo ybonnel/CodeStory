@@ -54,6 +54,8 @@ public class WebServer extends AbstractHandler {
         String response;
         int status = HttpServletResponse.SC_OK;
 
+        String specificLog = null;
+
         try {
             if (query != null) {
                 response = QueryType.getResponse(query);
@@ -69,6 +71,7 @@ public class WebServer extends AbstractHandler {
                 if (pathResponse.getContentType() != null) {
                     httpResponse.setContentType(pathResponse.getContentType());
                 }
+                specificLog = pathResponse.getSpecificLog();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +88,7 @@ public class WebServer extends AbstractHandler {
         long elapsedTime = System.nanoTime() - startTime;
 
 
-        LogUtil.logHttpRequest(date, request, payLoad, status, response, elapsedTime);
+        LogUtil.logHttpRequest(date, request, payLoad, status, response, elapsedTime, specificLog);
     }
 
 

@@ -5,6 +5,7 @@ public class PathResponse {
     private int statusCode;
     private String response;
     private String contentType;
+    private String specificLog;
 
     public PathResponse(int statusCode, String response) {
         this.statusCode = statusCode;
@@ -25,5 +26,13 @@ public class PathResponse {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public String getSpecificLog() {
+        return specificLog;
+    }
+
+    public void setSpecificLog(String specificLog) {
+        this.specificLog = specificLog;
     }
 }

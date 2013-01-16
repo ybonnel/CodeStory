@@ -19,7 +19,8 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
     private final ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-    private final TypeReference<List<Commande>> requestType = new TypeReference<List<Commande>>(){};
+    private final TypeReference<List<Commande>> requestType = new TypeReference<List<Commande>>() {
+    };
 
 
     @Override
@@ -30,6 +31,7 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
         PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType("application/json");
+        pathResponse.setSpecificLog("NbCommands=" + commandes.size() + ", gain=" + jajaScriptResponse.getGain());
         return pathResponse;
     }
 }

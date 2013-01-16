@@ -17,7 +17,7 @@ import static com.google.common.collect.Maps.newHashMap;
 public class LogUtil {
 
 
-    public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime) {
+    public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime, String specifiqueLog) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())
@@ -31,17 +31,25 @@ public class LogUtil {
         logMessage.append(request.getMethod());
         logMessage.append("\n\tPath info : ")
                 .append(request.getPathInfo());
-        logMessage.append("\n\tRequest parameters : ")
-                .append(convertParametersMap(request));
+        if (specifiqueLog == null) {
+            logMessage.append("\n\tRequest parameters : ")
+                    .append(convertParametersMap(request));
+        }
         logMessage.append("\n\tRemote adress : ")
                 .append(request.getRemoteAddr());
         logMessage.append("\n\tRequest headers : ")
                 .append(getRequestHeaders(request));
+        if (specifiqueLog == null) {
         logMessage.append("\n\tRequest payload : ")
                 .append(payLoad);
+        }
         logMessage.append("\n\tResponse status : ").append(status);
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
-        logMessage.append("\n\tResponse : ").append(response);
+        if (specifiqueLog == null) {
+            logMessage.append("\n\tResponse : ").append(response);
+        } else {
+            logMessage.append("\n\tSpecific : ").append(specifiqueLog);
+        }
 
         DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(date, DatabaseManager.TYPE_Q, logMessage.toString()));
 

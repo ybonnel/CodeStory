@@ -105,7 +105,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         WebConversation wc = new WebConversation();
         long elapsedTime = 0;
-        for (int i =100; elapsedTime < TimeUnit.SECONDS.toNanos(20); i=i+100) {
+        for (int i =1000; elapsedTime < TimeUnit.SECONDS.toNanos(20); i=i+5000) {
             List<Commande> commandes = new ArrayList<Commande>();
             for (int j = 1; j <= (i+1)*5; j++) {
                 Commande commande = new Commande();
@@ -128,7 +128,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
             assertEquals(200, response.getResponseCode());
             assertEquals("application/json", response.getContentType());
-            System.out.println("Level " + (i+1) + " : " + elapsedTime);
+            System.out.println("Level " + (i) + " : " + TimeUnit.NANOSECONDS.toMillis(elapsedTime));
 
 
         }
