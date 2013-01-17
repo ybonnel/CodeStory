@@ -45,7 +45,7 @@ public class JajascriptService {
     public JajascriptService(List<Commande> commandes) {
         this.commandes = commandes;
         for (Commande commande : commandes) {
-            commande.setHeureDepart(commande.getHeureDepart() + commande.getTempsVol());
+            commande.setHeureFin(commande.getHeureDepart() + commande.getTempsVol());
         }
         Collections.sort(this.commandes, new Comparator<Commande>() {
             @Override
