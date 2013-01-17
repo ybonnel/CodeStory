@@ -1,1 +1,1 @@
-java -jar code-story.jar >> serveur.log 2>&1 &
+java -Xms512m -Xmx512m -jar code-story.jar >> serveur.log 2>&1 &
