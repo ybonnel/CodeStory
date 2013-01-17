@@ -289,7 +289,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         String warmUpRequest = mapper.writeValueAsString(generateRandomCommands(5));
         sendPostRequest(wc, getURL() + "jajascript/optimize", warmUpRequest);
 
-        int level = 30000;
+        int level = 100000;
         List<Commande> commandes = generateRandomCommands(level * 5);
         String request = mapper.writeValueAsString(commandes);
 

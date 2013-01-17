@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -19,7 +20,7 @@ public class JajascriptService {
     private int[] starts;
     private int[] ends;
     private int[] prices;
-    private LinkedList<Solution> lastSolutions;
+    private Queue<Solution> lastSolutions;
 
 
     private static class Solution {
@@ -43,10 +44,13 @@ public class JajascriptService {
 
     public JajascriptService(List<Commande> commandes) {
         this.commandes = commandes;
+        for (Commande commande : commandes) {
+            commande.setHeureDepart(commande.getHeureDepart() + commande.getTempsVol());
+        }
         Collections.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.getHeureDepart() + commande1.getTempsVol(), commande2.getHeureDepart() + commande2.getTempsVol());
+                return Ints.compare(commande1.getHeureFin(), commande2.getHeureFin());
             }
         });
 
@@ -58,15 +62,16 @@ public class JajascriptService {
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
             Commande commande = commandes.get(indexComand);
             starts[indexComand] = commande.getHeureDepart();
-            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
+            ends[indexComand] = commande.getHeureFin();
             if (commande.getTempsVol() > bigestDuration) {
                 bigestDuration = commande.getTempsVol();
             }
             prices[indexComand] =  commande.getPrix();
         }
         lastSolutions = new LinkedList<Solution>();
-        for (int i=0; i< bigestDuration *2;i++) {
-            lastSolutions.addLast(new Solution(nbCommands));
+        int doubleBigestDuration = bigestDuration << 1;
+        for (int i=0; i< doubleBigestDuration;i++) {
+            lastSolutions.add(new Solution(nbCommands));
         }
     }
 
@@ -83,12 +88,14 @@ public class JajascriptService {
                 }
             }
 
-            lastSolutions.removeFirst();
+            boolean[] newAceptedCommands = lastSolutions.poll().acceptedCommands;
 
-            boolean[] newAceptedCommands = Arrays.copyOf(bestSolutionToAdd.acceptedCommands, bestSolutionToAdd.acceptedCommands.length);
+            for (int indexAccepted = 0; indexAccepted < i;indexAccepted++) {
+                newAceptedCommands[indexAccepted] = bestSolutionToAdd.acceptedCommands[indexAccepted];
+            }
             newAceptedCommands[i] = true;
             Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
-            lastSolutions.addLast(newSolution);
+            lastSolutions.add(newSolution);
         }
 
         Solution bestSolution = null;
@@ -105,6 +112,7 @@ public class JajascriptService {
         Arrays.fill(acceptedCommands, false);
 
         Solution solution = calculateIteratif();
+
 
         int gain = solution.prix;
         List<String> path = newArrayList();

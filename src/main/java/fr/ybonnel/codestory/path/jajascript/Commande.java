@@ -1,5 +1,6 @@
 package fr.ybonnel.codestory.path.jajascript;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Commande {
@@ -13,8 +14,16 @@ public class Commande {
     @JsonProperty("PRIX")
     private int prix;
 
-    private int getHeureFin() {
-        return heureDepart + tempsVol;
+    @JsonIgnore
+    private int heureFin = -1;
+
+    @JsonIgnore
+    public int getHeureFin() {
+        return heureFin;
+    }
+
+    public void setHeureFin(int heureFin) {
+        this.heureFin = heureFin;
     }
 
     public String getNomVol() {
