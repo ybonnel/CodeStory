@@ -16,6 +16,9 @@ public class JajaScriptResponse {
         this.path = path;
     }
 
+    public JajaScriptResponse() {
+    }
+
     public int getGain() {
         return gain;
     }

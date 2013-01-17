@@ -3,6 +3,7 @@ package fr.ybonnel.codestory;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
+import fr.ybonnel.codestory.logs.LogUtil;
 import net.sourceforge.jwebunit.html.Row;
 import net.sourceforge.jwebunit.html.Table;
 import org.junit.Test;
@@ -32,6 +33,7 @@ public class WebServerTest extends WebServerTestUtil {
     @SuppressWarnings("unchecked")
     @Test
     public void should_generate_logs() throws Exception {
+        LogUtil.enableLogs();
         getTester().getTestingEngine().setIgnoreFailingStatusCodes(true);
         setBaseUrl(getURL());
         beginAt("/?q=test");

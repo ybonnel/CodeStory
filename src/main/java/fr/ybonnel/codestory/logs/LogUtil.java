@@ -16,8 +16,21 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class LogUtil {
 
+    private static boolean mustLog = true;
+
+    public static void disableLogs() {
+        mustLog = false;
+    }
+
+    public static void enableLogs() {
+        mustLog = true;
+    }
+
 
     public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime, String specifiqueLog) {
+        if (!mustLog) {
+            return;
+        }
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())
@@ -84,4 +97,18 @@ public class LogUtil {
         DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_NEW, queryParameter));
     }
 
+    public static void logRequestUrl(HttpServletRequest request) {
+        if (!mustLog) {
+            return;
+        }
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        StringBuilder logRequest = new StringBuilder(sdf.format(date)).append(':');
+        logRequest.append(request.getMethod()).append(':');
+        logRequest.append(request.getRequestURL());
+        if (request.getQueryString() != null) {
+            logRequest.append('?').append(request.getQueryString());
+        }
+        System.err.println(logRequest.toString());
+    }
 }

@@ -8,6 +8,7 @@ import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptRequest;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
+import fr.ybonnel.codestory.path.jajascript.LegacyJajascriptService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +28,12 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
     public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws Exception {
         List<Commande> commandes = mapper.readValue(payLoad, requestType);
 
-        JajaScriptResponse jajaScriptResponse = new JajascriptService(commandes).calculate();
+        JajaScriptResponse jajaScriptResponse;
+        if (request.getPathInfo().endsWith("legacy")) {
+            jajaScriptResponse = new LegacyJajascriptService(commandes).calculate();
+        } else {
+            jajaScriptResponse = new JajascriptService(commandes).calculate();
+        }
 
         PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType("application/json");

@@ -28,6 +28,9 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
+        Date date = new Date();
+        long startTime = System.nanoTime();
+
 
         String payLoad;
         try {
@@ -36,17 +39,8 @@ public class WebServer extends AbstractHandler {
             payLoad = IOUtils.toString(request.getReader());
         }
 
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        StringBuilder logRequest = new StringBuilder(sdf.format(date)).append(':');
-        logRequest.append(request.getMethod()).append(':');
-        logRequest.append(request.getRequestURL());
-        if (request.getQueryString() != null) {
-            logRequest.append('?').append(request.getQueryString());
-        }
-        System.err.println(logRequest.toString());
+        LogUtil.logRequestUrl(request);
 
-        long startTime = System.nanoTime();
 
         String query = request.getParameter(QUERY_PARAMETER);
         httpResponse.setContentType("text/html;charset=utf-8");

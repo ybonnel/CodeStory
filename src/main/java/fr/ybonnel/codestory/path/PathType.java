@@ -10,7 +10,7 @@ public enum PathType {
     INSERT_ENONCE(new InsertEnonceHandler(), "/enonce/(\\d+)", "POST"),
     GET_ENONCES(new GetEnoncesHandler(), "/enonce(/)*", "GET"),
     SCALASKEL_CHANGES(new ChangeScalaskelHandler(), "/scalaskel/change/(\\d+)", "GET"),
-    JAJASCRIPT(new OptimizeJajascriptHandler(), "/jajascript/optimize", "POST");
+    JAJASCRIPT(new OptimizeJajascriptHandler(), "/jajascript/optimize.*", "POST");
 
     private AbstractPathHandler handler;
 
