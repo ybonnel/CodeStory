@@ -6,9 +6,7 @@ import com.google.common.primitives.Ints;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -20,10 +18,10 @@ public class JajascriptService {
     private int[] starts;
     private int[] ends;
     private int[] prices;
-    private Queue<Solution> lastSolutions;
+    private FastFifo lastSolutions;
 
 
-    private static class Solution {
+    public static class Solution {
         private int heureFin;
         private int prix;
         private boolean[] acceptedCommands;
@@ -68,10 +66,10 @@ public class JajascriptService {
             }
             prices[indexComand] =  commande.getPrix();
         }
-        lastSolutions = new LinkedList<Solution>();
         int doubleBigestDuration = bigestDuration << 1;
+        lastSolutions = new FastFifo(doubleBigestDuration);
         for (int i=0; i< doubleBigestDuration;i++) {
-            lastSolutions.add(new Solution(nbCommands));
+            lastSolutions.enqueue(new Solution(nbCommands));
         }
     }
 
@@ -88,14 +86,14 @@ public class JajascriptService {
                 }
             }
 
-            boolean[] newAceptedCommands = lastSolutions.poll().acceptedCommands;
+            boolean[] newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
 
             for (int indexAccepted = 0; indexAccepted < i;indexAccepted++) {
                 newAceptedCommands[indexAccepted] = bestSolutionToAdd.acceptedCommands[indexAccepted];
             }
             newAceptedCommands[i] = true;
             Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
-            lastSolutions.add(newSolution);
+            lastSolutions.enqueue(newSolution);
         }
 
         Solution bestSolution = null;
