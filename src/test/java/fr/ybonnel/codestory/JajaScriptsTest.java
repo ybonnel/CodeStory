@@ -293,14 +293,9 @@ public class JajaScriptsTest extends WebServerTestUtil {
         List<Commande> commandes = generateRandomCommands(level * 5);
         String request = mapper.writeValueAsString(commandes);
 
-        PostMethodWebRequest postRequest = new PostMethodWebRequest(,
-                new ByteArrayInputStream(request.getBytes()), "application/json");
-
         long startTime = System.nanoTime();
 
         WebResponse response = sendPostRequest(wc, getURL() + "jajascript/optimize", request);
-
-        wc.getResponse(postRequest);
 
         long elapsedTime = System.nanoTime() - startTime;
 
