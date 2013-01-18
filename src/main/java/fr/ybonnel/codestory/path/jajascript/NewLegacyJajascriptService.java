@@ -17,7 +17,7 @@ public class NewLegacyJajascriptService {
     private int[] starts;
     private int[] ends;
     private int[] prices;
-    private FastFifo lastSolutions;
+    private LegacyFastFifo lastSolutions;
 
 
     public NewLegacyJajascriptService(Commande[] commandes) {
@@ -25,7 +25,7 @@ public class NewLegacyJajascriptService {
         Arrays.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
+                return Ints.compare(commande1.heureDepart, commande2.heureDepart);
             }
         });
 
@@ -39,38 +39,38 @@ public class NewLegacyJajascriptService {
         int lastDepart = -1;
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
             Commande commande = commandes[indexComand];
-            if (commande.getHeureDepart() == lastDepart) {
+            if (commande.heureDepart == lastDepart) {
                 currentMaxSameDepart++;
             } else {
                 if (currentMaxSameDepart > maxSameDepart) {
                     maxSameDepart = currentMaxSameDepart;
                 }
-                lastDepart = commande.getHeureDepart();
+                lastDepart = commande.heureDepart;
                 currentMaxSameDepart = 1;
             }
-            starts[indexComand] = commande.getHeureDepart();
-            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
+            starts[indexComand] = commande.heureDepart;
+            ends[indexComand] = commande.heureDepart + commande.tempsVol;
             if (commande.getTempsVol() > bigestDuration) {
-                bigestDuration = commande.getTempsVol();
+                bigestDuration = commande.tempsVol;
             }
-            prices[indexComand] =  commande.getPrix();
+            prices[indexComand] =  commande.prix;
         }
         if (currentMaxSameDepart > maxSameDepart) {
             maxSameDepart = currentMaxSameDepart;
         }
         int sizeOfFifo = (bigestDuration << 1) + maxSameDepart;
-        lastSolutions = new FastFifo(sizeOfFifo);
+        lastSolutions = new LegacyFastFifo(sizeOfFifo);
         for (int i=0; i< sizeOfFifo;i++) {
-            lastSolutions.enqueue(new Solution(nbCommands));
+            lastSolutions.enqueue(new LegacySolution(nbCommands));
         }
     }
 
-    private Solution calculateIteratif() {
+    private LegacySolution calculateIteratif() {
         // Parcours de toutes les commandes
         for (int i=0; i<nbCommands;i++) {
-            Solution bestSolutionToAdd = null;
+            LegacySolution bestSolutionToAdd = null;
             int bestPrice = -1;
-            for (Solution solution : lastSolutions) {
+            for (LegacySolution solution : lastSolutions) {
                 if (starts[i] >= solution.heureFin
                         && solution.prix > bestPrice ) {
                     bestSolutionToAdd = solution;
@@ -80,16 +80,14 @@ public class NewLegacyJajascriptService {
 
             boolean[] newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
 
-            for (int indexAccepted = 0; indexAccepted < i;indexAccepted++) {
-                newAceptedCommands[indexAccepted] = bestSolutionToAdd.acceptedCommands[indexAccepted];
-            }
+            System.arraycopy(bestSolutionToAdd.acceptedCommands, 0,  newAceptedCommands, 0, i);
             newAceptedCommands[i] = true;
-            Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
+            LegacySolution newSolution = new LegacySolution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
             lastSolutions.enqueue(newSolution);
         }
 
-        Solution bestSolution = null;
-        for (Solution solution : lastSolutions) {
+        LegacySolution bestSolution = null;
+        for (LegacySolution solution : lastSolutions) {
             if (bestSolution == null || solution.prix > bestSolution.prix) {
                 bestSolution = solution;
             }
@@ -98,10 +96,8 @@ public class NewLegacyJajascriptService {
     }
 
     public JajaScriptResponse calculate() {
-        boolean[] acceptedCommands = new boolean[nbCommands];
-        Arrays.fill(acceptedCommands, false);
 
-        Solution solution = calculateIteratif();
+        LegacySolution solution = calculateIteratif();
 
 
         int gain = solution.prix;
@@ -109,7 +105,7 @@ public class NewLegacyJajascriptService {
 
         for (int i=0; i<nbCommands; i++) {
             if (solution.acceptedCommands[i]) {
-                path.add(commandes[i].getNomVol());
+                path.add(commandes[i].nomVol);
             }
         }
 

@@ -1,20 +1,19 @@
 package fr.ybonnel.codestory.path.jajascript;
 
-import java.util.Arrays;
+import java.util.BitSet;
 
 public class Solution {
     public int heureFin;
     public int prix;
-    public boolean[] acceptedCommands;
+    public BitSet acceptedCommands;
 
     Solution(int nbCommand) {
         heureFin = 0;
         prix = 0;
-        acceptedCommands = new boolean[nbCommand];
-        Arrays.fill(acceptedCommands, false);
+        acceptedCommands = new BitSet(nbCommand);
     }
 
-    Solution(int heureFin, int prix, boolean[] acceptedCommands) {
+    Solution(int heureFin, int prix, BitSet acceptedCommands) {
         this.heureFin = heureFin;
         this.prix = prix;
         this.acceptedCommands = acceptedCommands;

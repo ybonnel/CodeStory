@@ -4,6 +4,7 @@ package fr.ybonnel.codestory.path.jajascript;
 import com.google.common.primitives.Ints;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -68,7 +69,6 @@ public class JajascriptService {
 
     private Solution calculateIteratif() {
         // Parcours de toutes les commandes
-        //long totalConstructSolution = 0;
         for (int i=0; i<nbCommands;i++) {
             Solution bestSolutionToAdd = null;
             int bestPrice = -1;
@@ -79,22 +79,17 @@ public class JajascriptService {
                     bestPrice = solution.prix;
                 }
             }
-            //totalTime+= System.nanoTime() - startTime;
 
-            boolean[] newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
+            BitSet newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
+            newAceptedCommands.clear();
+            newAceptedCommands.or(bestSolutionToAdd.acceptedCommands);
 
-
-            //startTime = System.nanoTime();
-            System.arraycopy(bestSolutionToAdd.acceptedCommands, 0,  newAceptedCommands, 0, i);
-            //totalConstructSolution += System.nanoTime() - startTime;
-
-            newAceptedCommands[i] = true;
+            newAceptedCommands.set(i);
 
             Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
             lastSolutions.enqueue(newSolution);
 
         }
-        //System.out.println("ConstructNewSolutionTime : " + TimeUnit.NANOSECONDS.toMillis(totalConstructSolution));
 
         Solution bestSolution = null;
         for (Solution solution : lastSolutions) {
@@ -113,7 +108,7 @@ public class JajascriptService {
         List<String> path = newArrayList();
 
         for (int i=0; i<nbCommands; i++) {
-            if (solution.acceptedCommands[i]) {
+            if (solution.acceptedCommands.get(i)) {
                 path.add(commandes[i].nomVol);
             }
         }

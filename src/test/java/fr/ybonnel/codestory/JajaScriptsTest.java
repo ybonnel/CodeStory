@@ -226,7 +226,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
         List<ResponseByLevel> reponsesByLevel = new ArrayList<ResponseByLevel>();
 
         int level = 10000;
-        while (legacyRespond && newRespond) {
+        while (legacyRespond || newRespond) {
             elapsedTimeLegacy = -1;
             List<Commande> commandes = generateRandomCommands(level * 5);
 
