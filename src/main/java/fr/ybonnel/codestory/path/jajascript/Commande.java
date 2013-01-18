@@ -14,18 +14,6 @@ public class Commande {
     @JsonProperty("PRIX")
     private int prix;
 
-    @JsonIgnore
-    private int heureFin = -1;
-
-    @JsonIgnore
-    public int getHeureFin() {
-        return heureFin;
-    }
-
-    public void setHeureFin(int heureFin) {
-        this.heureFin = heureFin;
-    }
-
     public String getNomVol() {
         return nomVol;
     }

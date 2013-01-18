@@ -42,13 +42,10 @@ public class JajascriptService {
 
     public JajascriptService(List<Commande> commandes) {
         this.commandes = commandes;
-        for (Commande commande : commandes) {
-            commande.setHeureFin(commande.getHeureDepart() + commande.getTempsVol());
-        }
         Collections.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.getHeureFin(), commande2.getHeureFin());
+                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
             }
         });
 
@@ -57,18 +54,33 @@ public class JajascriptService {
         ends = new int[nbCommands];
         prices = new int[nbCommands];
         int bigestDuration = 0;
+        int maxSameDepart = 1;
+        int currentMaxSameDepart = 0;
+        int lastDepart = -1;
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
             Commande commande = commandes.get(indexComand);
+            if (commande.getHeureDepart() == lastDepart) {
+                currentMaxSameDepart++;
+            } else {
+                if (currentMaxSameDepart > maxSameDepart) {
+                    maxSameDepart = currentMaxSameDepart;
+                }
+                lastDepart = commande.getHeureDepart();
+                currentMaxSameDepart = 1;
+            }
             starts[indexComand] = commande.getHeureDepart();
-            ends[indexComand] = commande.getHeureFin();
+            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
             if (commande.getTempsVol() > bigestDuration) {
                 bigestDuration = commande.getTempsVol();
             }
             prices[indexComand] =  commande.getPrix();
         }
-        int doubleBigestDuration = bigestDuration << 1;
-        lastSolutions = new FastFifo(doubleBigestDuration);
-        for (int i=0; i< doubleBigestDuration;i++) {
+        if (currentMaxSameDepart > maxSameDepart) {
+            maxSameDepart = currentMaxSameDepart;
+        }
+        int sizeOfFifo = (bigestDuration << 1) + maxSameDepart;
+        lastSolutions = new FastFifo(sizeOfFifo);
+        for (int i=0; i< sizeOfFifo;i++) {
             lastSolutions.enqueue(new Solution(nbCommands));
         }
     }

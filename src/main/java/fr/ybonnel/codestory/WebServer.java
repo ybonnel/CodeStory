@@ -81,7 +81,6 @@ public class WebServer extends AbstractHandler {
 
         long elapsedTime = System.nanoTime() - startTime;
 
-
         LogUtil.logHttpRequest(date, request, payLoad, status, response, elapsedTime, specificLog);
     }
 
