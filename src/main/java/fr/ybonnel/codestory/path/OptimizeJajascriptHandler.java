@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
@@ -26,6 +27,7 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
     @Override
     public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws Exception {
+        long startTime = System.nanoTime();
         List<Commande> commandes = mapper.readValue(payLoad, requestType);
 
         JajaScriptResponse jajaScriptResponse;
@@ -37,7 +39,8 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
         PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType("application/json");
-        pathResponse.setSpecificLog("NbCommands=" + commandes.size() + ", gain=" + jajaScriptResponse.getGain());
+        long elapsedTime = System.nanoTime() - startTime;
+        pathResponse.setSpecificLog("NbCommands=" + commandes.size() + ", gain=" + jajaScriptResponse.getGain() + ", time=" + TimeUnit.NANOSECONDS.toMillis(elapsedTime) + "ms");
         return pathResponse;
     }
 }
