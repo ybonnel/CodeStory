@@ -259,8 +259,8 @@ public class JajaScriptsTest extends WebServerTestUtil {
             if (elapsedTimeNew > TimeUnit.SECONDS.toNanos(5)) {
                 newRespond = false;
             }
-            int increment = level / 20 <= 10 ? 10 : level / 20;
-            increment = increment - increment % 20;
+            int increment = level / 5 <= 100 ? 100 : level / 5;
+            increment = increment - increment % 100;
             level = level + increment;
         }
 
@@ -274,7 +274,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
             long diffLegacyTime = responseByLevel.legacyTime - lastLegacyTime;
             long diffNewTime = responseByLevel.newTime - lastNewTime;
             int diffLevel = responseByLevel.level - lastLevel;
-            for (int forgotLevel = lastLevel + 10; forgotLevel < responseByLevel.level; forgotLevel += 10) {
+            for (int forgotLevel = lastLevel + 100; forgotLevel < responseByLevel.level; forgotLevel += 100) {
                 long legacyTimeForgot = -1;
                 if (responseByLevel.legacyTime != -1) {
                     legacyTimeForgot = lastLegacyTime + diffLegacyTime * (forgotLevel - lastLevel) / diffLevel;

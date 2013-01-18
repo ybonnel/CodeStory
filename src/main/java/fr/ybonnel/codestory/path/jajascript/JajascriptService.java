@@ -81,7 +81,8 @@ public class JajascriptService {
             }
 
             BitSet newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
-            newAceptedCommands.clear();
+            // Faster than clear follow by or
+            newAceptedCommands.and(bestSolutionToAdd.acceptedCommands);
             newAceptedCommands.or(bestSolutionToAdd.acceptedCommands);
 
             newAceptedCommands.set(i);

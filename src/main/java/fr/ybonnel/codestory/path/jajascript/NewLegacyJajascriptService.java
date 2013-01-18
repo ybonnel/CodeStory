@@ -4,6 +4,7 @@ package fr.ybonnel.codestory.path.jajascript;
 import com.google.common.primitives.Ints;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
 
@@ -78,10 +79,10 @@ public class NewLegacyJajascriptService {
                 }
             }
 
-            boolean[] newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
-
-            System.arraycopy(bestSolutionToAdd.acceptedCommands, 0,  newAceptedCommands, 0, i);
-            newAceptedCommands[i] = true;
+            BitSet newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
+            newAceptedCommands.clear();
+            newAceptedCommands.or(bestSolutionToAdd.acceptedCommands);
+            newAceptedCommands.set(i);
             LegacySolution newSolution = new LegacySolution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
             lastSolutions.enqueue(newSolution);
         }
@@ -104,7 +105,7 @@ public class NewLegacyJajascriptService {
         List<String> path = newArrayList();
 
         for (int i=0; i<nbCommands; i++) {
-            if (solution.acceptedCommands[i]) {
+            if (solution.acceptedCommands.get(i)) {
                 path.add(commandes[i].nomVol);
             }
         }
