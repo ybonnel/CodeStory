@@ -12,7 +12,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class JajascriptService {
 
-    private List<Commande> commandes;
+    private Commande[] commandes;
 
     private int nbCommands;
     private int[] starts;
@@ -40,16 +40,16 @@ public class JajascriptService {
         }
     }
 
-    public JajascriptService(List<Commande> commandes) {
+    public JajascriptService(Commande[] commandes) {
         this.commandes = commandes;
-        Collections.sort(this.commandes, new Comparator<Commande>() {
+        Arrays.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
                 return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
             }
         });
 
-        nbCommands = commandes.size();
+        nbCommands = commandes.length;
         starts = new int[nbCommands];
         ends = new int[nbCommands];
         prices = new int[nbCommands];
@@ -58,7 +58,7 @@ public class JajascriptService {
         int currentMaxSameDepart = 0;
         int lastDepart = -1;
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
-            Commande commande = commandes.get(indexComand);
+            Commande commande = commandes[indexComand];
             if (commande.getHeureDepart() == lastDepart) {
                 currentMaxSameDepart++;
             } else {
@@ -129,7 +129,7 @@ public class JajascriptService {
 
         for (int i=0; i<nbCommands; i++) {
             if (solution.acceptedCommands[i]) {
-                path.add(commandes.get(i).getNomVol());
+                path.add(commandes[i].getNomVol());
             }
         }
 

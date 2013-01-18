@@ -334,8 +334,6 @@ public class JajaScriptsTest extends WebServerTestUtil {
         long minElapsedTime = Long.MAX_VALUE;
         long maxElapsedTime = 0;
 
-
-
         for (int i=0;i<=nbOccurToTest;i++) {
 
             long startTime;
