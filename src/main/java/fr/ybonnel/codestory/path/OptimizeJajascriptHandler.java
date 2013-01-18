@@ -31,12 +31,7 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
         long startTime = System.nanoTime();
         Commande[] commandes = mapper.readValue(payLoad, requestType);
 
-        JajaScriptResponse jajaScriptResponse;
-        if (request.getPathInfo().endsWith("legacy")) {
-            jajaScriptResponse = new LegacyJajascriptService(Arrays.asList(commandes)).calculate();
-        } else {
-            jajaScriptResponse = new JajascriptService(commandes).calculate();
-        }
+        JajaScriptResponse jajaScriptResponse = new JajascriptService(commandes).calculate();
 
         PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType("application/json");

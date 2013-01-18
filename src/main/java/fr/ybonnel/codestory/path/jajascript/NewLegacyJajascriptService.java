@@ -6,11 +6,10 @@ import com.google.common.primitives.Ints;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 
-public class JajascriptService {
+public class NewLegacyJajascriptService {
 
     private Commande[] commandes;
 
@@ -21,12 +20,12 @@ public class JajascriptService {
     private FastFifo lastSolutions;
 
 
-    public JajascriptService(Commande[] commandes) {
+    public NewLegacyJajascriptService(Commande[] commandes) {
         this.commandes = commandes;
         Arrays.sort(this.commandes, new Comparator<Commande>() {
             @Override
             public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.heureDepart, commande2.heureDepart);
+                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
             }
         });
 
@@ -40,21 +39,21 @@ public class JajascriptService {
         int lastDepart = -1;
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
             Commande commande = commandes[indexComand];
-            if (commande.heureDepart == lastDepart) {
+            if (commande.getHeureDepart() == lastDepart) {
                 currentMaxSameDepart++;
             } else {
                 if (currentMaxSameDepart > maxSameDepart) {
                     maxSameDepart = currentMaxSameDepart;
                 }
-                lastDepart = commande.heureDepart;
+                lastDepart = commande.getHeureDepart();
                 currentMaxSameDepart = 1;
             }
-            starts[indexComand] = commande.heureDepart;
-            ends[indexComand] = commande.heureDepart + commande.tempsVol;
+            starts[indexComand] = commande.getHeureDepart();
+            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
             if (commande.getTempsVol() > bigestDuration) {
-                bigestDuration = commande.tempsVol;
+                bigestDuration = commande.getTempsVol();
             }
-            prices[indexComand] =  commande.prix;
+            prices[indexComand] =  commande.getPrix();
         }
         if (currentMaxSameDepart > maxSameDepart) {
             maxSameDepart = currentMaxSameDepart;
@@ -68,7 +67,6 @@ public class JajascriptService {
 
     private Solution calculateIteratif() {
         // Parcours de toutes les commandes
-        //long totalConstructSolution = 0;
         for (int i=0; i<nbCommands;i++) {
             Solution bestSolutionToAdd = null;
             int bestPrice = -1;
@@ -79,22 +77,16 @@ public class JajascriptService {
                     bestPrice = solution.prix;
                 }
             }
-            //totalTime+= System.nanoTime() - startTime;
 
             boolean[] newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
 
-
-            //startTime = System.nanoTime();
-            System.arraycopy(bestSolutionToAdd.acceptedCommands, 0,  newAceptedCommands, 0, i);
-            //totalConstructSolution += System.nanoTime() - startTime;
-
+            for (int indexAccepted = 0; indexAccepted < i;indexAccepted++) {
+                newAceptedCommands[indexAccepted] = bestSolutionToAdd.acceptedCommands[indexAccepted];
+            }
             newAceptedCommands[i] = true;
-
             Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
             lastSolutions.enqueue(newSolution);
-
         }
-        //System.out.println("ConstructNewSolutionTime : " + TimeUnit.NANOSECONDS.toMillis(totalConstructSolution));
 
         Solution bestSolution = null;
         for (Solution solution : lastSolutions) {
@@ -106,15 +98,18 @@ public class JajascriptService {
     }
 
     public JajaScriptResponse calculate() {
+        boolean[] acceptedCommands = new boolean[nbCommands];
+        Arrays.fill(acceptedCommands, false);
 
         Solution solution = calculateIteratif();
+
 
         int gain = solution.prix;
         List<String> path = newArrayList();
 
         for (int i=0; i<nbCommands; i++) {
             if (solution.acceptedCommands[i]) {
-                path.add(commandes[i].nomVol);
+                path.add(commandes[i].getNomVol());
             }
         }
 

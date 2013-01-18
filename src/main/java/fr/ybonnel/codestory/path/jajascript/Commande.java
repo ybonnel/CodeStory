@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Commande {
 
     @JsonProperty("VOL")
-    private String nomVol;
+    public String nomVol;
     @JsonProperty("DEPART")
-    private int heureDepart;
+    public int heureDepart;
     @JsonProperty("DUREE")
-    private int tempsVol;
+    public int tempsVol;
     @JsonProperty("PRIX")
-    private int prix;
+    public int prix;
 
     public String getNomVol() {
         return nomVol;

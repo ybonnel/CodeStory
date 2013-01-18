@@ -11,6 +11,9 @@ import com.meterware.httpunit.WebResponse;
 import fr.ybonnel.codestory.logs.LogUtil;
 import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
+import fr.ybonnel.codestory.path.jajascript.JajascriptService;
+import fr.ybonnel.codestory.path.jajascript.LegacyJajascriptService;
+import fr.ybonnel.codestory.path.jajascript.NewLegacyJajascriptService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -122,46 +125,26 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Test
     public void should_answer_same_as_legacy() throws IOException, SAXException {
         LogUtil.disableLogs();
-        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        WebConversation wc = new WebConversation();
 
 
         for (int nbCommands = 1; nbCommands <= 500; nbCommands = nbCommands + 1) {
             List<Commande> commandes = generateRandomCommands(nbCommands);
 
-            String request = mapper.writeValueAsString(commandes);
-
             long startTime = System.nanoTime();
-            WebResponse response = sendPostRequest(wc, getURL() + "jajascript/optimize/legacy", request);
+            JajaScriptResponse reponseLegacy = new LegacyJajascriptService(commandes).calculate();
             long elapsedTimeLegacy = System.nanoTime() - startTime;
-
-            assertEquals(200, response.getResponseCode());
-            assertEquals("application/json", response.getContentType());
-            String legacyResponse = response.getText();
 
 
             startTime = System.nanoTime();
-            response = sendPostRequest(wc, getURL() + "jajascript/optimize", request);
+            JajaScriptResponse reponseNew = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
             long elapsedTimeNew = System.nanoTime() - startTime;
 
-            assertEquals(200, response.getResponseCode());
-            assertEquals("application/json", response.getContentType());
-
-            String newResponse = response.getText();
-
-
-            int legacyGain = mapper.readValue(legacyResponse, JajaScriptResponse.class).getGain();
-            int newGain = mapper.readValue(newResponse, JajaScriptResponse.class).getGain();
+            int legacyGain = reponseLegacy.getGain();
+            int newGain = reponseNew.getGain();
 
             System.out.println("Nb commands " + nbCommands + " : legacy=" + TimeUnit.NANOSECONDS.toMillis(elapsedTimeLegacy) + ",new=" + TimeUnit.NANOSECONDS.toMillis(elapsedTimeNew));
 
-            if (legacyGain != newGain) {
-                System.out.println("Request = " + request);
-                System.out.println("Legacy = " + legacyResponse);
-                System.out.println("NewResponse = " + newResponse);
-            }
-
-            assertEquals(request, legacyGain, newGain);
+            assertEquals(legacyGain, newGain);
         }
     }
 
@@ -226,56 +209,48 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
         assertEquals(200, response.getResponseCode());
         assertEquals("application/json", response.getContentType());
-        assertEquals("{\"gain\":50,\"path\":[\"0\"]}", response.getText());
+        assertEquals(request, "{\"gain\":50,\"path\":[\"0\"]}", response.getText());
     }
 
     @Test
     @Ignore
     public void should_found_max_level() throws IOException, SAXException {
         LogUtil.disableLogs();
-        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        WebConversation wc = new WebConversation();
-
-        // Warm up
-        String warmUpRequest = mapper.writeValueAsString(generateRandomCommands(5));
-        sendPostRequest(wc, getURL() + "jajascript/optimize", warmUpRequest);
-        sendPostRequest(wc, getURL() + "jajascript/optimize/legacy", warmUpRequest);
-
 
         boolean legacyRespond = true;
         boolean newRespond = true;
         long elapsedTimeLegacy = 0;
+        long totalWin = 0;
+        long totalLegacy = 0;
 
         List<ResponseByLevel> reponsesByLevel = new ArrayList<ResponseByLevel>();
 
-        int level = 10;
-        while (legacyRespond || newRespond) {
+        int level = 10000;
+        while (legacyRespond && newRespond) {
             elapsedTimeLegacy = -1;
             List<Commande> commandes = generateRandomCommands(level * 5);
 
-            String request = mapper.writeValueAsString(commandes);
-
-            if (legacyRespond) {
-                long startTime = System.nanoTime();
-                WebResponse response = sendPostRequest(wc, getURL() + "jajascript/optimize/legacy", request);
-                elapsedTimeLegacy = System.nanoTime() - startTime;
-
-                assertEquals(200, response.getResponseCode());
-                assertEquals("application/json", response.getContentType());
-            }
 
             long startTime = System.nanoTime();
-            WebResponse response = sendPostRequest(wc, getURL() + "jajascript/optimize", request);
+            JajaScriptResponse newResponse = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
             long elapsedTimeNew = System.nanoTime() - startTime;
 
-            assertEquals(200, response.getResponseCode());
-            assertEquals("application/json", response.getContentType());
-
+            if (legacyRespond) {
+                startTime = System.nanoTime();
+                JajaScriptResponse responseLegacy = new NewLegacyJajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
+                elapsedTimeLegacy = System.nanoTime() - startTime;
+                assertEquals(responseLegacy.getGain(), newResponse.getGain());
+            }
             reponsesByLevel.add(new ResponseByLevel(level, elapsedTimeLegacy, elapsedTimeNew));
 
             System.out.println("Level : " + level);
             System.out.println("LegacyTime : " + TimeUnit.NANOSECONDS.toMillis(elapsedTimeLegacy));
             System.out.println("NewTime : " + TimeUnit.NANOSECONDS.toMillis(elapsedTimeNew));
+
+            if (legacyRespond) {
+                totalWin += elapsedTimeLegacy - elapsedTimeNew;
+                totalLegacy += elapsedTimeLegacy;
+            }
 
 
             if (elapsedTimeLegacy > TimeUnit.SECONDS.toNanos(5)) {
@@ -284,8 +259,8 @@ public class JajaScriptsTest extends WebServerTestUtil {
             if (elapsedTimeNew > TimeUnit.SECONDS.toNanos(5)) {
                 newRespond = false;
             }
-            int increment = level / 10 <= 10 ? 10 : level / 10;
-            increment = increment - increment % 10;
+            int increment = level / 20 <= 10 ? 10 : level / 20;
+            increment = increment - increment % 20;
             level = level + increment;
         }
 
@@ -312,7 +287,8 @@ public class JajaScriptsTest extends WebServerTestUtil {
             lastLegacyTime = responseByLevel.legacyTime;
             lastNewTime = responseByLevel.newTime;
         }
-
+        double pourcentageGain = (100 * totalWin) / (double) totalLegacy;
+        System.out.println("Total time win : " + TimeUnit.NANOSECONDS.toMillis(totalWin) + " / " + TimeUnit.NANOSECONDS.toMillis(totalLegacy) + "(" + pourcentageGain + "%)");
     }
 
 
@@ -320,13 +296,6 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Ignore
     public void should_be_very_very_fast() throws IOException, SAXException {
         //LogUtil.disableLogs();
-        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        WebConversation wc = new WebConversation();
-
-        // Warm up
-        String warmUpRequest = mapper.writeValueAsString(generateRandomCommands(5));
-        sendPostRequest(wc, getURL() + "jajascript/optimize", warmUpRequest);
-
         int level = 30000;
         int nbOccurToTest = 50;
 
@@ -334,29 +303,20 @@ public class JajaScriptsTest extends WebServerTestUtil {
         long minElapsedTime = Long.MAX_VALUE;
         long maxElapsedTime = 0;
 
-        for (int i=0;i<=nbOccurToTest;i++) {
+        for (int i = 0; i <= nbOccurToTest; i++) {
 
-            long startTime;
-
-            WebResponse response;
-            {
-                List<Commande> commandes = generateRandomCommands(level * 5);
-                String request = mapper.writeValueAsString(commandes);
-                startTime = System.nanoTime();
-                response = sendPostRequest(wc, getURL() + "jajascript/optimize", request);
-                response.getText();
-            }
+            List<Commande> commandes = generateRandomCommands(level * 5);
+            long startTime = System.nanoTime();
+            new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
 
             long elapsedTime = System.nanoTime() - startTime;
 
-            if (i!=0) {
+            if (i != 0) {
                 totalElapsedTime += elapsedTime;
                 minElapsedTime = Longs.min(minElapsedTime, elapsedTime);
                 maxElapsedTime = Longs.max(maxElapsedTime, elapsedTime);
             }
 
-            assertEquals(200, response.getResponseCode());
-            assertEquals("application/json", response.getContentType());
             System.out.println("Test " + i + " : " + TimeUnit.NANOSECONDS.toMillis(elapsedTime));
         }
         System.out.println("Level " + level + " :");

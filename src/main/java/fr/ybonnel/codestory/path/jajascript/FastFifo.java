@@ -3,9 +3,9 @@ package fr.ybonnel.codestory.path.jajascript;
 
 import java.util.Iterator;
 
-public class FastFifo implements Iterable<JajascriptService.Solution> {
+public class FastFifo implements Iterable<Solution> {
 
-    private JajascriptService.Solution[] tabOfElements;             // queue elements
+    private Solution[] tabOfElements;             // queue elements
     private int nbElements;           // number of elements on queue
     private int last;       // index of next available slot
     private int first;
@@ -15,24 +15,24 @@ public class FastFifo implements Iterable<JajascriptService.Solution> {
     // cast needed since no generic array creation in Java
     public FastFifo(int capacity) {
         nbElements = capacity;
-        tabOfElements = new JajascriptService.Solution[capacity];
+        tabOfElements = new Solution[capacity];
         first = 0;
-        last = nbElements-1;
+        last = nbElements - 1;
         iter = new FifoIter();
     }
 
-    public JajascriptService.Solution getFirst() {
+    public Solution getFirst() {
         return tabOfElements[first];
     }
 
-    public void enqueue(JajascriptService.Solution item) {
+    public void enqueue(Solution item) {
         tabOfElements[last] = item;
         last = (last + 1) % nbElements; // wrap-around
         first = (first + 1) % nbElements; // wrap-around
 
     }
 
-    private class FifoIter implements Iterator<JajascriptService.Solution> {
+    private class FifoIter implements Iterator<Solution> {
 
         private int actuelIndex;
         private boolean nextCalled;
@@ -48,10 +48,10 @@ public class FastFifo implements Iterable<JajascriptService.Solution> {
         }
 
         @Override
-        public JajascriptService.Solution next() {
+        public Solution next() {
             nextCalled = true;
-            JajascriptService.Solution item = tabOfElements[actuelIndex];
-            actuelIndex = (actuelIndex+1)%nbElements;
+            Solution item = tabOfElements[actuelIndex];
+            actuelIndex = (actuelIndex + 1) % nbElements;
             return item;
         }
 
@@ -63,7 +63,7 @@ public class FastFifo implements Iterable<JajascriptService.Solution> {
 
 
     @Override
-    public Iterator<JajascriptService.Solution> iterator() {
+    public Iterator<Solution> iterator() {
         iter.init();
         return iter;
     }
