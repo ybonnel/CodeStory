@@ -21,7 +21,11 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
     private Pattern patternMultiple = Pattern.compile("(" + NOMBRE + ")\\*(" + NOMBRE + ")");
     private Pattern patternDivide = Pattern.compile("(" + NOMBRE + ")/(" + NOMBRE + ")");
 
-    private NumberFormat format = new DecimalFormat("#0.########################################", new DecimalFormatSymbols(Locale.FRANCE));
+    private NumberFormat format = new DecimalFormat("#0.#", new DecimalFormatSymbols(Locale.FRANCE));
+
+    public CalculateQueryHandler() {
+        format.setMaximumFractionDigits(500);
+    }
 
     @Override
     public String getResponse(String query) {
@@ -36,7 +40,6 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
 
         try {
             BigDecimal retour = new BigDecimal(calculateQuery);
-            retour = retour.setScale(50, RoundingMode.HALF_UP);
             return format.format(retour);
         } catch (NumberFormatException numberFormatException) {
             numberFormatException.printStackTrace();
@@ -73,7 +76,7 @@ public class CalculateQueryHandler extends AbstractQueryHandler {
             try {
                 result = a.divide(b);
             } catch (ArithmeticException exception) {
-                result = a.divide(b, 500, RoundingMode.HALF_UP);
+                result = a.divide(b, 1000, RoundingMode.HALF_UP);
             }
             calculateQuery = calculateQuery.substring(0, matcherDivide.start()) + result.toString() + calculateQuery.substring(matcherDivide.end());
             matcherDivide = patternDivide.matcher(calculateQuery);

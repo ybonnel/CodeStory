@@ -58,6 +58,7 @@ public class CalculateTest extends WebServerTestUtil {
     public void should_answer_with_double_parenthesis() throws IOException, SAXException {
         test_calculate("((1+2)+3+4+(5+6+7)+(8+9+10)*3)/2*5", "272,5");
     }
+
     @Test
     public void should_answer_with_coma() throws IOException, SAXException {
         test_calculate("1,5*4", "6");
@@ -67,7 +68,7 @@ public class CalculateTest extends WebServerTestUtil {
     public void should_answer_to_a_big_calculate() throws IOException, SAXException {
         test_calculate("((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000", "31878018903828899277492024491376690701584023926880");
 
-        test_calculate("((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000/31878018900000000000000000000000000000000000000000", "1,0000000001201109544951058577663585832677");
+        test_calculate("((1,1+2)+3,14+4+(5+6+7)+(8+9+10)*4267387833344334647677634)/2*553344300034334349999000/31878018903828899277492024491376690701584023926880", "1");
 
 
     }
@@ -77,7 +78,11 @@ public class CalculateTest extends WebServerTestUtil {
         test_calculate("(-1)+(1)", "0");
     }
 
-
+    @Test
+    public void should_answer_with_lot_of_decimals() throws IOException, SAXException {
+        test_calculate("1,0000000000000000000000000000000000000000000000001*1,0000000000000000000000000000000000000000000000001"
+                , "1,00000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000001");
+    }
 
 
 }
