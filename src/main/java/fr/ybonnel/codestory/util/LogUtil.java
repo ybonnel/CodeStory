@@ -22,7 +22,7 @@ public class LogUtil {
     /**
      * Log the request and specific informations.
      */
-    public static void logHttpRequest(HttpServletRequest request, String payLoad, long elapsedTime, WebServerResponse response) {
+    public static void logHttpRequest(HttpServletRequest request, String payLoad, long timeWithNetwork, long timeWithoutNetwork, WebServerResponse response) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())
@@ -47,7 +47,8 @@ public class LogUtil {
                     .append(payLoad);
         }
         logMessage.append("\n\tResponse status : ").append(response.getStatusCode());
-        logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
+        logMessage.append("\n\tResponse time with network: ").append(NumberFormat.getInstance(Locale.FRANCE).format(timeWithNetwork)).append("ns");
+        logMessage.append("\n\tResponse time without network: ").append(NumberFormat.getInstance(Locale.FRANCE).format(timeWithoutNetwork)).append("ns");
         if (response.getSpecificLog() == null) {
             logMessage.append("\n\tResponse : ").append(response.getResponse());
         } else {

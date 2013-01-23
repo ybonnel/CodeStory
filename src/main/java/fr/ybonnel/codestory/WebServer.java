@@ -33,19 +33,21 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
-        Chrono chrono = new Chrono().start();
+        Chrono chronoWithNetwork = new Chrono().start();
         String payLoad = getPayload(request);
 
         LogUtil.logRequestUrl(request);
 
-
+        Chrono chronoWithoutNetwork = new Chrono().start();
         WebServerResponse response = processRequest(request, payLoad);
+        chronoWithoutNetwork.stop();
+
 
         fillHttpResponse(httpResponse, response);
 
-        chrono.stop();
+        chronoWithNetwork.stop();
 
-        LogUtil.logHttpRequest(request, payLoad, chrono.getTimeInNs(), response);
+        LogUtil.logHttpRequest(request, payLoad, chronoWithNetwork.getTimeInNs(), chronoWithNetwork.getTimeInNs(), response);
     }
 
     /**
