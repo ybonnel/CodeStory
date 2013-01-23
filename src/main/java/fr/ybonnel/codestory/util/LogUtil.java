@@ -1,6 +1,7 @@
-package fr.ybonnel.codestory.logs;
+package fr.ybonnel.codestory.util;
 
 import fr.ybonnel.codestory.WebServer;
+import fr.ybonnel.codestory.WebServerResponse;
 import fr.ybonnel.codestory.database.DatabaseManager;
 import fr.ybonnel.codestory.database.modele.LogMessage;
 
@@ -16,21 +17,12 @@ import static com.google.common.collect.Maps.newHashMap;
 
 public class LogUtil {
 
-    private static boolean mustLog = true;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
 
-    public static void disableLogs() {
-        mustLog = false;
-    }
-
-    public static void enableLogs() {
-        mustLog = true;
-    }
-
-
-    public static void logHttpRequest(Date date, HttpServletRequest request, String payLoad, int status, String response, long elapsedTime, String specifiqueLog) {
-        if (!mustLog) {
-            return;
-        }
+    /**
+     * Log the request and specific informations.
+     */
+    public static void logHttpRequest(HttpServletRequest request, String payLoad, long elapsedTime, WebServerResponse response) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())
@@ -44,43 +36,46 @@ public class LogUtil {
         logMessage.append(request.getMethod());
         logMessage.append("\n\tPath info : ")
                 .append(request.getPathInfo());
-        if (specifiqueLog == null) {
-            logMessage.append("\n\tRequest parameters : ")
-                    .append(convertParametersMap(request));
-        }
+        logMessage.append("\n\tRequest parameters : ")
+                .append(convertParametersMap(request));
         logMessage.append("\n\tRemote adress : ")
                 .append(request.getRemoteAddr());
         logMessage.append("\n\tRequest headers : ")
                 .append(getRequestHeaders(request));
-        if (specifiqueLog == null) {
-        logMessage.append("\n\tRequest payload : ")
-                .append(payLoad);
+        if (response.getSpecificLog() == null) {
+            logMessage.append("\n\tRequest payload : ")
+                    .append(payLoad);
         }
-        logMessage.append("\n\tResponse status : ").append(status);
+        logMessage.append("\n\tResponse status : ").append(response.getStatusCode());
         logMessage.append("\n\tResponse time : ").append(NumberFormat.getInstance(Locale.FRANCE).format(elapsedTime)).append("ns");
-        if (specifiqueLog == null) {
-            logMessage.append("\n\tResponse : ").append(response);
+        if (response.getSpecificLog() == null) {
+            logMessage.append("\n\tResponse : ").append(response.getResponse());
         } else {
-            logMessage.append("\n\tSpecific : ").append(specifiqueLog);
+            logMessage.append("\n\tSpecific : ").append(response.getContentType());
         }
 
-        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(date, DatabaseManager.TYPE_Q, logMessage.toString()));
+        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_Q, logMessage.toString()));
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss,SSS");
-        System.out.println(sdf.format(date) + '\n' + logMessage);
+        logMessage(logMessage.toString());
     }
 
+    /**
+     * Get useful headers of request.
+     */
     private static Map<String, String> getRequestHeaders(HttpServletRequest request) {
         Map<String, String> headersMap = newHashMap();
         if (request.getHeader("Accept") != null) {
             headersMap.put("Accept", request.getHeader("Accept"));
         }
-        if (request.getHeader("Content-Type") !=null) {
+        if (request.getHeader("Content-Type") != null) {
             headersMap.put("Content-Type", request.getHeader("Content-Type"));
         }
         return headersMap;
     }
 
+    /**
+     * Get the content of all request parameters.
+     */
     private static String convertParametersMap(HttpServletRequest request) {
         StringBuilder builder = new StringBuilder();
         Enumeration<?> parameters = request.getParameterNames();
@@ -92,23 +87,24 @@ public class LogUtil {
         return builder.toString();
     }
 
-    public static void logUnkownQuery(String queryParameter) {
-        System.err.println("#### QueryType inconnue : " + queryParameter + " ####");
-        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_NEW, queryParameter));
-    }
-
+    /**
+     * Log the url called.
+     */
     public static void logRequestUrl(HttpServletRequest request) {
-        if (!mustLog) {
-            return;
-        }
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        StringBuilder logRequest = new StringBuilder(sdf.format(date)).append(':');
+        StringBuilder logRequest = new StringBuilder();
         logRequest.append(request.getMethod()).append(':');
         logRequest.append(request.getRequestURL());
         if (request.getQueryString() != null) {
             logRequest.append('?').append(request.getQueryString());
         }
-        System.err.println(logRequest.toString());
+        logMessage(logRequest.toString());
+    }
+
+    /**
+     * Log a message.
+     */
+    public static void logMessage(String message) {
+        StringBuilder logContent = new StringBuilder(DATE_FORMAT.format(new Date()));
+        System.out.println(logContent.append(':').append(message).toString());
     }
 }

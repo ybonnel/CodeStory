@@ -1,9 +1,9 @@
 package fr.ybonnel.codestory;
 
-import fr.ybonnel.codestory.logs.LogUtil;
-import fr.ybonnel.codestory.path.PathResponse;
+import fr.ybonnel.codestory.util.LogUtil;
 import fr.ybonnel.codestory.path.PathType;
 import fr.ybonnel.codestory.query.QueryType;
+import fr.ybonnel.codestory.util.Chrono;
 import org.apache.commons.io.IOUtils;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.AbstractHandler;
@@ -20,6 +20,11 @@ import java.util.Date;
 public class WebServer extends AbstractHandler {
 
     public static final String QUERY_PARAMETER = "q";
+    public static final String HEADER_SERVER = "Server";
+    public static final String SERVER_NAME = "YboServer";
+    public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=utf-8";
+    public static final int DEFAULT_PORT = 10080;
+
 
     @Override
     public void handle(String target,
@@ -28,80 +33,85 @@ public class WebServer extends AbstractHandler {
                        int dispatch)
             throws IOException, ServletException {
 
-        Date date = new Date();
-        long startTime = System.nanoTime();
+        Chrono chrono = new Chrono().start();
+        String payLoad = getPayload(request);
+
+        LogUtil.logRequestUrl(request);
 
 
+        WebServerResponse response = processRequest(request, payLoad);
+
+        fillHttpResponse(httpResponse, response);
+
+        chrono.stop();
+
+        LogUtil.logHttpRequest(request, payLoad, chrono.getTimeInNs(), response);
+    }
+
+    /**
+     * Fill httpResponse with content of response.
+     */
+    private void fillHttpResponse(HttpServletResponse httpResponse, WebServerResponse response) throws IOException {
+        httpResponse.setHeader(HEADER_SERVER, SERVER_NAME);
+        httpResponse.setStatus(response.getStatusCode());
+        if (response.getContentType() != null) {
+            httpResponse.setContentType(response.getContentType());
+        } else {
+            httpResponse.setContentType(DEFAULT_CONTENT_TYPE);
+        }
+        PrintWriter writer = httpResponse.getWriter();
+        writer.print(response.getResponse());
+        writer.close();
+    }
+
+    /**
+     * Process the request.
+     */
+    private WebServerResponse processRequest(HttpServletRequest request, String payLoad) {
+        WebServerResponse response;
+
+        try {
+            String query = request.getParameter(QUERY_PARAMETER);
+            if (query != null) {
+                response = QueryType.getResponse(query);
+            } else {
+                response = PathType.getResponse(request, payLoad);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new WebServerResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return response;
+    }
+
+    /**
+     * Get the content of payload.
+     */
+    private String getPayload(HttpServletRequest request) throws IOException {
         String payLoad;
         try {
             payLoad = IOUtils.toString(request.getInputStream());
         } catch (Exception exception) {
             payLoad = IOUtils.toString(request.getReader());
         }
-
-        LogUtil.logRequestUrl(request);
-
-
-        String query = request.getParameter(QUERY_PARAMETER);
-        httpResponse.setContentType("text/html;charset=utf-8");
-
-        String response;
-        int status = HttpServletResponse.SC_OK;
-
-        String specificLog = null;
-
-        try {
-            if (query != null) {
-                response = QueryType.getResponse(query);
-                if (response == null) {
-                    LogUtil.logUnkownQuery(query);
-                    response = "Query " + query + " is unknown";
-                    status = HttpServletResponse.SC_NOT_FOUND;
-                }
-            } else {
-                PathResponse pathResponse = PathType.getResponse(request, payLoad);
-                status = pathResponse.getStatusCode();
-                response = pathResponse.getResponse();
-                if (pathResponse.getContentType() != null) {
-                    httpResponse.setContentType(pathResponse.getContentType());
-                }
-                specificLog = pathResponse.getSpecificLog();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-            response = e.getMessage();
-        }
-
-        httpResponse.setHeader("Server", "YboServer");
-        httpResponse.setStatus(status);
-        PrintWriter writer = httpResponse.getWriter();
-        writer.print(response);
-        writer.close();
-
-        long elapsedTime = System.nanoTime() - startTime;
-
-        LogUtil.logHttpRequest(date, request, payLoad, status, response, elapsedTime, specificLog);
+        return payLoad;
     }
 
 
     public static void main(String... args) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
-        System.err.println(sdf.format(new Date()) + ":CodeStory starting");
-        int port = 10080;
+        LogUtil.logMessage("CodeStory starting");
+        int port = DEFAULT_PORT;
         if (args.length == 1) {
             port = Integer.parseInt(args[0]);
         }
 
         Server server = new Server(port);
-
         Signal.handle(new Signal("TERM"), new StopHandler(server));
-
         server.setHandler(new WebServer());
         server.start();
         server.join();
 
-        System.err.println(sdf.format(new Date()) + ":CodeStory stopped");
+        LogUtil.logMessage("CodeStory stopped");
     }
 
 }

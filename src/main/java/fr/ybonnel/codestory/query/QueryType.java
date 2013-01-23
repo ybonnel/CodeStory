@@ -1,6 +1,9 @@
 package fr.ybonnel.codestory.query;
 
 
+import fr.ybonnel.codestory.WebServerResponse;
+
+import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Pattern;
 
 public enum QueryType {
@@ -12,9 +15,12 @@ public enum QueryType {
         }
     },
     LOG(new LogQueryHandler()) {
+
+        Pattern pattern = Pattern.compile("log(\\([QN]\\))*");
+
         @Override
         protected boolean isThisQueryType(String query) {
-            return query.startsWith("log");
+            return pattern.matcher(query).matches();
         }
     },
     MAILING_LIST(new FixResponseQueryHandler("OUI")) {
@@ -84,13 +90,13 @@ public enum QueryType {
 
     protected abstract boolean isThisQueryType(String query);
 
-    public static String getResponse(String query) {
+    public static WebServerResponse getResponse(String query) {
         for (QueryType oneQuestion : values()) {
             if (oneQuestion.isThisQueryType(query)) {
-                return oneQuestion.queryHandler.getResponse(query);
+                return new WebServerResponse(HttpServletResponse.SC_OK, oneQuestion.queryHandler.getResponse(query));
             }
         }
-        return null;
+        return new WebServerResponse(HttpServletResponse.SC_NOT_FOUND, "Query " + query + " is unknown");
     }
 
 }

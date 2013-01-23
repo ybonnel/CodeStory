@@ -3,7 +3,6 @@ package fr.ybonnel.codestory.database.modele;
 import java.util.Date;
 
 
-@SuppressWarnings("UnusedDeclaration")
 public class LogMessage {
     private Date date;
     private String type;

@@ -1,13 +1,13 @@
-package fr.ybonnel.codestory.path;
+package fr.ybonnel.codestory;
 
 
-public class PathResponse {
+public class WebServerResponse {
     private int statusCode;
     private String response;
     private String contentType;
     private String specificLog;
 
-    public PathResponse(int statusCode, String response) {
+    public WebServerResponse(int statusCode, String response) {
         this.statusCode = statusCode;
         this.response = response;
     }

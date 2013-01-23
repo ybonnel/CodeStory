@@ -1,6 +1,7 @@
 package fr.ybonnel.codestory.path;
 
 
+import fr.ybonnel.codestory.WebServerResponse;
 import fr.ybonnel.codestory.database.DatabaseManager;
 import fr.ybonnel.codestory.database.modele.Enonce;
 import org.pegdown.PegDownProcessor;
@@ -11,8 +12,8 @@ import java.util.List;
 
 public class GetEnoncesHandler extends AbstractPathHandler {
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... param) {
-        return new PathResponse(HttpServletResponse.SC_OK, getAllEnonce());
+    public WebServerResponse getResponse(HttpServletRequest request, String payLoad, String... param) {
+        return new WebServerResponse(HttpServletResponse.SC_OK, getAllEnonce());
     }
 
     public String getAllEnonce() {

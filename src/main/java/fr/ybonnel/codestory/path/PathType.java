@@ -1,5 +1,7 @@
 package fr.ybonnel.codestory.path;
 
+import fr.ybonnel.codestory.WebServerResponse;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
@@ -32,14 +34,14 @@ public enum PathType {
         }
     }
 
-    public static PathResponse getResponse(HttpServletRequest request, String payLoad) throws Exception {
+    public static WebServerResponse getResponse(HttpServletRequest request, String payLoad) throws Exception {
         for (PathType onePath : values()) {
             Matcher isThisPath = onePath.isThisPath(request.getMethod(), request.getPathInfo());
             if (isThisPath != null && isThisPath.matches()) {
                 return onePath.handler.getResponse(request, payLoad, extractParameters(isThisPath));
             }
         }
-        return new PathResponse(HttpServletResponse.SC_NOT_FOUND, "This path is unknown");
+        return new WebServerResponse(HttpServletResponse.SC_NOT_FOUND, "This path is unknown");
     }
 
     private static String[] extractParameters(Matcher thisPath) {

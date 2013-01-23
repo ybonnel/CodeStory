@@ -7,7 +7,7 @@ import com.google.common.primitives.Longs;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
-import fr.ybonnel.codestory.logs.LogUtil;
+import fr.ybonnel.codestory.util.LogUtil;
 import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
@@ -122,25 +122,14 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
     @Test
     public void should_answer_same_as_legacy() throws IOException, SAXException {
-        LogUtil.disableLogs();
-
-
         for (int nbCommands = 1; nbCommands <= 500; nbCommands = nbCommands + 1) {
             List<Commande> commandes = generateRandomCommands(nbCommands);
 
-            long startTime = System.nanoTime();
-            JajaScriptResponse reponseLegacy = new LegacyJajascriptService(commandes).calculate();
-            long elapsedTimeLegacy = System.nanoTime() - startTime;
+            JajaScriptResponse legacyResponse = new LegacyJajascriptService(commandes).calculate();
+            JajaScriptResponse newResponse = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
 
-
-            startTime = System.nanoTime();
-            JajaScriptResponse reponseNew = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
-            long elapsedTimeNew = System.nanoTime() - startTime;
-
-            int legacyGain = reponseLegacy.getGain();
-            int newGain = reponseNew.getGain();
-
-            System.out.println("Nb commands " + nbCommands + " : legacy=" + TimeUnit.NANOSECONDS.toMillis(elapsedTimeLegacy) + ",new=" + TimeUnit.NANOSECONDS.toMillis(elapsedTimeNew));
+            int legacyGain = legacyResponse.getGain();
+            int newGain = newResponse.getGain();
 
             assertEquals(legacyGain, newGain);
         }

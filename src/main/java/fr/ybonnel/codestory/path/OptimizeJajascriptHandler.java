@@ -3,6 +3,7 @@ package fr.ybonnel.codestory.path;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.ybonnel.codestory.WebServerResponse;
 import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
@@ -20,13 +21,13 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
 
     @Override
-    public PathResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws Exception {
+    public WebServerResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws Exception {
         long startTime = System.nanoTime();
         Commande[] commandes = mapper.readValue(payLoad, requestType);
 
         JajaScriptResponse jajaScriptResponse = new JajascriptService(commandes).calculate();
 
-        PathResponse pathResponse = new PathResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
+        WebServerResponse pathResponse = new WebServerResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType("application/json");
         long elapsedTime = System.nanoTime() - startTime;
         pathResponse.setSpecificLog("NbCommands=" + commandes.length + ", gain=" + jajaScriptResponse.getGain() + ", time=" + TimeUnit.NANOSECONDS.toMillis(elapsedTime) + "ms");
