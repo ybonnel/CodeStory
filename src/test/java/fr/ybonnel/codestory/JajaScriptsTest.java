@@ -1,7 +1,6 @@
 package fr.ybonnel.codestory;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Longs;
@@ -13,7 +12,6 @@ import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
 import fr.ybonnel.codestory.path.jajascript.LegacyJajascriptService;
-import fr.ybonnel.codestory.path.jajascript.NewLegacyJajascriptService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -210,85 +208,6 @@ public class JajaScriptsTest extends WebServerTestUtil {
         assertEquals(200, response.getResponseCode());
         assertEquals("application/json", response.getContentType());
         assertEquals(request, "{\"gain\":50,\"path\":[\"0\"]}", response.getText());
-    }
-
-    @Test
-    @Ignore
-    public void should_found_max_level() throws IOException, SAXException {
-        LogUtil.disableLogs();
-
-        boolean legacyRespond = true;
-        boolean newRespond = true;
-        long elapsedTimeLegacy = 0;
-        long totalWin = 0;
-        long totalLegacy = 0;
-
-        List<ResponseByLevel> reponsesByLevel = new ArrayList<ResponseByLevel>();
-
-        int level = 10000;
-        while (legacyRespond || newRespond) {
-            elapsedTimeLegacy = -1;
-            List<Commande> commandes = generateRandomCommands(level * 5);
-
-
-            long startTime = System.nanoTime();
-            JajaScriptResponse newResponse = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
-            long elapsedTimeNew = System.nanoTime() - startTime;
-
-            if (legacyRespond) {
-                startTime = System.nanoTime();
-                JajaScriptResponse responseLegacy = new NewLegacyJajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
-                elapsedTimeLegacy = System.nanoTime() - startTime;
-                assertEquals(responseLegacy.getGain(), newResponse.getGain());
-            }
-            reponsesByLevel.add(new ResponseByLevel(level, elapsedTimeLegacy, elapsedTimeNew));
-
-            System.out.println("Level : " + level);
-            System.out.println("LegacyTime : " + TimeUnit.NANOSECONDS.toMillis(elapsedTimeLegacy));
-            System.out.println("NewTime : " + TimeUnit.NANOSECONDS.toMillis(elapsedTimeNew));
-
-            if (legacyRespond) {
-                totalWin += elapsedTimeLegacy - elapsedTimeNew;
-                totalLegacy += elapsedTimeLegacy;
-            }
-
-
-            if (elapsedTimeLegacy > TimeUnit.SECONDS.toNanos(5)) {
-                legacyRespond = false;
-            }
-            if (elapsedTimeNew > TimeUnit.SECONDS.toNanos(5)) {
-                newRespond = false;
-            }
-            int increment = level / 5 <= 100 ? 100 : level / 5;
-            increment = increment - increment % 100;
-            level = level + increment;
-        }
-
-        // Print Responses By Level
-        System.out.println("Level,Legacy Time(ms),New Time(ms)");
-        int lastLevel = 0;
-        long lastLegacyTime = 0;
-        long lastNewTime = 0;
-        for (ResponseByLevel responseByLevel : reponsesByLevel) {
-
-            long diffLegacyTime = responseByLevel.legacyTime - lastLegacyTime;
-            long diffNewTime = responseByLevel.newTime - lastNewTime;
-            int diffLevel = responseByLevel.level - lastLevel;
-            for (int forgotLevel = lastLevel + 100; forgotLevel < responseByLevel.level; forgotLevel += 100) {
-                long legacyTimeForgot = -1;
-                if (responseByLevel.legacyTime != -1) {
-                    legacyTimeForgot = lastLegacyTime + diffLegacyTime * (forgotLevel - lastLevel) / diffLevel;
-                }
-                long newTimeForgot = lastNewTime + diffNewTime * (forgotLevel - lastLevel) / diffLevel;
-                new ResponseByLevel(forgotLevel, legacyTimeForgot, newTimeForgot).print();
-            }
-            responseByLevel.print();
-            lastLevel = responseByLevel.level;
-            lastLegacyTime = responseByLevel.legacyTime;
-            lastNewTime = responseByLevel.newTime;
-        }
-        double pourcentageGain = (100 * totalWin) / (double) totalLegacy;
-        System.out.println("Total time win : " + TimeUnit.NANOSECONDS.toMillis(totalWin) + " / " + TimeUnit.NANOSECONDS.toMillis(totalLegacy) + "(" + pourcentageGain + "%)");
     }
 
 
