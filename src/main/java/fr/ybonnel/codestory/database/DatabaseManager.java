@@ -13,22 +13,22 @@ public enum DatabaseManager {
 
     INSTANCE;
 
-    public static final String TYPE_NEW = "N";
     public static final String TYPE_Q = "Q";
+    public static final String DB_DRIVER = "org.h2.Driver";
+    public static final String DB_USER = "sa";
 
     private JdbcDataSource ds;
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     DatabaseManager() {
         try {
-            Class.forName("org.h2.Driver");
+            Class.forName(DB_DRIVER);
 
             boolean databaseExists = doesDatabaseExists();
 
             ds = new JdbcDataSource();
             ds.setURL(DatabaseUtil.getUrl());
-            ds.setUser("sa");
-            ds.setPassword("sa");
+            ds.setUser(DB_USER);
+            ds.setPassword(DB_USER);
 
             if (!databaseExists) {
                 createDatabase();
@@ -42,7 +42,7 @@ public enum DatabaseManager {
         boolean databaseExists = false;
         try {
             String url = DatabaseUtil.getUrl() + ";IFEXISTS=TRUE";
-            Connection connection = DriverManager.getConnection(url, "sa", "sa");
+            Connection connection = DriverManager.getConnection(url, DB_USER, DB_USER);
             connection.close();
             databaseExists = true;
         } catch (SQLException ignore) {

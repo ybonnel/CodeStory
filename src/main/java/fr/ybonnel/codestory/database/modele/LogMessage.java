@@ -4,6 +4,7 @@ import java.util.Date;
 
 
 public class LogMessage {
+    public static final int MAX_MESSAGE_SIZE = 450;
     private Date date;
     private String type;
     private String message;
@@ -11,8 +12,8 @@ public class LogMessage {
     public LogMessage(Date date, String type, String message) {
         this.date = date;
         this.type = type;
-        if (message.length() > 450) {
-            this.message = message.substring(0, 450);
+        if (message.length() > MAX_MESSAGE_SIZE) {
+            this.message = message.substring(0, MAX_MESSAGE_SIZE);
         } else {
             this.message = message;
         }
@@ -21,8 +22,8 @@ public class LogMessage {
     public LogMessage(String type, String message) {
         date = new Date();
         this.type = type;
-        if (message.length() > 450) {
-            this.message = message.substring(0, 450);
+        if (message.length() > MAX_MESSAGE_SIZE) {
+            this.message = message.substring(0, MAX_MESSAGE_SIZE);
         } else {
             this.message = message;
         }

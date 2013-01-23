@@ -21,7 +21,6 @@ public class LogDao extends AbstractDao<LogMessage> {
     }
 
     @Override
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public List<LogMessage> findAll() {
         List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
@@ -45,7 +44,6 @@ public class LogDao extends AbstractDao<LogMessage> {
     }
 
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     public List<LogMessage> findByType(String type) {
         List<LogMessage> logMessages = new ArrayList<LogMessage>();
 
@@ -69,7 +67,6 @@ public class LogDao extends AbstractDao<LogMessage> {
         return logMessages;
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void insert(LogMessage objectToInsert) {
         try {

@@ -20,7 +20,6 @@ public class EnonceDao extends AbstractDao<Enonce> {
         super(ds);
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public List<Enonce> findAll() {
         List<Enonce> enonces = newArrayList();
@@ -46,7 +45,6 @@ public class EnonceDao extends AbstractDao<Enonce> {
         return enonces;
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
     public void insert(Enonce enonce) {
         try {

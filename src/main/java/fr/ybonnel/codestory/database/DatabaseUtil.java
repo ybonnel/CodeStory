@@ -2,7 +2,6 @@ package fr.ybonnel.codestory.database;
 
 public class DatabaseUtil {
 
-    @SuppressWarnings("RedundantFieldInitialization")
     private static boolean test = false;
 
     public static String getUrl() {

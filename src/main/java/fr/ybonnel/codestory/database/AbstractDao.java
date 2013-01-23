@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-@SuppressWarnings("UnusedDeclaration")
 public abstract class AbstractDao<T> {
 
     private DataSource ds;
