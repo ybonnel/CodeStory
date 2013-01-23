@@ -52,7 +52,7 @@ public class LogUtil {
         if (response.getSpecificLog() == null) {
             logMessage.append("\n\tResponse : ").append(response.getResponse());
         } else {
-            logMessage.append("\n\tSpecific : ").append(response.getContentType());
+            logMessage.append("\n\tSpecific : ").append(response.getSpecificLog());
         }
 
         DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(startTime, DatabaseManager.TYPE_Q, logMessage.toString()));
