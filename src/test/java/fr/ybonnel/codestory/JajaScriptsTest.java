@@ -11,7 +11,7 @@ import fr.ybonnel.codestory.logs.LogUtil;
 import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
-import fr.ybonnel.codestory.path.jajascript.LegacyJajascriptService;
+import fr.ybonnel.codestory.path.jajascript.legacy.LegacyJajascriptService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;

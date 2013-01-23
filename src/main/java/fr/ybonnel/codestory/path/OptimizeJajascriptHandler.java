@@ -2,20 +2,13 @@ package fr.ybonnel.codestory.path;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ybonnel.codestory.path.jajascript.Commande;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
-import fr.ybonnel.codestory.path.jajascript.JajascriptRequest;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
-import fr.ybonnel.codestory.path.jajascript.LegacyJajascriptService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class OptimizeJajascriptHandler extends AbstractPathHandler {

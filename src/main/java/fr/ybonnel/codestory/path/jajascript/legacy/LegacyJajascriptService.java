@@ -1,7 +1,9 @@
-package fr.ybonnel.codestory.path.jajascript;
+package fr.ybonnel.codestory.path.jajascript.legacy;
 
 
 import com.google.common.primitives.Ints;
+import fr.ybonnel.codestory.path.jajascript.Commande;
+import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 
 import java.util.Arrays;
 import java.util.Collections;
