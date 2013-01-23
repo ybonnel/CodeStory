@@ -22,7 +22,7 @@ public class LogUtil {
     /**
      * Log the request and specific informations.
      */
-    public static void logHttpRequest(HttpServletRequest request, String payLoad, long timeWithNetwork, long timeWithoutNetwork, WebServerResponse response) {
+    public static void logHttpRequest(Date startTime, HttpServletRequest request, String payLoad, long timeWithNetwork, long timeWithoutNetwork, WebServerResponse response) {
         String query = request.getParameter(WebServer.QUERY_PARAMETER);
         if (query != null && query.startsWith("log")
                 || "/favicon.ico".equals(request.getPathInfo())
@@ -55,7 +55,7 @@ public class LogUtil {
             logMessage.append("\n\tSpecific : ").append(response.getContentType());
         }
 
-        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(DatabaseManager.TYPE_Q, logMessage.toString()));
+        DatabaseManager.INSTANCE.getLogDao().insert(new LogMessage(startTime, DatabaseManager.TYPE_Q, logMessage.toString()));
 
         logMessage(logMessage.toString());
     }

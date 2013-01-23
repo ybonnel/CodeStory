@@ -34,6 +34,7 @@ public class WebServer extends AbstractHandler {
             throws IOException, ServletException {
 
         Chrono chronoWithNetwork = new Chrono().start();
+        Date startTime = new Date();
         String payLoad = getPayload(request);
 
         LogUtil.logRequestUrl(request);
@@ -47,7 +48,7 @@ public class WebServer extends AbstractHandler {
 
         chronoWithNetwork.stop();
 
-        LogUtil.logHttpRequest(request, payLoad, chronoWithNetwork.getTimeInNs(), chronoWithNetwork.getTimeInNs(), response);
+        LogUtil.logHttpRequest(startTime, request, payLoad, chronoWithNetwork.getTimeInNs(), chronoWithoutNetwork.getTimeInNs(), response);
     }
 
     /**
