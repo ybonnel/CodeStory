@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import fr.ybonnel.codestory.WebServerResponse;
 import fr.ybonnel.codestory.path.scalaskel.Coin;
 import fr.ybonnel.codestory.path.scalaskel.Change;
+import fr.ybonnel.codestory.path.scalaskel.ScalaskelChangeService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,41 +31,11 @@ public class ChangeScalaskelHandler extends AbstractPathHandler {
             return new WebServerResponse(HttpServletResponse.SC_FORBIDDEN, "Wrong parameters");
         }
 
-        List<Change> changes = completeChanges(centsToPay, null, null);
+        List<Change> changes = ScalaskelChangeService.getInstance().calculateChanges(centsToPay);
         return new WebServerResponse(HttpServletResponse.SC_OK,
                 objectMapper.writeValueAsString(changes));
     }
 
-    public List<Change> completeChanges(int cents, Change currentChange, Coin lastCoin) {
-        // Stop condition of recursivity
-        if (cents == 0) {
-            return Lists.newArrayList(currentChange);
-        }
-        List<Change> changes = Lists.newArrayList();
-        for (Coin coin : Collections2.filter(
-                Coin.valuesAsLists(),
-                new FilterCoins(lastCoin, cents))) {
-            Change change = new Change(currentChange);
-            change.pay(coin);
-            changes.addAll(completeChanges(cents - coin.getValue(), change, coin));
-        }
-        return changes;
-    }
 
-    private static class FilterCoins implements Predicate<Coin> {
-
-        private int minValue;
-        private int centsToPay;
-
-        private FilterCoins(Coin lastCoin, int centsToPay) {
-            minValue = lastCoin == null ? 0 : lastCoin.getValue();
-            this.centsToPay = centsToPay;
-        }
-
-        @Override
-        public boolean apply(Coin input) {
-            return minValue <= input.getValue() && input.canPay(centsToPay);
-        }
-    }
 
 }

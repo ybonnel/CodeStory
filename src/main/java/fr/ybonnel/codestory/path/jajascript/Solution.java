@@ -3,19 +3,19 @@ package fr.ybonnel.codestory.path.jajascript;
 import java.util.BitSet;
 
 public class Solution {
-    public int heureFin;
-    public int prix;
-    public BitSet acceptedCommands;
+    public int endTime;
+    public int price;
+    public BitSet acceptedFlights;
 
-    Solution(int nbCommand) {
-        heureFin = 0;
-        prix = 0;
-        acceptedCommands = new BitSet(nbCommand);
+    Solution(int nbFlights) {
+        endTime = 0;
+        price = 0;
+        acceptedFlights = new BitSet(nbFlights);
     }
 
-    Solution(int heureFin, int prix, BitSet acceptedCommands) {
-        this.heureFin = heureFin;
-        this.prix = prix;
-        this.acceptedCommands = acceptedCommands;
+    Solution(int endTime, int price, BitSet acceptedFlights) {
+        this.endTime = endTime;
+        this.price = price;
+        this.acceptedFlights = acceptedFlights;
     }
 }

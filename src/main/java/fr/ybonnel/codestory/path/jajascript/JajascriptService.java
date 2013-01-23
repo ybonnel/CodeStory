@@ -7,94 +7,118 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Lists.newArrayList;
 
 public class JajascriptService {
 
-    private Commande[] commandes;
 
-    private int nbCommands;
+    private Flight[] flights;
+
+    private int nbFlights;
     private int[] starts;
     private int[] ends;
     private int[] prices;
     private FastFifo lastSolutions;
 
 
-    public JajascriptService(Commande[] commandes) {
-        this.commandes = commandes;
-        Arrays.sort(this.commandes, new Comparator<Commande>() {
+    public JajascriptService(Flight[] flights) {
+        this.flights = flights;
+        // Sort flight order by start time.
+        Arrays.sort(this.flights, new Comparator<Flight>() {
             @Override
-            public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.heureDepart, commande2.heureDepart);
+            public int compare(Flight flight1, Flight flight2) {
+                return Ints.compare(flight1.startTime, flight2.startTime);
             }
         });
 
-        nbCommands = commandes.length;
-        starts = new int[nbCommands];
-        ends = new int[nbCommands];
-        prices = new int[nbCommands];
-        int bigestDuration = 0;
-        int maxSameDepart = 1;
-        int currentMaxSameDepart = 0;
-        int lastDepart = -1;
-        for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
-            Commande commande = commandes[indexComand];
-            if (commande.heureDepart == lastDepart) {
-                currentMaxSameDepart++;
-            } else {
-                if (currentMaxSameDepart > maxSameDepart) {
-                    maxSameDepart = currentMaxSameDepart;
-                }
-                lastDepart = commande.heureDepart;
-                currentMaxSameDepart = 1;
-            }
-            starts[indexComand] = commande.heureDepart;
-            ends[indexComand] = commande.heureDepart + commande.tempsVol;
-            if (commande.getTempsVol() > bigestDuration) {
-                bigestDuration = commande.tempsVol;
-            }
-            prices[indexComand] =  commande.prix;
-        }
-        if (currentMaxSameDepart > maxSameDepart) {
-            maxSameDepart = currentMaxSameDepart;
-        }
-        int sizeOfFifo = (bigestDuration << 1) + maxSameDepart;
+        nbFlights = flights.length;
+        starts = new int[nbFlights];
+        ends = new int[nbFlights];
+        prices = new int[nbFlights];
+        int sizeOfFifo = completeArraysAndReturnFifoSize(flights);
+
+        // Fill FIFO with empty solution.
         lastSolutions = new FastFifo(sizeOfFifo);
-        for (int i=0; i< sizeOfFifo;i++) {
-            lastSolutions.enqueue(new Solution(nbCommands));
+        for (int i = 0; i < sizeOfFifo; i++) {
+            lastSolutions.enqueue(new Solution(nbFlights));
         }
     }
 
-    private Solution calculateIteratif() {
-        // Parcours de toutes les commandes
-        for (int i=0; i<nbCommands;i++) {
+    /**
+     * Complete all arrays (starts, ends and prices) and calculate size of FIFO.
+     */
+    private int completeArraysAndReturnFifoSize(Flight[] flights) {
+        int bigestDuration = 0;
+        int maxSameStartTime = 1;
+        int currentMaxSameStartTimeFound = 0;
+        int lastStartTime = -1;
+        for (int flightNumber = 0; flightNumber < nbFlights; flightNumber++) {
+            Flight flight = flights[flightNumber];
+
+            // If startTime if equal to the precedent,
+            // increment the number of same startTime.
+            if (flight.startTime == lastStartTime) {
+                currentMaxSameStartTimeFound++;
+            } else {
+                if (currentMaxSameStartTimeFound > maxSameStartTime) {
+                    maxSameStartTime = currentMaxSameStartTimeFound;
+                }
+                lastStartTime = flight.startTime;
+                currentMaxSameStartTimeFound = 1;
+            }
+
+            starts[flightNumber] = flight.startTime;
+            ends[flightNumber] = flight.startTime + flight.duration;
+            prices[flightNumber] = flight.price;
+
+            if (flight.getDuration() > bigestDuration) {
+                bigestDuration = flight.duration;
+            }
+        }
+        // The max of same startTime can have be found in the last iteration.
+        if (currentMaxSameStartTimeFound > maxSameStartTime) {
+            maxSameStartTime = currentMaxSameStartTimeFound;
+        }
+
+        // Size of FIFO needed =
+        // Max(duration) * 2 + (Max of same startTime).
+        // This is the max number of flight between two accepted flight.
+        return (bigestDuration << 1) + maxSameStartTime;
+    }
+
+    private Solution calculateSolution() {
+        // Iterate on all flight.
+        for (int flightNumber = 0; flightNumber < nbFlights; flightNumber++) {
             Solution bestSolutionToAdd = null;
             int bestPrice = -1;
+            // Search the best solution in FIFO we can take for this slght.
             for (Solution solution : lastSolutions) {
-                if (starts[i] >= solution.heureFin
-                        && solution.prix > bestPrice ) {
+                if (starts[flightNumber] >= solution.endTime
+                        && solution.price > bestPrice) {
                     bestSolutionToAdd = solution;
-                    bestPrice = solution.prix;
+                    bestPrice = solution.price;
                 }
             }
 
-            BitSet newAceptedCommands = lastSolutions.getFirst().acceptedCommands;
+            BitSet newAceptedFlights = lastSolutions.getFirst().acceptedFlights;
             // Faster than clear follow by or
-            newAceptedCommands.and(bestSolutionToAdd.acceptedCommands);
-            newAceptedCommands.or(bestSolutionToAdd.acceptedCommands);
+            newAceptedFlights.and(bestSolutionToAdd.acceptedFlights);
+            newAceptedFlights.or(bestSolutionToAdd.acceptedFlights);
 
-            newAceptedCommands.set(i);
+            // Add the current flight to the solution.
+            newAceptedFlights.set(flightNumber);
 
-            Solution newSolution = new Solution(ends[i], bestSolutionToAdd.prix + prices[i], newAceptedCommands);
+            Solution newSolution = new Solution(ends[flightNumber], bestSolutionToAdd.price + prices[flightNumber], newAceptedFlights);
+            // Add the new solution to FIFO.
             lastSolutions.enqueue(newSolution);
 
         }
 
+        // Search the best solution in FIFO.
         Solution bestSolution = null;
         for (Solution solution : lastSolutions) {
-            if (bestSolution == null || solution.prix > bestSolution.prix) {
+            if (bestSolution == null || solution.price > bestSolution.price) {
                 bestSolution = solution;
             }
         }
@@ -103,14 +127,15 @@ public class JajascriptService {
 
     public JajaScriptResponse calculate() {
 
-        Solution solution = calculateIteratif();
+        Solution solution = calculateSolution();
 
-        int gain = solution.prix;
+        int gain = solution.price;
+
         List<String> path = newArrayList();
-
-        for (int i=0; i<nbCommands; i++) {
-            if (solution.acceptedCommands.get(i)) {
-                path.add(commandes[i].nomVol);
+        // Construct the path with the array of accepted flights.
+        for (int i = 0; i < nbFlights; i++) {
+            if (solution.acceptedFlights.get(i)) {
+                path.add(flights[i].name);
             }
         }
 

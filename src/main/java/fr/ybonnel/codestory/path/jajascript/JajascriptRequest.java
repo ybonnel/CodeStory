@@ -5,13 +5,13 @@ import java.util.List;
 
 public class JajascriptRequest {
 
-    private List<Commande> commandes;
+    private List<Flight> commandes;
 
-    public JajascriptRequest(List<Commande> commandes) {
+    public JajascriptRequest(List<Flight> commandes) {
         this.commandes = commandes;
     }
 
-    public List<Commande> getCommandes() {
+    public List<Flight> getCommandes() {
         return commandes;
     }
 }

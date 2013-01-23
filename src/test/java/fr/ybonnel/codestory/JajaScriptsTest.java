@@ -7,8 +7,7 @@ import com.google.common.primitives.Longs;
 import com.meterware.httpunit.PostMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebResponse;
-import fr.ybonnel.codestory.util.LogUtil;
-import fr.ybonnel.codestory.path.jajascript.Commande;
+import fr.ybonnel.codestory.path.jajascript.Flight;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 import fr.ybonnel.codestory.path.jajascript.JajascriptService;
 import fr.ybonnel.codestory.path.jajascript.legacy.LegacyJajascriptService;
@@ -123,10 +122,10 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Test
     public void should_answer_same_as_legacy() throws IOException, SAXException {
         for (int nbCommands = 1; nbCommands <= 500; nbCommands = nbCommands + 1) {
-            List<Commande> commandes = generateRandomCommands(nbCommands);
+            List<Flight> commandes = generateRandomCommands(nbCommands);
 
             JajaScriptResponse legacyResponse = new LegacyJajascriptService(commandes).calculate();
-            JajaScriptResponse newResponse = new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
+            JajaScriptResponse newResponse = new JajascriptService(commandes.toArray(new Flight[commandes.size()])).calculate();
 
             int legacyGain = legacyResponse.getGain();
             int newGain = newResponse.getGain();
@@ -135,17 +134,17 @@ public class JajaScriptsTest extends WebServerTestUtil {
         }
     }
 
-    private List<Commande> generateRandomCommands(int nbCommands) {
-        List<Commande> commandes = new ArrayList<Commande>();
+    private List<Flight> generateRandomCommands(int nbCommands) {
+        List<Flight> flights = new ArrayList<Flight>();
         for (int index = 1; index <= nbCommands; index++) {
-            Commande commande = new Commande();
-            commande.setNomVol(Integer.toString(index));
-            commande.setHeureDepart(index);
-            commande.setTempsVol(random.nextInt(10) + 1);
-            commande.setPrix(random.nextInt(20) + 1);
-            commandes.add(commande);
+            Flight flight = new Flight();
+            flight.setName(Integer.toString(index));
+            flight.setStartTime(index);
+            flight.setDuration(random.nextInt(10) + 1);
+            flight.setPrice(random.nextInt(20) + 1);
+            flights.add(flight);
         }
-        return commandes;
+        return flights;
     }
 
     private static class ResponseByLevel {
@@ -171,23 +170,23 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Test
     public void should_answer_right_to_limit_case() throws IOException, SAXException {
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        List<Commande> commandes = new ArrayList<Commande>();
-        Commande firstCommande = new Commande();
-        firstCommande.setNomVol("0");
-        firstCommande.setHeureDepart(0);
-        firstCommande.setTempsVol(1);
-        firstCommande.setPrix(50);
-        commandes.add(firstCommande);
+        List<Flight> flights = new ArrayList<Flight>();
+        Flight firstCommande = new Flight();
+        firstCommande.setName("0");
+        firstCommande.setStartTime(0);
+        firstCommande.setDuration(1);
+        firstCommande.setPrice(50);
+        flights.add(firstCommande);
 
         for (int index = 1; index < 100; index++) {
-            Commande commande = new Commande();
-            commande.setNomVol(Integer.toString(index));
-            commande.setHeureDepart(0);
-            commande.setTempsVol(random.nextInt(10) + 1);
-            commande.setPrix(random.nextInt(20) + 1);
-            commandes.add(commande);
+            Flight flight = new Flight();
+            flight.setName(Integer.toString(index));
+            flight.setStartTime(0);
+            flight.setDuration(random.nextInt(10) + 1);
+            flight.setPrice(random.nextInt(20) + 1);
+            flights.add(flight);
         }
-        String request = mapper.writeValueAsString(commandes);
+        String request = mapper.writeValueAsString(flights);
 
 
         WebConversation wc = new WebConversation();
@@ -213,9 +212,9 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
         for (int i = 0; i <= nbOccurToTest; i++) {
 
-            List<Commande> commandes = generateRandomCommands(level * 5);
+            List<Flight> flights = generateRandomCommands(level * 5);
             long startTime = System.nanoTime();
-            new JajascriptService(commandes.toArray(new Commande[commandes.size()])).calculate();
+            new JajascriptService(flights.toArray(new Flight[flights.size()])).calculate();
 
             long elapsedTime = System.nanoTime() - startTime;
 

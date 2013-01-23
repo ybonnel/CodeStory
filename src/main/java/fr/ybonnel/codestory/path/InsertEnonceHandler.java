@@ -20,15 +20,8 @@ public class InsertEnonceHandler extends AbstractPathHandler {
     public WebServerResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws JsonProcessingException {
 
         int id = Integer.parseInt(params[0]);
-        Enonce enonce = payLoad == null ? contructEnonce(id, request) : new Enonce(id, "Enonce " + id, payLoad);
+        Enonce enonce = new Enonce(id, "Enonce " + id, payLoad);
         DatabaseManager.INSTANCE.getEnonceDao().insert(enonce);
         return new WebServerResponse(HttpServletResponse.SC_CREATED, mapper.writeValueAsString(enonce));
-    }
-
-    public Enonce contructEnonce(int id, HttpServletRequest request) {
-        Enumeration<?> parameters = request.getParameterNames();
-        String titre = (String) parameters.nextElement();
-        return new Enonce(id, "Enonce " + id, titre + "=" + request.getParameter(titre));
-
     }
 }

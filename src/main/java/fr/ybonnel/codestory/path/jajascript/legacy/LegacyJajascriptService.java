@@ -2,7 +2,7 @@ package fr.ybonnel.codestory.path.jajascript.legacy;
 
 
 import com.google.common.primitives.Ints;
-import fr.ybonnel.codestory.path.jajascript.Commande;
+import fr.ybonnel.codestory.path.jajascript.Flight;
 import fr.ybonnel.codestory.path.jajascript.JajaScriptResponse;
 
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class LegacyJajascriptService {
 
-    private List<Commande> commandes;
+    private List<Flight> commandes;
 
     private int nbCommands;
     private int[] starts;
@@ -26,12 +26,12 @@ public class LegacyJajascriptService {
     private long startTime;
 
 
-    public LegacyJajascriptService(List<Commande> commandes) {
+    public LegacyJajascriptService(List<Flight> commandes) {
         this.commandes = commandes;
-        Collections.sort(this.commandes, new Comparator<Commande>() {
+        Collections.sort(this.commandes, new Comparator<Flight>() {
             @Override
-            public int compare(Commande commande1, Commande commande2) {
-                return Ints.compare(commande1.getHeureDepart(), commande2.getHeureDepart());
+            public int compare(Flight flight1, Flight flight2) {
+                return Ints.compare(flight1.getStartTime(), flight2.getStartTime());
             }
         });
 
@@ -41,11 +41,11 @@ public class LegacyJajascriptService {
         durations = new int[nbCommands];
         prices = new int[nbCommands];
         for (int indexComand = 0; indexComand < nbCommands; indexComand++) {
-            Commande commande = commandes.get(indexComand);
-            starts[indexComand] = commande.getHeureDepart();
-            ends[indexComand] = commande.getHeureDepart() + commande.getTempsVol();
-            durations[indexComand] = commande.getTempsVol();
-            prices[indexComand] =  commande.getPrix();
+            Flight flight = commandes.get(indexComand);
+            starts[indexComand] = flight.getStartTime();
+            ends[indexComand] = flight.getStartTime() + flight.getDuration();
+            durations[indexComand] = flight.getDuration();
+            prices[indexComand] =  flight.getPrice();
         }
         maxValue = Ints.max(ends);
         pricesByEndTime = new int[maxValue+1];
@@ -109,7 +109,7 @@ public class LegacyJajascriptService {
 
         for (int i=0; i<nbCommands; i++) {
             if (bestAcceptedCommands[i]) {
-                path.add(commandes.get(i).getNomVol());
+                path.add(commandes.get(i).getName());
             }
         }
 
