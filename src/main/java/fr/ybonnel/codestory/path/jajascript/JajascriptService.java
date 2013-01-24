@@ -92,6 +92,7 @@ public class JajascriptService {
         for (int flightNumber = 0; flightNumber < nbFlights; flightNumber++) {
             Solution bestSolutionToAdd = null;
             int bestPrice = -1;
+            int bestPriceAlreadyFound  = -1;
             // Search the best solution in FIFO we can take for this slght.
             for (Solution solution : lastSolutions) {
                 if (starts[flightNumber] >= solution.endTime
@@ -99,19 +100,26 @@ public class JajascriptService {
                     bestSolutionToAdd = solution;
                     bestPrice = solution.price;
                 }
+                if (ends[flightNumber] >= solution.endTime && solution.price > bestPriceAlreadyFound) {
+                    bestPriceAlreadyFound = solution.price;
+                }
             }
 
-            BitSet newAceptedFlights = lastSolutions.getFirst().acceptedFlights;
-            // Faster than clear follow by or
-            newAceptedFlights.and(bestSolutionToAdd.acceptedFlights);
-            newAceptedFlights.or(bestSolutionToAdd.acceptedFlights);
+            int newPrice = bestSolutionToAdd.price + prices[flightNumber];
 
-            // Add the current flight to the solution.
-            newAceptedFlights.set(flightNumber);
+            if (newPrice > bestPriceAlreadyFound) {
+                BitSet newAceptedFlights = lastSolutions.getFirst().acceptedFlights;
+                // Faster than clear follow by or
+                newAceptedFlights.and(bestSolutionToAdd.acceptedFlights);
+                newAceptedFlights.or(bestSolutionToAdd.acceptedFlights);
 
-            Solution newSolution = new Solution(ends[flightNumber], bestSolutionToAdd.price + prices[flightNumber], newAceptedFlights);
-            // Add the new solution to FIFO.
-            lastSolutions.enqueue(newSolution);
+                // Add the current flight to the solution.
+                newAceptedFlights.set(flightNumber);
+
+                Solution newSolution = new Solution(ends[flightNumber], bestSolutionToAdd.price + prices[flightNumber], newAceptedFlights);
+                // Add the new solution to FIFO.
+                lastSolutions.enqueue(newSolution);
+            }
 
         }
 

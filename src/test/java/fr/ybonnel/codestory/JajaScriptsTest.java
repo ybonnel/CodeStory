@@ -203,8 +203,8 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Ignore
     public void should_be_very_very_fast() throws IOException, SAXException {
         //LogUtil.disableLogs();
-        int level = 30000;
-        int nbOccurToTest = 50;
+        int level = 100000;
+        int nbOccurToTest = 5;
 
         long totalElapsedTime = 0;
         long minElapsedTime = Long.MAX_VALUE;
@@ -212,9 +212,15 @@ public class JajaScriptsTest extends WebServerTestUtil {
 
         for (int i = 0; i <= nbOccurToTest; i++) {
 
-            List<Flight> flights = generateRandomCommands(level * 5);
-            long startTime = System.nanoTime();
-            new JajascriptService(flights.toArray(new Flight[flights.size()])).calculate();
+            JajascriptService service;
+            long startTime;
+            {
+                List<Flight> flights = generateRandomCommands(level * 5);
+                startTime = System.nanoTime();
+                service = new JajascriptService(flights.toArray(new Flight[flights.size()]));
+            }
+
+            service.calculate();
 
             long elapsedTime = System.nanoTime() - startTime;
 
