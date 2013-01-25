@@ -71,6 +71,12 @@ public enum QueryType {
             return query.equals("As tu copie le code de ndeloof(OUI/NON/JE_SUIS_NICOLAS)");
         }
     },
+    WANT_PARTICIPATE(new FixResponseQueryHandler("OUI")) {
+        @Override
+        protected boolean isThisQueryType(String query) {
+            return query.equals("Souhaites-tu-participer-a-la-suite-de-Code-Story(OUI/NON)");
+        }
+    },
     CALCULATE(new CalculateQueryHandler()) {
 
         private Pattern pattern = Pattern.compile("[\\(\\)0-9\\+/\\* ,\\-]+");

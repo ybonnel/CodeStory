@@ -209,8 +209,11 @@ public class WebServerTest extends WebServerTestUtil {
         assertEquals("NON", response.getText());
     }
 
-
-
-
-
+    @Test
+    public void should_want_participate() throws IOException, SAXException {
+        WebConversation wc = new WebConversation();
+        WebResponse response = wc.getResponse(getURL() + "/?q=Souhaites-tu-participer-a-la-suite-de-Code-Story(OUI/NON)");
+        assertEquals(200, response.getResponseCode());
+        assertEquals("OUI", response.getText());
+    }
 }
