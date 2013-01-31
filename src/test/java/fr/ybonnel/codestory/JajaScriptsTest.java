@@ -22,6 +22,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -203,7 +204,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
     @Ignore
     public void should_be_very_very_fast() throws IOException, SAXException {
         //LogUtil.disableLogs();
-        int level = 100000;
+        int level = 20000;
         int nbOccurToTest = 5;
 
         long totalElapsedTime = 0;

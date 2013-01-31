@@ -1,21 +1,33 @@
 package fr.ybonnel.codestory.path.jajascript;
 
-import java.util.BitSet;
+import java.util.*;
 
 public class Solution {
-    public int endTime;
-    public int price;
-    public BitSet acceptedFlights;
+    public final int endTime;
+    public final int price;
+    public final Solution oldSolution;
+    public final Flight newFlight;
 
-    Solution(int nbFlights) {
-        endTime = 0;
-        price = 0;
-        acceptedFlights = new BitSet(nbFlights);
-    }
-
-    Solution(int endTime, int price, BitSet acceptedFlights) {
+    Solution(int endTime, int price, Solution oldSolution, Flight newFlight) {
         this.endTime = endTime;
         this.price = price;
-        this.acceptedFlights = acceptedFlights;
+        this.oldSolution = oldSolution;
+        this.newFlight = newFlight;
+    }
+
+    public List<Flight> getFlights() {
+
+        LinkedList<Flight> flights = new LinkedList<Flight>();
+        flights.add(newFlight);
+
+        Solution currentSolution = oldSolution;
+        while (currentSolution != null) {
+            flights.add(currentSolution.newFlight);
+            currentSolution = currentSolution.oldSolution;
+        }
+
+        Collections.reverse(flights);
+
+        return flights;
     }
 }

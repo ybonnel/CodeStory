@@ -3,10 +3,7 @@ package fr.ybonnel.codestory.path.jajascript;
 
 import com.google.common.primitives.Ints;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -19,7 +16,7 @@ public class JajascriptService {
     private int[] starts;
     private int[] ends;
     private int[] prices;
-    private FastFifo lastSolutions;
+    private LinkedList<Solution> lastSolutions;
 
 
     public JajascriptService(Flight[] flights) {
@@ -39,10 +36,7 @@ public class JajascriptService {
         int sizeOfFifo = completeArraysAndReturnFifoSize(flights);
 
         // Fill FIFO with empty solution.
-        lastSolutions = new FastFifo(sizeOfFifo);
-        for (int i = 0; i < sizeOfFifo; i++) {
-            lastSolutions.enqueue(new Solution(nbFlights));
-        }
+        lastSolutions = new LinkedList<Solution>();
     }
 
     /**
@@ -105,20 +99,22 @@ public class JajascriptService {
                 }
             }
 
-            int newPrice = bestSolutionToAdd.price + prices[flightNumber];
+            int newPrice = (bestSolutionToAdd == null ? 0 : bestSolutionToAdd.price) + prices[flightNumber];
 
             if (newPrice > bestPriceAlreadyFound) {
-                BitSet newAceptedFlights = lastSolutions.getFirst().acceptedFlights;
-                // Faster than clear follow by or
-                newAceptedFlights.and(bestSolutionToAdd.acceptedFlights);
-                newAceptedFlights.or(bestSolutionToAdd.acceptedFlights);
-
                 // Add the current flight to the solution.
-                newAceptedFlights.set(flightNumber);
-
-                Solution newSolution = new Solution(ends[flightNumber], bestSolutionToAdd.price + prices[flightNumber], newAceptedFlights);
+                Solution newSolution = new Solution(ends[flightNumber], newPrice, bestSolutionToAdd, flights[flightNumber]);
                 // Add the new solution to FIFO.
-                lastSolutions.enqueue(newSolution);
+                lastSolutions.addLast(newSolution);
+            }
+
+            if (bestSolutionToAdd != null) {
+                Solution oldSolution = lastSolutions.getFirst();
+                while (oldSolution.endTime <= starts[flightNumber]
+                        && oldSolution.price < bestSolutionToAdd.price) {
+                    lastSolutions.removeFirst();
+                    oldSolution = lastSolutions.getFirst();
+                }
             }
 
         }
@@ -141,10 +137,8 @@ public class JajascriptService {
 
         List<String> path = newArrayList();
         // Construct the path with the array of accepted flights.
-        for (int i = 0; i < nbFlights; i++) {
-            if (solution.acceptedFlights.get(i)) {
-                path.add(flights[i].name);
-            }
+        for (Flight flight : solution.getFlights()) {
+            path.add(flight.getName());
         }
 
         return new JajaScriptResponse(gain, path);
