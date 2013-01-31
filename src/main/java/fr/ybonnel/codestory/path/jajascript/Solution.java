@@ -1,18 +1,21 @@
 package fr.ybonnel.codestory.path.jajascript;
 
-import java.util.*;
+import com.google.common.primitives.Ints;
 
-public class Solution {
-    public final int endTime;
+import java.util.LinkedList;
+import java.util.List;
+
+public class Solution implements Comparable<Solution> {
     public final int price;
+    public final int endTime;
     public final Solution oldSolution;
     public final Flight newFlight;
 
-    Solution(int endTime, int price, Solution oldSolution, Flight newFlight) {
-        this.endTime = endTime;
+    Solution(int price, Solution oldSolution, Flight newFlight) {
         this.price = price;
         this.oldSolution = oldSolution;
         this.newFlight = newFlight;
+        this.endTime = newFlight.endTime;
     }
 
     public List<Flight> getFlights() {
@@ -22,12 +25,19 @@ public class Solution {
 
         Solution currentSolution = oldSolution;
         while (currentSolution != null) {
-            flights.add(currentSolution.newFlight);
+            flights.addFirst(currentSolution.newFlight);
             currentSolution = currentSolution.oldSolution;
         }
 
-        Collections.reverse(flights);
-
         return flights;
+    }
+
+    public boolean isBetterThan(Solution bestSolutionToAdd) {
+        return bestSolutionToAdd == null || price > bestSolutionToAdd.price;
+    }
+
+    @Override
+    public int compareTo(Solution o) {
+        return Ints.compare(price, o.price);
     }
 }

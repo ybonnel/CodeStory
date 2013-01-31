@@ -1,8 +1,10 @@
 package fr.ybonnel.codestory.path.jajascript;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.primitives.Ints;
 
-public class Flight {
+public class Flight implements Comparable<Flight> {
 
     @JsonProperty("VOL")
     public String name;
@@ -12,6 +14,8 @@ public class Flight {
     public int duration;
     @JsonProperty("PRIX")
     public int price;
+    @JsonIgnore
+    public Integer endTime;
 
     public String getName() {
         return name;
@@ -43,5 +47,11 @@ public class Flight {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+
+    @Override
+    public int compareTo(Flight o) {
+        return Ints.compare(startTime, o.startTime);
     }
 }
