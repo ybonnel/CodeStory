@@ -32,10 +32,8 @@ public class ChangeScalaskelHandler extends AbstractPathHandler {
         }
 
         List<Change> changes = ScalaskelChangeService.getInstance().calculateChanges(centsToPay);
-        return new WebServerResponse(HttpServletResponse.SC_OK,
-                objectMapper.writeValueAsString(changes));
+        return new WebServerResponse(HttpServletResponse.SC_OK, objectMapper.writeValueAsString(changes));
     }
-
 
 
 }

@@ -15,7 +15,11 @@ public class Flight implements Comparable<Flight> {
     @JsonProperty("PRIX")
     public int price;
     @JsonIgnore
-    public Integer endTime;
+    public int endTime;
+
+    public void calculateEndTime() {
+        endTime = startTime + duration;
+    }
 
     public String getName() {
         return name;

@@ -122,6 +122,7 @@ public class JajaScriptsTest extends WebServerTestUtil {
     public void should_answer_same_as_legacy() throws IOException, SAXException {
         for (int nbCommands = 1; nbCommands <= 500; nbCommands = nbCommands + 1) {
             List<Flight> commandes = generateRandomCommands(nbCommands);
+            Collections.shuffle(commandes);
 
             JajaScriptResponse legacyResponse = new LegacyJajascriptService(commandes).calculate();
             JajaScriptResponse newResponse = new JajascriptService(commandes).calculate();

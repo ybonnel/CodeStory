@@ -1,5 +1,6 @@
 package fr.ybonnel.codestory.path.jajascript;
 
+import com.google.common.base.Optional;
 import com.google.common.primitives.Ints;
 
 import java.util.LinkedList;
@@ -8,10 +9,10 @@ import java.util.List;
 public class Solution implements Comparable<Solution> {
     public final int price;
     public final int endTime;
-    public final Solution oldSolution;
+    public final Optional<Solution> oldSolution;
     public final Flight newFlight;
 
-    Solution(int price, Solution oldSolution, Flight newFlight) {
+    Solution(int price, Optional<Solution> oldSolution, Flight newFlight) {
         this.price = price;
         this.oldSolution = oldSolution;
         this.newFlight = newFlight;
@@ -23,17 +24,17 @@ public class Solution implements Comparable<Solution> {
         LinkedList<Flight> flights = new LinkedList<Flight>();
         flights.add(newFlight);
 
-        Solution currentSolution = oldSolution;
-        while (currentSolution != null) {
-            flights.addFirst(currentSolution.newFlight);
-            currentSolution = currentSolution.oldSolution;
+        Optional<Solution> currentSolution = oldSolution;
+        while (currentSolution.isPresent()) {
+            flights.addFirst(currentSolution.get().newFlight);
+            currentSolution = currentSolution.get().oldSolution;
         }
 
         return flights;
     }
 
-    public boolean isBetterThan(Solution bestSolutionToAdd) {
-        return bestSolutionToAdd == null || price > bestSolutionToAdd.price;
+    public boolean isBetterThan(Optional<Solution> bestSolutionToAdd) {
+        return !bestSolutionToAdd.isPresent() || price > bestSolutionToAdd.get().price;
     }
 
     @Override

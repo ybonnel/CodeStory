@@ -72,10 +72,9 @@ public class JajascriptPerfTest {
     @Ignore
     public void testManyLevels() {
         System.out.println("NbFlights;Min(ms);Max(ms);Moy(ms)");
-        for (int nbFlight = 50000; nbFlight <= 1000000; nbFlight +=50000) {
+        for (int nbFlight = 10000; nbFlight <= 1000000; nbFlight +=10000) {
             testALevel(nbFlight);
         }
-
     }
 
     @Test

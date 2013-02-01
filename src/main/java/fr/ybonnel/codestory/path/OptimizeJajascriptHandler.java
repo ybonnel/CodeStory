@@ -23,14 +23,14 @@ public class OptimizeJajascriptHandler extends AbstractPathHandler {
 
     @Override
     public WebServerResponse getResponse(HttpServletRequest request, String payLoad, String... params) throws Exception {
-        List<Flight> commandes = mapper.readValue(payLoad, requestType);
+        List<Flight> flights = mapper.readValue(payLoad, requestType);
 
-        JajaScriptResponse jajaScriptResponse = new JajascriptService(commandes).calculate();
+        JajaScriptResponse jajaScriptResponse = new JajascriptService(flights).calculate();
 
         WebServerResponse pathResponse = new WebServerResponse(HttpServletResponse.SC_OK, mapper.writeValueAsString(jajaScriptResponse));
         pathResponse.setContentType(CONTENT_TYPE_JSON);
         // Specific log to avoid log big request with thousands flights.
-        pathResponse.setSpecificLog("NbCommands=" + commandes.size() + ", gain=" + jajaScriptResponse.getGain());
+        pathResponse.setSpecificLog("NbFlights=" + flights.size() + ", gain=" + jajaScriptResponse.getGain());
         return pathResponse;
     }
 }
