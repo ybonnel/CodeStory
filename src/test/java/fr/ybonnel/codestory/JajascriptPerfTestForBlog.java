@@ -81,9 +81,11 @@ public class JajascriptPerfTestForBlog {
 
         service.calculate();
 
-        System.gc();
+        long elapsedTime = System.nanoTime() - startTime;
 
-        return System.nanoTime() - startTime;
+        System.gc();
+        
+        return elapsedTime;
     }
 
     private static List<Integer> levels = new ArrayList<Integer>() {{
